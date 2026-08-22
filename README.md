@@ -235,6 +235,7 @@ python -m venv .venv
 **2. Activate it**
 ```bash
 # Windows:
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 .venv\Scripts\activate
 # macOS/Linux:
 source .venv/bin/activate
