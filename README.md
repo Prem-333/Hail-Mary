@@ -211,8 +211,7 @@ full discussion of deployment considerations in a real fab/ESS environment.
 
 ### Quick Start
 
-```bash
-git clone <https://github.com/Prem-333/Hail-Mary>
+git clone <repo-url> && cd Low-Cortisol
 python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 python -m src.data_generation.generate_dataset
@@ -228,7 +227,8 @@ streamlit run dashboard/app.py
 
 **1. Clone and create a virtual environment**
 ```bash
-git clone <https://github.com/Prem-333/Hail-Mary>
+git clone <https://github.com/Prem-333/Low-Cortisol>
+cd Low-Cortisol
 python -m venv .venv
 ```
 
@@ -275,7 +275,7 @@ Deep-Dive, Live Early-Rejection Simulator, and Evaluation Summary.
 ## 📁 Project Structure
 
 ```
-burnin-screening/
+Low-Cortisol/
 ├── dashboard/app.py              # Streamlit dashboard (4 views)
 ├── data/
 │   ├── raw/                      # Placeholder for real fab data
