@@ -212,7 +212,7 @@ full discussion of deployment considerations in a real fab/ESS environment.
 ### Quick Start
 
 ```bash
-git clone <repo-url> 
+git clone <https://github.com/Prem-333/Hail-Mary>
 python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 python -m src.data_generation.generate_dataset
@@ -229,7 +229,6 @@ streamlit run dashboard/app.py
 **1. Clone and create a virtual environment**
 ```bash
 git clone <https://github.com/Prem-333/Hail-Mary>
-cd burnin-screening
 python -m venv .venv
 ```
 
