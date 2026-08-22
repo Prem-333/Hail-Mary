@@ -228,7 +228,7 @@ streamlit run dashboard/app.py
 
 **1. Clone and create a virtual environment**
 ```bash
-git clone <repo-url>
+git clone <https://github.com/Prem-333/Hail-Mary>
 cd burnin-screening
 python -m venv .venv
 ```
