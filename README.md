@@ -305,12 +305,10 @@ burnin-screening/
 
 ## 👥 Team and License
 
-**Team Name:** _add your registered SIH team name here_
+**Team Name:** Low Cortisol
 **Members:** _add team member names here_
 
-**License:** add a `LICENSE` file before final submission — MIT is a
-common, permissive default for hackathon projects if you don't have a
-specific reason to choose otherwise.
+**License:** MIT
 
 ---
 
