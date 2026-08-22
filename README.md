@@ -212,7 +212,7 @@ full discussion of deployment considerations in a real fab/ESS environment.
 ### Quick Start
 
 ```bash
-git clone <repo-url> && cd burnin-screening
+git clone <repo-url> 
 python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 python -m src.data_generation.generate_dataset
