@@ -212,7 +212,9 @@ full discussion of deployment considerations in a real fab/ESS environment.
 ### Quick Start
 
 git clone https://github.com/Prem-333/Hail-Mary.git && cd Hail-Mary
-python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
+python -m venv .venv
+# Windows: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser; .venv\Scripts\activate
+# macOS/Linux: source .venv/bin/activate
 pip install -r requirements.txt
 python -m src.data_generation.generate_dataset
 streamlit run dashboard/app.py
