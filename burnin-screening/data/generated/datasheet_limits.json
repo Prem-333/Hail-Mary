@@ -1,0 +1,14 @@
+{
+  "leakage_current_uA": {
+    "min": 0.0,
+    "max": 50.0,
+    "unit": "\u00b5A",
+    "description": "Maximum allowable leakage current per datasheet spec"
+  },
+  "propagation_delay_ns": {
+    "min": 0.0,
+    "max": 18.0,
+    "unit": "ns",
+    "description": "Maximum allowable propagation delay per datasheet spec"
+  }
+}

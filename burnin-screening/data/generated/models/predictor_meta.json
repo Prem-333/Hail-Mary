@@ -1,0 +1,14 @@
+{
+  "param_names": [
+    "leakage_current_uA",
+    "propagation_delay_ns"
+  ],
+  "feature_names": [
+    "value_0h",
+    "value_24h",
+    "early_slope",
+    "lot_dev_0h",
+    "lot_dev_24h"
+  ],
+  "safety_slope_n_sigma": 3.0
+}
