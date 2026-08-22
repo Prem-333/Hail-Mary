@@ -305,7 +305,7 @@ burnin-screening/
 
 ## 👥 Team and License
 
-**Team Name:** Low Cortisol
+**Team Name:** Hail Mary
 **Members:** _add team member names here_
 
 **License:** MIT
