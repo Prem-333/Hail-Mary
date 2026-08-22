@@ -8,9 +8,8 @@
 ![Recall](https://img.shields.io/badge/recall-95.6%25-2E7D4F?style=flat-square)
 ![False Negatives](https://img.shields.io/badge/false%20negatives-11%2F249-B8791A?style=flat-square)
 ![Explainability](https://img.shields.io/badge/explainability-8%2F8-2E7D4F?style=flat-square)
-![SIH 2026](https://img.shields.io/badge/SIH%202026-SIH26170-14171A?style=flat-square)
 
-> Built for **Smart India Hackathon 2026** — Problem Statement **SIH26170**
+
 > Indian Space Research Organisation (ISRO) · *AI-Driven Anomaly Detection in Component Burn-In & Screening*
 
 **A component reading 45 µA in a lot with a 10 µA median passes every datasheet limit ever written for it. LATENT catches it anyway** — 95.6% recall, only 11 missed defects out of 249, validated end-to-end against 3,559 synthetic components across 10 lots, with the ability to reject a bad component at the 24-hour mark instead of waiting out the full 168-hour burn-in cycle.
