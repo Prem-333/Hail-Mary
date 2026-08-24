@@ -1,4 +1,4 @@
-# Virtual environment
+﻿# Virtual environment
 .venv/
 venv/
 env/
@@ -40,3 +40,7 @@ data/generated/*.parquet
 # Misc
 *.log
 .env
+
+# Frontend
+frontend/node_modules/
+
