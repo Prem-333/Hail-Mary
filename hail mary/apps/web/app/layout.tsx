@@ -27,7 +27,9 @@ export default function RootLayout({
       <body className="flex">
         <ThemeProvider>
           <Sidebar />
-          <div className="ml-[260px] w-[calc(100%-260px)] flex flex-col min-h-screen bg-muted/10">
+          <div className="ml-[260px] w-[calc(100%-260px)] flex flex-col min-h-screen"
+            style={{ background: "var(--background)" }}
+          >
             <Header />
             <main className="flex-1 p-8 overflow-x-hidden">
               {children}

@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "d3-array": "^3.2.4",
+    "d3-scale": "^4.0.2",
+    "motion": "^13.1.1",
+    "react-use-measure": "^2.1.7"
+  }
+}
