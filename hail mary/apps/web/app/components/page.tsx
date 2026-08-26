@@ -12,7 +12,7 @@ const fetcher = (url: string) => axios.get(url).then(res => res.data);
 const swrOpts = { revalidateOnFocus: false, dedupingInterval: 5000 };
 
 export default function ComponentsIndex() {
-  const { data: lotsData } = useSWR("http://127.0.0.1:8000/api/lots/", fetcher, swrOpts);
+  const { data: lotsData } = useSWR(`${process.env.NEXT_PUBLIC_API_URL}/api/lots/`, fetcher, swrOpts);
   const [selectedLot, setSelectedLot] = useState<string>("");
   const router = useRouter();
 
@@ -23,7 +23,7 @@ export default function ComponentsIndex() {
   }, [lotsData, selectedLot]);
 
   const { data: lotDetails, isLoading } = useSWR(
-    selectedLot ? `http://127.0.0.1:8000/api/lots/${selectedLot}` : null,
+    selectedLot ? `${process.env.NEXT_PUBLIC_API_URL}/api/lots/${selectedLot}` : null,
     fetcher,
     swrOpts
   );
@@ -67,7 +67,7 @@ export default function ComponentsIndex() {
       {/* Summary strip */}
       <motion.div variants={itemVariants} className="grid grid-cols-3 gap-3">
         <div className="flex items-center gap-3 px-4 py-3 rounded-lg" style={{
-          background: "linear-gradient(135deg, var(--card) 0%, oklch(0.1 0 0) 100%)",
+          background: "linear-gradient(135deg, var(--card) 0%, oklch(0.09 0.004 260) 100%)",
           border: "1px solid oklch(1 0 0 / 6%)",
         }}>
           <Activity className="h-4 w-4 text-muted-foreground" />
@@ -75,7 +75,7 @@ export default function ComponentsIndex() {
           <span className="ml-auto text-lg font-bold tabular-nums">{components.length}</span>
         </div>
         <div className="flex items-center gap-3 px-4 py-3 rounded-lg" style={{
-          background: "linear-gradient(135deg, oklch(0.13 0.04 25) 0%, oklch(0.1 0 0) 100%)",
+          background: "linear-gradient(135deg, oklch(0.13 0.04 25) 0%, oklch(0.09 0.004 260) 100%)",
           border: "1px solid oklch(0.65 0.22 25 / 15%)",
         }}>
           <AlertTriangle className="h-4 w-4 text-destructive/70" />
@@ -83,7 +83,7 @@ export default function ComponentsIndex() {
           <span className="ml-auto text-lg font-bold tabular-nums text-destructive">{flaggedCount}</span>
         </div>
         <div className="flex items-center gap-3 px-4 py-3 rounded-lg" style={{
-          background: "linear-gradient(135deg, oklch(0.12 0.03 160) 0%, oklch(0.1 0 0) 100%)",
+          background: "linear-gradient(135deg, oklch(0.12 0.03 160) 0%, oklch(0.09 0.004 260) 100%)",
           border: "1px solid oklch(0.6 0.15 160 / 15%)",
         }}>
           <CheckCircle className="h-4 w-4 text-emerald-500/70" />
@@ -109,7 +109,7 @@ export default function ComponentsIndex() {
               className="cursor-pointer group"
             >
               <div className="rounded-lg p-4 h-full transition-colors" style={{
-                background: "linear-gradient(135deg, var(--card) 0%, oklch(0.1 0 0) 100%)",
+                background: "linear-gradient(135deg, var(--card) 0%, oklch(0.09 0.004 260) 100%)",
                 border: c.is_anomalous
                   ? "1px solid oklch(0.65 0.22 25 / 20%)"
                   : "1px solid oklch(1 0 0 / 6%)",
