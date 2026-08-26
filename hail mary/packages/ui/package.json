@@ -11,8 +11,12 @@
   "dependencies": {
     "@base-ui/react": "^1.7.0",
     "@number-flow/react": "^0.6.2",
+    "@visx/curve": "^4.0.1-alpha.0",
+    "@visx/event": "^4.0.1-alpha.0",
     "@visx/pattern": "^4.0.1-alpha.0",
     "@visx/responsive": "^4.0.1-alpha.0",
+    "@visx/scale": "^4.0.1-alpha.0",
+    "@visx/shape": "^4.0.1-alpha.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "d3-array": "^3.2.4",
@@ -48,6 +52,11 @@
     "./postcss.config": "./postcss.config.mjs",
     "./lib/*": "./src/lib/*.ts",
     "./components/*": "./src/components/*.tsx",
+    "./components/charts/*": [
+      "./src/components/charts/*.tsx",
+      "./src/components/charts/*.ts"
+    ],
+    "./components/charts/tooltip": "./src/components/charts/tooltip/index.ts",
     "./hooks/*": "./src/hooks/*.ts"
   }
 }
