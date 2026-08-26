@@ -268,6 +268,8 @@ python -m src.evaluation.evaluate
 Outputs `results/metrics.md` with the full metrics breakdown.
 
 **7. Launch the dashboard**
+> **Note**: The Streamlit dashboard is currently deprecated in favor of the new Next.js frontend (`hail mary/apps/web`). You can launch the Next.js dashboard by navigating to `hail mary/apps/web` and running `npm run dev`.
+
 ```bash
 streamlit run dashboard/app.py
 ```
