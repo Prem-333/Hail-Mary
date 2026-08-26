@@ -37,7 +37,7 @@ function ProgressBar({ value, max = 1, color = "oklch(0.78 0.12 250)", delay = 0
 }
 
 export default function EvaluationSummary() {
-  const { data, isLoading, error } = useSWR("http://127.0.0.1:8000/api/evaluation/", fetcher, swrOpts);
+  const { data, isLoading, error } = useSWR(`${process.env.NEXT_PUBLIC_API_URL}/api/evaluation/`, fetcher, swrOpts);
 
   const containerVariants = {
     hidden: { opacity: 0 },

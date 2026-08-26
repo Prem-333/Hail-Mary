@@ -19,17 +19,17 @@ const fetcher = (url: string) => axios.get(url).then(res => res.data);
 const swrOpts = { revalidateOnFocus: false, dedupingInterval: 5000 };
 
 export default function LotOverview() {
-  const { data: lotsData, error: lotsError } = useSWR("http://127.0.0.1:8000/api/lots/", fetcher, swrOpts);
-  const [selectedLot, setSelectedLot] = useState<string>("L-404");
+  const { data: lotsData, error: lotsError } = useSWR(`${process.env.NEXT_PUBLIC_API_URL}/api/lots/`, fetcher, swrOpts);
+  const [selectedLot, setSelectedLot] = useState<string>("");
 
   useEffect(() => {
-    if (lotsData?.lots?.length > 0 && !lotsData.lots.includes(selectedLot)) {
+    if (lotsData?.lots?.length > 0 && !selectedLot) {
       setSelectedLot(lotsData.lots[0]);
     }
   }, [lotsData, selectedLot]);
 
   const { data: lotDetails, isLoading, error: lotError } = useSWR(
-    selectedLot ? `http://127.0.0.1:8000/api/lots/${selectedLot}` : null, 
+    selectedLot ? `${process.env.NEXT_PUBLIC_API_URL}/api/lots/${selectedLot}` : null, 
     fetcher,
     swrOpts
   );
@@ -121,7 +121,7 @@ export default function LotOverview() {
         {statCards.map((card, i) => (
           <motion.div key={card.label} variants={itemVariants}>
             <Card className="relative overflow-hidden" style={{
-              background: "linear-gradient(135deg, var(--card) 0%, oklch(0.1 0 0) 100%)",
+              background: "linear-gradient(135deg, var(--card) 0%, oklch(0.09 0.004 260) 100%)",
               border: "1px solid oklch(1 0 0 / 6%)",
             }}>
               <CardHeader className="pb-2">
@@ -144,7 +144,7 @@ export default function LotOverview() {
       {/* Scatter Chart */}
       <motion.div variants={itemVariants}>
         <Card style={{
-          background: "linear-gradient(180deg, var(--card) 0%, oklch(0.095 0 0) 100%)",
+          background: "linear-gradient(180deg, var(--card) 0%, oklch(0.09 0.004 260) 100%)",
           border: "1px solid oklch(1 0 0 / 6%)",
         }}>
           <CardHeader>
@@ -203,7 +203,7 @@ export default function LotOverview() {
       {/* Flagged Components Table */}
       <motion.div variants={itemVariants}>
         <Card style={{
-          background: "linear-gradient(180deg, var(--card) 0%, oklch(0.095 0 0) 100%)",
+          background: "linear-gradient(180deg, var(--card) 0%, oklch(0.09 0.004 260) 100%)",
           border: "1px solid oklch(1 0 0 / 6%)",
         }}>
           <CardHeader>

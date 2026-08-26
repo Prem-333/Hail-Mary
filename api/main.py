@@ -9,7 +9,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 # Import routers
-from api.routers import lots, components, simulation, evaluation
+from api.routers import lots, components, simulation, evaluation, streaming
 from api.dependencies import load_system
 
 app = FastAPI(title="Burn-In Screening API")
@@ -33,6 +33,7 @@ app.include_router(lots.router)
 app.include_router(components.router)
 app.include_router(simulation.router)
 app.include_router(evaluation.router)
+app.include_router(streaming.router)
 
 @app.get("/")
 def read_root():

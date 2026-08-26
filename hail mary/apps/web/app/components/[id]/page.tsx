@@ -6,7 +6,11 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
 import { ArrowLeft } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, ComposedChart } from "recharts";
+import { Gauge } from "@workspace/ui/components/charts/gauge";
+import { LineChart, Line } from "@/components/charts/line-chart";
+import { Grid } from "@/components/charts/grid";
+import { XAxis } from "@/components/charts/x-axis";
+import { ChartTooltip } from "@/components/charts/tooltip";
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data);
 const swrOpts = { revalidateOnFocus: false, dedupingInterval: 5000 };
@@ -14,7 +18,7 @@ const swrOpts = { revalidateOnFocus: false, dedupingInterval: 5000 };
 export default function ComponentDeepDive() {
   const { id } = useParams();
   const router = useRouter();
-  const { data, isLoading, error } = useSWR(`http://127.0.0.1:8000/api/components/${id}`, fetcher, swrOpts);
+  const { data, isLoading, error } = useSWR(`${process.env.NEXT_PUBLIC_API_URL}/api/components/${id}`, fetcher, swrOpts);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -75,7 +79,7 @@ export default function ComponentDeepDive() {
       {/* Parametric Trajectory */}
       <motion.div variants={itemVariants}>
         <Card style={{
-          background: "linear-gradient(180deg, var(--card) 0%, oklch(0.095 0 0) 100%)",
+          background: "linear-gradient(180deg, var(--card) 0%, oklch(0.09 0.004 260) 100%)",
           border: "1px solid oklch(1 0 0 / 6%)",
         }}>
           <CardHeader>
@@ -93,31 +97,16 @@ export default function ComponentDeepDive() {
                 
                 return (
                   <div key={param} className="h-[300px] rounded-lg p-4" style={{
-                    background: "oklch(0.1 0 0)",
+                    background: "oklch(0.09 0.004 260)",
                     border: "1px solid oklch(1 0 0 / 6%)",
                   }}>
                     <h4 className="font-semibold text-sm mb-4 capitalize text-center text-muted-foreground">{param.replace(/_/g, ' ')}</h4>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <ComposedChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="oklch(1 0 0 / 8%)" />
-                        <XAxis dataKey="time" name="Hours" tick={{ fill: 'oklch(0.5 0 0)', fontSize: 11 }} axisLine={false} tickLine={false} />
-                        <YAxis domain={['dataMin - 2', 'dataMax + 2']} tick={{ fill: 'oklch(0.5 0 0)', fontSize: 11 }} axisLine={false} tickLine={false} />
-                        <Tooltip
-                          contentStyle={{
-                            background: 'var(--popover)',
-                            border: '1px solid var(--border)',
-                            borderRadius: 8,
-                            fontSize: 12,
-                            boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
-                          }}
-                          labelStyle={{ color: 'var(--popover-foreground)' }}
-                          itemStyle={{ color: 'var(--popover-foreground)' }}
-                        />
-                        <Area type="monotone" dataKey="max" stroke="none" fill="oklch(0.78 0.12 250 / 15%)" />
-                        <Area type="monotone" dataKey="min" stroke="none" fill="oklch(0.085 0 0)" fillOpacity={1} />
-                        <Line type="monotone" dataKey="val" stroke="oklch(0.78 0.12 250)" strokeWidth={2.5} dot={{ r: 5, fill: 'oklch(0.78 0.12 250)', strokeWidth: 0 }} />
-                      </ComposedChart>
-                    </ResponsiveContainer>
+                    <LineChart data={chartData} xDataKey="time">
+                      <Grid horizontal />
+                      <Line dataKey="val" stroke="var(--chart-1)" strokeWidth={2} />
+                      <XAxis />
+                      <ChartTooltip />
+                    </LineChart>
                   </div>
                 );
               })}
@@ -130,20 +119,36 @@ export default function ComponentDeepDive() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <motion.div variants={itemVariants}>
           <Card className="h-full" style={{
-            background: "linear-gradient(135deg, var(--card) 0%, oklch(0.095 0 0) 100%)",
+            background: "linear-gradient(135deg, var(--card) 0%, oklch(0.09 0.004 260) 100%)",
             border: "1px solid oklch(1 0 0 / 6%)",
           }}>
             <CardHeader>
               <CardTitle>Anomaly Detection (Module A)</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="flex flex-col items-center justify-center p-4">
+                <div className="w-full max-w-[280px]">
+                  <Gauge
+                    value={Math.min(((anomaly.anomaly_score || 0) / 25) * 100, 100)}
+                    centerValue={anomaly.anomaly_score || 0}
+                    defaultLabel="Anomaly Score"
+                    spacing={20}
+                    inactiveFillOpacity={0.2}
+                    activeFill={anomaly.is_anomalous ? "var(--destructive)" : "var(--chart-2)"}
+                    useGradient={false}
+                    formatOptions={{
+                      maximumFractionDigits: 1,
+                    }}
+                  />
+                </div>
+              </div>
               <div className={`p-4 rounded-lg border-l-4 ${
                 anomaly.is_anomalous 
                   ? 'border-destructive bg-destructive/10 text-destructive' 
                   : 'border-emerald-500 bg-emerald-500/10 text-emerald-400'
               }`}>
                 <p className="font-bold">{anomaly.is_anomalous ? "ANOMALOUS" : "Normal"}</p>
-                <p className="text-sm opacity-80">Score: {anomaly.anomaly_score?.toFixed(2)}</p>
+                <p className="text-sm opacity-80">Threshold crossed</p>
               </div>
               <div>
                 <h4 className="font-semibold mb-1 text-sm text-muted-foreground">Justification</h4>
@@ -155,7 +160,7 @@ export default function ComponentDeepDive() {
 
         <motion.div variants={itemVariants}>
           <Card className="h-full" style={{
-            background: "linear-gradient(135deg, var(--card) 0%, oklch(0.095 0 0) 100%)",
+            background: "linear-gradient(135deg, var(--card) 0%, oklch(0.09 0.004 260) 100%)",
             border: "1px solid oklch(1 0 0 / 6%)",
           }}>
             <CardHeader>
@@ -201,7 +206,7 @@ export default function ComponentDeepDive() {
       {/* Final Assessment */}
       <motion.div variants={itemVariants}>
         <Card style={{
-          background: "linear-gradient(135deg, var(--card) 0%, oklch(0.095 0 0) 100%)",
+          background: "linear-gradient(135deg, var(--card) 0%, oklch(0.09 0.004 260) 100%)",
           border: "1px solid oklch(1 0 0 / 6%)",
         }}>
           <CardHeader>
