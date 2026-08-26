@@ -1,20 +1,35 @@
 'use client';
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import useSWR from "swr";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select";
 import { Gauge } from "@workspace/ui/components/charts/gauge";
 import { Zap, FlaskConical, ArrowRight, AlertTriangle, CheckCircle } from "lucide-react";
 
+const fetcher = (url: string) => axios.get(url).then(res => res.data);
+const swrOpts = { revalidateOnFocus: false, dedupingInterval: 5000 };
+
 export default function SimulatorPage() {
+  // Fetch lots from the API for the selector
+  const { data: lotsData } = useSWR(`${process.env.NEXT_PUBLIC_API_URL}/api/lots/`, fetcher, swrOpts);
+
   const [formData, setFormData] = useState({
-    lot_id: "LOT_000",
+    lot_id: "",
     leak_0h: 17.0,
     leak_24h: 17.2,
     delay_0h: 8.0,
     delay_24h: 8.04
   });
+
+  // Initialize lot_id from the API once data loads
+  useEffect(() => {
+    if (lotsData?.lots?.length > 0 && !formData.lot_id) {
+      setFormData(prev => ({ ...prev, lot_id: lotsData.lots[0] }));
+    }
+  }, [lotsData, formData.lot_id]);
 
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -25,7 +40,7 @@ export default function SimulatorPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.post("http://127.0.0.1:8000/api/simulate/", formData);
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/simulate/`, formData);
       setResult(res.data);
     } catch (err) {
       console.error(err);
@@ -50,7 +65,7 @@ export default function SimulatorPage() {
     show: { opacity: 1, y: 0, transition: { duration: 0.35 } }
   };
 
-  const inputClass = "w-full mt-1.5 px-3 py-2.5 rounded-lg text-sm transition-all focus:outline-none focus:ring-1 focus:ring-ring/40 bg-[oklch(0.1_0_0)] border border-border/40 placeholder:text-muted-foreground/40 tabular-nums";
+  const inputClass = "w-full mt-1.5 px-3 py-2.5 rounded-lg text-sm transition-all focus:outline-none focus:ring-1 focus:ring-ring/40 bg-[oklch(0.09_0.004_260)] border border-border/40 placeholder:text-muted-foreground/40 tabular-nums";
 
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="show" className="flex flex-col gap-5">
@@ -63,7 +78,7 @@ export default function SimulatorPage() {
         {/* Input panel */}
         <motion.div variants={itemVariants} className="lg:col-span-2">
           <div className="rounded-lg p-5 h-full" style={{
-            background: "linear-gradient(180deg, var(--card) 0%, oklch(0.095 0 0) 100%)",
+            background: "linear-gradient(180deg, var(--card) 0%, oklch(0.085 0.004 260) 100%)",
             border: "1px solid oklch(1 0 0 / 6%)",
           }}>
             <div className="flex items-center gap-2 mb-4">
@@ -72,9 +87,24 @@ export default function SimulatorPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Lot ID Selector — from real API data */}
               <div>
                 <label className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Lot ID</label>
-                <input name="lot_id" value={formData.lot_id} onChange={handleChange} className={inputClass} />
+                <div className="mt-1.5">
+                  <Select
+                    value={formData.lot_id}
+                    onValueChange={(v) => setFormData(prev => ({ ...prev, lot_id: v }))}
+                  >
+                    <SelectTrigger className="w-full bg-[oklch(0.09_0.004_260)] border-border/40 h-10 text-sm">
+                      <SelectValue placeholder="Select Lot" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {lotsData?.lots?.map((lot: string) => (
+                        <SelectItem key={lot} value={lot}>{lot}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               <div className="pt-3 border-t border-border/20">
@@ -112,9 +142,9 @@ export default function SimulatorPage() {
               </div>
 
               <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}>
-                <Button type="submit" className="w-full mt-2 h-11 font-semibold text-sm gap-2" disabled={loading}
+                <Button type="submit" className="w-full mt-2 h-11 font-semibold text-sm gap-2" disabled={loading || !formData.lot_id}
                   style={{
-                    background: "linear-gradient(135deg, oklch(0.22 0 0) 0%, oklch(0.16 0 0) 100%)",
+                    background: "linear-gradient(135deg, oklch(0.22 0.005 260) 0%, oklch(0.14 0.004 260) 100%)",
                     border: "1px solid oklch(1 0 0 / 10%)",
                   }}
                 >
@@ -141,7 +171,7 @@ export default function SimulatorPage() {
         {/* Results panel */}
         <motion.div variants={itemVariants} className="lg:col-span-3">
           <div className="rounded-lg h-full" style={{
-            background: "linear-gradient(180deg, var(--card) 0%, oklch(0.095 0 0) 100%)",
+            background: "linear-gradient(180deg, var(--card) 0%, oklch(0.085 0.004 260) 100%)",
             border: "1px solid oklch(1 0 0 / 6%)",
           }}>
             <div className="p-5 border-b border-border/10">
@@ -155,7 +185,7 @@ export default function SimulatorPage() {
                     className="flex flex-col items-center justify-center py-16 text-center"
                   >
                     <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{
-                      background: "linear-gradient(135deg, oklch(0.15 0 0), oklch(0.12 0 0))",
+                      background: "linear-gradient(135deg, oklch(0.14 0.005 260), oklch(0.1 0.004 260))",
                       border: "1px solid oklch(1 0 0 / 6%)",
                     }}>
                       <FlaskConical className="h-7 w-7 text-muted-foreground/30" />
@@ -178,7 +208,7 @@ export default function SimulatorPage() {
                   <motion.div key="result" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-5">
                     {/* Status badge */}
                     <div className="flex items-center justify-between p-4 rounded-lg" style={{
-                      background: result.is_flagged ? "oklch(0.13 0.04 25)" : "oklch(0.12 0.03 160)",
+                      background: result.is_flagged ? "oklch(0.13 0.04 25)" : "oklch(0.11 0.03 160)",
                       border: result.is_flagged ? "1px solid oklch(0.65 0.22 25 / 25%)" : "1px solid oklch(0.6 0.15 160 / 25%)",
                     }}>
                       <div className="flex items-center gap-3">
@@ -210,7 +240,7 @@ export default function SimulatorPage() {
                         return (
                           <motion.div key={param} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
                             className="rounded-lg p-4" style={{
-                              background: "oklch(0.1 0 0)",
+                              background: "oklch(0.09 0.004 260)",
                               border: "1px solid oklch(1 0 0 / 5%)",
                             }}
                           >
