@@ -1,361 +1,119 @@
 # LATENT
 
-### Cohort-Relative Anomaly Detection & Drift Prediction for Semiconductor Burn-In Screening
+Provides cohort-relative anomaly detection and drift prediction to identify latent defects in semiconductor components during burn-in testing.
 
 ![Python](https://img.shields.io/badge/python-3.11%2B-14171A?style=flat-square&logo=python&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-42%2F42%20passing-2E7D4F?style=flat-square)
-![F2 Score](https://img.shields.io/badge/F2--score-0.9311-2E7D4F?style=flat-square)
-![Recall](https://img.shields.io/badge/recall-95.6%25-2E7D4F?style=flat-square)
-![False Negatives](https://img.shields.io/badge/false%20negatives-11%2F249-B8791A?style=flat-square)
-![Explainability](https://img.shields.io/badge/explainability-8%2F8-2E7D4F?style=flat-square)
-![Build](https://img.shields.io/badge/build-passing-2E7D4F?style=flat-square)
-![License](https://img.shields.io/badge/license-MIT-14171A?style=flat-square)
+![Next.js](https://img.shields.io/badge/Next.js-16.2-black?style=flat-square&logo=next.js)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-009688?style=flat-square&logo=fastapi&logoColor=white)
 
----
+<!-- TODO: screenshot or 60s demo GIF here -->
 
-> **Indian Space Research Organisation (ISRO) · AI-Driven Anomaly Detection in Component Burn-In & Screening**
+## The Problem
 
-**A component reading 45 µA in a lot with a 10 µA median passes every datasheet limit ever written for it. LATENT catches it anyway** — 95.6% recall, only 11 missed defects out of 249, validated end-to-end against 7,559 synthetic components across 50 lots, with the ability to reject a bad component at the 24-hour mark instead of waiting out the full 168-hour burn-in cycle.
+Standard semiconductor component screening relies on static datasheet limits, where a component passes if its leakage stays below an absolute threshold (e.g., 50 µA). However, if every other component in a production lot measures 10 µA, a 48 µA part is a latent defect that will pass screening but likely fail in deployment (such as in a satellite). Static limits are blind to batch context, resulting in escaped defects.
 
-This isn't a model bolted onto a demo. It's a complete pipeline — synthetic data grounded in real accelerated-aging physics, two independently-evaluated ML modules, a SHAP-backed explainability layer, and a live dashboard — and every number below is reproducible in under five minutes. See [Quick Start](#-setup-and-quick-start).
+## The Solution
 
----
+- **Cohort-Relative Anomaly Detection**: Calculates Z-scores using Median Absolute Deviation (MAD) and an Isolation Forest ensemble to flag lot-relative outliers rather than absolute limits (`src/outlier_detection/detector.py`).
+- **Early Rejection Prediction**: Predicts 168-hour end-of-test drift using only 0-hour and 24-hour readings via an XGBoost regressor, allowing faulty parts to be rejected days early (`src/drift_prediction/predictor.py`).
+- **Explainable Decisions**: Decomposes all anomaly flags into human-readable feature impacts using SHAP values (`src/explainability/explainer.py`).
+- **Live Sensor Streaming**: Visualizes live 1Hz component telemetry via WebSockets on a real-time monitor dashboard (`api/routers/streaming.py` and `hail mary/apps/web/app/monitor/page.tsx`).
 
-## 🏆 Why This Wins on the Rubric
+## Architecture Diagram
 
-| Criterion | Requirement | LATENT Delivery | Margin |
-|-----------|-------------|-----------------|--------|
-| **Zero False Negatives** | "Catastrophic if missed" | **95.6% recall** (F2=0.9311) | ✅ Exceeds |
-| **Drift Accuracy** | Lowest MAE | **1.36 µA leakage**, **0.42 ns delay** | ✅ Leads |
-| **Explainability** | "No black boxes" | **8/8 rubric** — SHAP + rule traces | ✅ Perfect |
-| **Early Rejection** | Flag at 24h | **37.4% latent caught early** | ✅ Unique |
-| **Cohort-Relative** | Batch-aware screening | **MAD + Isolation Forest ensemble** | ✅ Novel |
-
----
-
-## 🎯 The Problem
-
-In space missions, **you cannot repair a broken circuit board once the satellite is launched**. ISRO puts electronic components through Burn-In testing — running them at extreme temperatures (125°C) for 168 hours to weed out failures.
-
-**The fatal flaw in current practice:** Components are judged against **static datasheet limits**. If the max leakage is 50 µA, a part reading 48 µA "passes."
-
-**But:** If every other part in that batch measures ~10 µA, that 48 µA part is a **latent defect** — a ticking time bomb that will fail in orbit. Static limits miss it. **LATENT doesn't.**
-
----
-
-## ⚡ Why Cohort-Relative Screening Wins
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│  TRADITIONAL STATIC LIMITS                                      │
-│  ─────────────────────────────────────────────────────────────  │
-│  Limit: 50 µA     │  Part A: 48 µA  →  PASS  ✅                │
-│                   │  Part B: 12 µA  →  PASS  ✅                │
-│                   │  Part C: 9 µA   →  PASS  ✅                │
-│                   │                                               │
-│  Result: Latent defect (Part A) escapes to space ❌            │
-├─────────────────────────────────────────────────────────────────┤
-│  LATENT: COHORT-RELATIVE SCREENING                              │
-│  ─────────────────────────────────────────────────────────────  │
-│  Lot Median: 10 µA  │  MAD: 1.2 µA  │  Z-threshold: 3.5       │
-│  Part A: 48 µA     →  Z = 31.7  →  FLAGGED 🚨                 │
-│  Part B: 12 µA     →  Z = 1.7   →  Normal                       │
-│  Part C: 9 µA      →  Z = -0.8  →  Normal                       │
-│  Result: Latent defect caught before launch ✅                 │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+graph TD
+    A[Next.js: Web Dashboard] -->|REST & WebSockets| B(FastAPI: API Backend)
+    B --> C[Data Layer: Synthetic Data Sets]
+    B --> D[Module A: Outlier Detector]
+    B --> E[Module B: Drift Predictor]
+    B --> F[Explainer: SHAP Layer]
+    D -->|MAD / iForest| G[(Local CSV Data)]
+    E -->|XGBoost| G
+    C -->|Physics-based Engine| G
 ```
 
----
+## How It Works
 
-## 🏗 Architecture
-
-```
-┌────────────────────────────────────────────────────────────────────────────┐
-│                         LATENT PIPELINE                                    │
-├────────────────────────────────────────────────────────────────────────────┤
-│                                                                            │
-│  📊 SYNTHETIC DATA GENERATOR          🔍 MODULE A: OUTLIER DETECTOR       │
-│  ───────────────────────────          ────────────────────────────────    │
-│  • 50 lots, 7,559 components          • Robust Z-score (MAD-based)       │
-│  • 3 populations: Normal/Latent/      • Isolation Forest (ensemble)      │
-│    Obvious defect                       • Union rule (A OR B)            │
-│  • Arrhenius physics + noise          • F2=0.9311, Recall=95.6%          │
-│  • 10 timepoints (0-168h)              • Per-component provenance       │
-│                                                                            │
-│  📈 MODULE B: DRIFT PREDICTOR        📝 EXPLAINABILITY LAYER             │
-│  ─────────────────────────────        ─────────────────────────────      │
-│  • XGBoost regressor                   • TreeSHAP decomposition          │
-│  • Inputs: 0h + 24h only               • Base value + feature impacts   │
-│  • Predicts: 168h value                • QA-ready natural language      │
-│  • Safety-slope early rejection        • 8/8 rubric score               │
-│  • MAE: 1.36µA / 0.42ns                • "Why this part, in plain English"│
-│                                                                            │
-│  🖥 LIVE DASHBOARD (Next.js 15)      🔌 API LAYER (FastAPI)              │
-│  ─────────────────────────────        ─────────────────────────────      │
-│  • Lot Overview (scatter plots)        • REST endpoints + WebSocket     │
-│  • Component Deep-Dive (trajectories)  • Model persistence & versioning │
-│  • Sensor Monitor (real-time stream)   • Zero-downtime reload          │
-│  • Rejection Simulator (what-if)       • Structured logging            │
-│  • Evaluation Summary (metrics)        • Health checks                 │
-│                                                                            │
-└────────────────────────────────────────────────────────────────────────────┘
+```mermaid
+sequenceDiagram
+    participant UI as Next.js Dashboard
+    participant API as FastAPI (simulation.py)
+    participant ML as XGBoost Predictor
+    participant SHAP as Explainer
+    
+    UI->>API: POST /api/simulate (0h & 24h readings)
+    API->>ML: Predict 168h target leakage
+    ML-->>API: Predicted Value
+    API->>SHAP: Generate feature attribution
+    SHAP-->>API: SHAP Base + Feature Impacts
+    API-->>UI: Return Prediction & Explanation Payload
+    UI->>UI: Render Component Deep-Dive View
 ```
 
----
+## Tech Stack
 
-## 📊 Results at a Glance
+| Layer | Technology | Why |
+|-------|------------|-----|
+| **Frontend UI** | Next.js 16.2 / React 19 | Server-side rendering, fast Turbopack compilation |
+| **Charting & Viz** | Recharts / D3 | Complex scatter plots for lot overviews and trajectory lines |
+| **Backend API** | FastAPI / Uvicorn | High-performance async REST endpoints and WebSocket streaming |
+| **ML Models** | XGBoost / Scikit-Learn | Fast inference for drift regression and Isolation Forest detection |
+| **Explainability** | SHAP | Provides additive, theoretically sound feature attributions for QA reports |
 
-### Module A — Anomaly Detection
-| Metric | Value | Target |
-|--------|-------|--------|
-| **F2-Score** | **0.9311** | > 0.85 |
-| **Recall** | **95.6%** | > 90% |
-| **Precision** | 84.2% | > 75% |
-| **False Negatives** | **11 / 249** | < 15 |
-| **Latent Defect Recall** | 92.3% | > 85% |
+## What Makes This Different
 
-### Module B — Drift Prediction
-| Parameter | MAE | RMSE | R² |
-|-----------|-----|------|-----|
-| **Leakage Current (µA)** | **1.36** | 2.14 | 0.94 |
-| **Propagation Delay (ns)** | **0.42** | 0.68 | 0.91 |
+- **MAD over Standard Deviation**: Uses Median Absolute Deviation for cohort stats (`detector.py`)—standard deviation is heavily skewed by the exact extreme outliers we are trying to catch, whereas MAD provides a robust baseline.
+- **Safety-Slope Rejection**: Predicts final drift using XGBoost, but applies a custom per-lot statistical "safety slope" derived from early readings, catching latent defects reliably at 24 hours.
 
-| Defect Class | Leakage MAE | Delay MAE |
-|--------------|-------------|-----------|
-| Normal | 0.89 µA | 0.28 ns |
-| Latent | **3.41 µA** | **1.12 ns** |
-| Obvious | 1.23 µA | 0.39 ns |
+## Quickstart
 
-> **Key insight:** Higher MAE on latent defects is **expected and useful** — the model *cannot* predict what it hasn't seen in 0h/24h. The residual itself becomes a signal.
+**Prerequisites:** Python 3.11+, Node.js 20+
 
-### Early Rejection (Safety-Slope)
-| Metric | Value |
-|--------|-------|
-| Latent caught at 24h | **37.4%** |
-| False alarm rate (normal) | 4.1% |
-| Hours saved per early reject | **144h** |
+1. **Setup Backend & Generate Data:**
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate  # On Windows use: .venv\Scripts\activate
+   pip install -r requirements.txt
+   
+   # Generate synthetic dataset
+   python -m src.data_generation.generate_dataset --lots 50
+   
+   # Start FastAPI server
+   cd api
+   uvicorn main:app --reload --port 8000
+   ```
 
-### Explainability
-| Rubric Item | Score |
-|-------------|-------|
-| SHAP additivity verified | ✅ |
-| Feature-to-physical mapping | ✅ |
-| Rule trace for Module A | ✅ |
-| Natural language QA report | ✅ |
-| Confidence intervals shown | ✅ |
-| Counterfactual ("what if") | ✅ |
-| Per-component provenance | ✅ |
-| **Total** | **8 / 8** |
+2. **Setup Frontend Dashboard:**
+   ```bash
+   cd "hail mary"
+   npm install
+   npm run dev
+   ```
+   > Access the dashboard at `http://localhost:3000`
 
----
+<details>
+<summary><b>Project Structure</b></summary>
 
-## 🎬 Demo
-
-### Live Dashboard
-```bash
-# Terminal 1: Start API
-cd api && uvicorn main:app --reload --port 8000
-
-# Terminal 2: Start Frontend
-cd hail-mary && npm run dev
+```text
+├── api/                # FastAPI backend routers and ML model bindings
+├── hail mary/          # Next.js 16.2 turborepo frontend workspace
+├── src/                # Core ML logic (detection, prediction, SHAP)
+├── tests/              # Python test suite
+├── notebooks/          # Jupyter exploratory notebooks
+├── data/               # Local CSV dataset storage (generated)
+└── results/            # Markdown evaluation reports
 ```
-→ Open http://localhost:3000
+</details>
 
-### Reproducible Evaluation (5 minutes)
-```bash
-# Full pipeline: generate → train → evaluate
-python -m src.data_generation.generate_dataset --lots 50 --seed 42
-python -m src.evaluation.evaluate
-```
-Outputs `results/metrics.md` with all numbers above.
+## Challenges & What We Learned
 
-### What You'll See
-1. **Lot Overview** — Scatter plot of every component, anomalies glow red
-2. **Component Deep-Dive** — Trajectory vs. lot envelope, SHAP waterfall
-3. **Sensor Monitor** — Real-time WebSocket stream, 1s updates, no reset
-4. **Rejection Simulator** — Type 0h/24h values, get instant 168h prediction
-5. **Evaluation Summary** — All metrics, confusion matrices, SHAP summary
+Tuning the XGBoost drift predictor required a counterintuitive approach to residual errors. Initially, we treated high prediction errors as model failures. However, we realized that latent defects are inherently unpredictable based solely on 0h/24h behavior. We leaned into this by using the prediction residual itself (the MAE gap between normal and latent parts) as a strong secondary signal for anomaly detection, rather than trying to perfectly predict random walks.
 
----
+## What's Next
 
-## 🚀 Real-World Impact
+- **Physical Sensor Integration**: Swap the synthetic WebSocket data pump with a real hardware MQTT stream.
+- **Dynamic Threshold Tuning**: Add an interactive UI slider to let QA engineers adjust the Z-score anomaly sensitivity on the fly.
+- **PDF QA Reports**: Implement a route to export the component deep-dive view (including SHAP explanations) into a printable QA sign-off document.
 
-| Scenario | Traditional | LATENT |
-|----------|-------------|--------|
-| **Satellite launch** | 2-3 latent defects escape | **<1 per 1000** |
-| **Burn-in cycle time** | 168h fixed | **24h for 37% of bad parts** |
-| **Cost per escaped defect** | $50M+ (mission loss) | **$0 (caught on ground)** |
-| **QA engineer time/part** | 15 min manual review | **30 sec auto-generated report** |
-
----
-
-## 🛠 Setup and Quick Start
-
-### Prerequisites
-- Python 3.11+
-- Node.js 20+
-- 4 GB RAM minimum
-
-### 1. Backend
-```bash
-cd D:/Vic/SIH-2026
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-
-# Generate synthetic data (first run)
-python -m src.data_generation.generate_dataset --lots 50 --seed 42
-
-# Start API server
-cd api && uvicorn main:app --reload --port 8000
-```
-
-### 2. Frontend
-```bash
-cd hail-mary
-npm install
-npm run dev
-```
-→ http://localhost:3000
-
-### 3. Run Full Evaluation
-```bash
-python -m src.evaluation.evaluate
-cat results/metrics.md
-```
-
----
-
-## 📁 Project Structure
-
-```
-SIH-2026/
-├── api/                          # FastAPI backend
-│   ├── main.py                   # App entry, CORS, routers
-│   ├── dependencies.py           # ML system loader (singleton)
-│   └── routers/
-│       ├── lots.py               # Lot listings, summaries
-│       ├── components.py         # Component details + QA reports
-│       ├── simulation.py         # What-if predictions
-│       ├── evaluation.py         # Metrics endpoint
-│       └── streaming.py          # WebSocket sensor stream
-│
-├── src/                          # Core ML Pipeline
-│   ├── data_generation/
-│   │   └── generate_dataset.py   # Physics-based synthetic data
-│   ├── outlier_detection/
-│   │   └── detector.py           # Module A: MAD Z-score + iForest
-│   ├── drift_prediction/
-│   │   └── predictor.py          # Module B: XGBoost + safety-slope
-│   ├── explainability/
-│   │   └── explainer.py          # SHAP + QA report generator
-│   └── evaluation/
-│       └── evaluate.py           # F2, MAE, explainability rubric
-│
-├── hail-mary/                    # Next.js 15 Frontend (Turborepo)
-│   ├── apps/web/                 # Dashboard application
-│   │   ├── app/
-│   │   │   ├── page.tsx          # Lot Overview (scatter)
-│   │   │   ├── components/       # Deep-dive + index
-│   │   │   ├── monitor/          # Live WebSocket charts
-│   │   │   ├── simulator/        # Rejection what-if tool
-│   │   │   └── evaluation/       # Metrics dashboard
-│   │   └── components/           # Header, Sidebar, Theme
-│   └── packages/ui/              # shadcn/ui component library
-│
-├── tests/                        # 42 passing tests
-│   ├── test_outlier_detection.py
-│   ├── test_drift_prediction.py
-│   ├── test_explainability.py
-│   ├── test_streaming.py
-│   └── test_integration.py
-│
-├── data/                         # Generated datasets (gitignored)
-├── results/                      # Evaluation outputs
-└── notebooks/                    # Exploration notebooks
-```
-
----
-
-## 🧪 Testing
-
-```bash
-# All tests (42 tests, <30s)
-pytest tests/ -v
-
-# Specific modules
-pytest tests/test_outlier_detection.py -v
-pytest tests/test_drift_prediction.py -v
-pytest tests/test_explainability.py -v
-pytest tests/test_streaming.py -v
-pytest tests/test_integration.py -v
-
-# With coverage
-pytest tests/ --cov=src --cov-report=html
-```
-
----
-
-## 🔬 Technical Highlights
-
-### Robust Statistics (Why MAD, Not Std)
-```python
-# Standard deviation is pulled by outliers — defeats the purpose
-std = np.std(values)  # Inflated by the very defects we're hunting
-
-# MAD is robust — 50% breakdown point
-mad = np.median(np.abs(values - np.median(values))) * 1.4826
-# 1.4826 makes MAD consistent with std for normal distributions
-```
-
-### Safety-Slope Early Rejection
-```python
-# Per-lot threshold from early_slope distribution
-safety_slope = median(early_slope) + N * std(early_slope)
-
-# Component flagged if predicted drift exceeds this
-if predicted_168h - value_0h > safety_slope * 168:
-    flag_for_rejection = True
-```
-
-### SHAP Additivity Guarantee
-```
-prediction = base_value + Σ(shap_values)
-             = 12.4 µA + (+3.2) + (-0.5) + (+1.1) + ...
-             = 16.2 µA ✅ (matches model output exactly)
-```
-
-Every number traces to a physical measurement on the bench.
-
----
-
-## 🌟 The "Wow" Factors
-
-1. **Cohort-relative, not absolute** — Catches the 48µA part in a 10µA lot
-2. **Predicts the future from 14%** — 0h+24h → 168h with 1.36µA MAE
-3. **Explains like a human** — "Leakage at 24h pushed prediction +3.2µA"
-4. **Real-time, no resets** — WebSocket stream with monotonic timestamps
-5. **Production-grade** — Model persistence, health checks, structured logs
-6. **Reproducible in 5 min** — Single command regenerates everything
-7. **Tested, not just demoed** — 42 tests, CI-ready, typed, linted
-
----
-
-## 📜 License
-
-MIT — Built for ISRO Smart India Hackathon 2026.
-
----
-
-## 🤝 Acknowledgments
-
-- **ISRO** for defining the problem that matters
-- **SHAP** (Lundberg & Lee) for making ML interpretable
-- **XGBoost** team for the gradient boosting that just works
-- **shadcn/ui** for the component foundation
-
----
-
-*"In space, there are no second chances. LATENT ensures the first one counts."*
-
-**— LATENT Team, SIH 2026**
+<!-- TODO: add team members -->
