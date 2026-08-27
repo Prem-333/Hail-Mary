@@ -68,7 +68,7 @@ export default function SensorMonitor() {
 
   // Connect WebSocket
   const connectWs = useCallback(() => {
-    if (wsRef.current?.readyState === WebSocket.OPEN) {
+    if (wsRef.current) {
       wsRef.current.close();
     }
 
