@@ -13,6 +13,9 @@ import { LiveXAxis } from "@workspace/ui/components/charts/live-x-axis";
 import { LiveYAxis } from "@workspace/ui/components/charts/live-y-axis";
 import { Radio, Pause, Play, RotateCcw, AlertTriangle, CheckCircle, Zap } from "lucide-react";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+const WS_URL = process.env.NEXT_PUBLIC_WS_URL || "ws://127.0.0.1:8000";
+
 const fetcher = (url: string) => axios.get(url).then(res => res.data);
 const swrOpts = { revalidateOnFocus: false, dedupingInterval: 5000 };
 
@@ -30,7 +33,7 @@ interface StreamMeta {
 }
 
 export default function SensorMonitor() {
-  const { data: lotsData } = useSWR(`${process.env.NEXT_PUBLIC_API_URL}/api/lots/`, fetcher, swrOpts);
+  const { data: lotsData } = useSWR(`${API_URL}/api/lots/`, fetcher, swrOpts);
 
   const [selectedLot, setSelectedLot] = useState<string>("");
   const [selectedComponent, setSelectedComponent] = useState<string>("");
@@ -38,7 +41,6 @@ export default function SensorMonitor() {
   const [connected, setConnected] = useState(false);
   const [meta, setMeta] = useState<StreamMeta | null>(null);
 
-  // Sensor data stores
   const [leakageData, setLeakageData] = useState<SensorPoint[]>([]);
   const [delayData, setDelayData] = useState<SensorPoint[]>([]);
   const [currentLeakage, setCurrentLeakage] = useState(0);
@@ -46,16 +48,22 @@ export default function SensorMonitor() {
   const [currentHour, setCurrentHour] = useState(0);
 
   const pausedRef = useRef(paused);
+  const metaRef = useRef<StreamMeta | null>(null);
+  
   useEffect(() => {
     pausedRef.current = paused;
   }, [paused]);
 
+  useEffect(() => {
+    metaRef.current = meta;
+  }, [meta]);
+
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const reconnectAttemptsRef = useRef(0);
 
-  // Lot component list
   const { data: lotComponents } = useSWR(
-    selectedLot ? `${process.env.NEXT_PUBLIC_API_URL}/api/streaming/components/${selectedLot}` : null,
+    selectedLot ? `${API_URL}/api/streaming/components/${selectedLot}` : null,
     fetcher,
     swrOpts,
   );
@@ -66,18 +74,17 @@ export default function SensorMonitor() {
     }
   }, [lotsData, selectedLot]);
 
-  // Connect WebSocket
   const connectWs = useCallback(() => {
-    if (wsRef.current) {
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
       wsRef.current.close();
     }
 
-    const ws = new WebSocket(`${process.env.NEXT_PUBLIC_WS_URL}/ws/sensor-stream`);
+    const ws = new WebSocket(`${WS_URL}/ws/sensor-stream`);
     wsRef.current = ws;
 
     ws.onopen = () => {
       setConnected(true);
-      // Send init config
+      reconnectAttemptsRef.current = 0;
       ws.send(JSON.stringify({
         lot_id: selectedLot || undefined,
         component_id: selectedComponent || undefined,
@@ -88,22 +95,37 @@ export default function SensorMonitor() {
       const msg = JSON.parse(event.data);
 
       if (msg.type === "init") {
+        const prevMeta = metaRef.current;
+        // FIX: Only clear data if lot/component actually changed
+        const isDifferentComponent = !prevMeta || 
+          prevMeta.component_id !== msg.component_id ||
+          prevMeta.lot_id !== msg.lot_id;
+        
         setMeta(msg);
-        setLeakageData([]);
-        setDelayData([]);
+        if (isDifferentComponent) {
+          setLeakageData([]);
+          setDelayData([]);
+        }
         return;
       }
 
       if (msg.type === "data" && !pausedRef.current) {
-        const now = msg.time;
+        // FIX: Use real timestamp from server (unix seconds)
+        const timeSec = msg.time;
 
         if (msg.leakage !== undefined) {
           setCurrentLeakage(msg.leakage);
-          setLeakageData(prev => [...prev.slice(-500), { time: now, value: msg.leakage }]);
+          setLeakageData(prev => {
+            const next = [...prev, { time: timeSec, value: msg.leakage }];
+            return next.slice(-500);
+          });
         }
         if (msg.delay !== undefined) {
           setCurrentDelay(msg.delay);
-          setDelayData(prev => [...prev.slice(-500), { time: now, value: msg.delay }]);
+          setDelayData(prev => {
+            const next = [...prev, { time: timeSec, value: msg.delay }];
+            return next.slice(-500);
+          });
         }
         if (msg.burn_in_hour !== undefined) {
           setCurrentHour(msg.burn_in_hour);
@@ -113,10 +135,12 @@ export default function SensorMonitor() {
 
     ws.onclose = () => {
       setConnected(false);
-      // Auto-reconnect after 3s
+      const delay = Math.min(3000 * Math.pow(1.5, reconnectAttemptsRef.current), 30000);
+      reconnectAttemptsRef.current++;
+      
       reconnectTimeoutRef.current = setTimeout(() => {
         connectWs();
-      }, 3000);
+      }, delay);
     };
 
     ws.onerror = () => {
@@ -124,7 +148,6 @@ export default function SensorMonitor() {
     };
   }, [selectedLot, selectedComponent]);
 
-  // Reconnect when lot/component changes
   useEffect(() => {
     connectWs();
     return () => {
@@ -139,6 +162,7 @@ export default function SensorMonitor() {
     setCurrentLeakage(0);
     setCurrentDelay(0);
     setCurrentHour(0);
+    reconnectAttemptsRef.current = 0;
     connectWs();
   };
 
@@ -153,20 +177,19 @@ export default function SensorMonitor() {
   };
 
   const leakageMomentum = {
-    up: "oklch(0.65 0.22 25)",       // Red — leakage going up is bad
-    down: "oklch(0.68 0.12 160)",    // Green — leakage dropping is good
-    flat: "oklch(0.55 0.01 260)",    // Grey
+    up: "oklch(0.65 0.22 25)",
+    down: "oklch(0.68 0.12 160)",
+    flat: "oklch(0.55 0.01 260)",
   };
 
   const delayMomentum = {
-    up: "oklch(0.65 0.22 25)",       // Red — delay going up is bad
-    down: "oklch(0.68 0.12 160)",    // Green
-    flat: "oklch(0.55 0.01 260)",    // Grey
+    up: "oklch(0.65 0.22 25)",
+    down: "oklch(0.68 0.12 160)",
+    flat: "oklch(0.55 0.01 260)",
   };
 
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="show" className="flex flex-col gap-5">
-      {/* Header */}
       <div className="flex justify-between items-end">
         <div>
           <div className="flex items-center gap-3">
@@ -190,7 +213,6 @@ export default function SensorMonitor() {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Lot selector */}
           <div className="w-40">
             <Select value={selectedLot} onValueChange={(v) => { setSelectedLot(v); setSelectedComponent(""); }}>
               <SelectTrigger className="bg-card border-border/50 h-9 text-sm">
@@ -204,7 +226,6 @@ export default function SensorMonitor() {
             </Select>
           </div>
 
-          {/* Component selector */}
           <div className="w-48">
             <Select value={selectedComponent} onValueChange={setSelectedComponent}>
               <SelectTrigger className="bg-card border-border/50 h-9 text-sm">
@@ -221,7 +242,6 @@ export default function SensorMonitor() {
             </Select>
           </div>
 
-          {/* Controls */}
           <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
             <Button variant="outline" size="icon" className="h-9 w-9 border-border/50"
               onClick={() => setPaused(!paused)}
@@ -237,7 +257,6 @@ export default function SensorMonitor() {
         </div>
       </div>
 
-      {/* Stream info strip */}
       {meta && (
         <motion.div variants={itemVariants} className="grid grid-cols-4 gap-3">
           <div className="flex items-center gap-3 px-4 py-3 rounded-lg" style={{
@@ -279,9 +298,7 @@ export default function SensorMonitor() {
         </motion.div>
       )}
 
-      {/* Live Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        {/* Leakage Current Chart */}
         <motion.div variants={itemVariants}>
           <div className="rounded-lg overflow-hidden" style={{
             background: "linear-gradient(180deg, var(--card) 0%, oklch(0.085 0.004 260) 100%)",
@@ -338,7 +355,6 @@ export default function SensorMonitor() {
           </div>
         </motion.div>
 
-        {/* Propagation Delay Chart */}
         <motion.div variants={itemVariants}>
           <div className="rounded-lg overflow-hidden" style={{
             background: "linear-gradient(180deg, var(--card) 0%, oklch(0.085 0.004 260) 100%)",
@@ -396,7 +412,6 @@ export default function SensorMonitor() {
         </motion.div>
       </div>
 
-      {/* Datasheet limits reference */}
       <motion.div variants={itemVariants}>
         <div className="rounded-lg p-5" style={{
           background: "linear-gradient(135deg, var(--card) 0%, oklch(0.09 0.004 260) 100%)",
