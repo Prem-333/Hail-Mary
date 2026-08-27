@@ -287,9 +287,9 @@ def generate_lot(
 
 
 def generate_dataset(
-    n_lots: int = 10,
-    units_min: int = 200,
-    units_max: int = 500,
+    n_lots: int = 20,
+    units_min: int = 500,
+    units_max: int = 1000,
     latent_rate_min: float = 0.03,
     latent_rate_max: float = 0.07,
     obvious_rate_min: float = 0.01,
@@ -381,9 +381,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         description="Generate synthetic burn-in test data for component reliability screening.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    parser.add_argument("--lots", type=int, default=10, help="Number of manufacturing lots to simulate.")
-    parser.add_argument("--units-min", type=int, default=200, help="Minimum units per lot.")
-    parser.add_argument("--units-max", type=int, default=500, help="Maximum units per lot.")
+    parser.add_argument("--lots", type=int, default=20, help="Number of manufacturing lots to simulate.")
+    parser.add_argument("--units-min", type=int, default=500, help="Minimum units per lot.")
+    parser.add_argument("--units-max", type=int, default=1000, help="Maximum units per lot.")
     parser.add_argument("--latent-rate-min", type=float, default=0.03, help="Minimum latent defect rate per lot.")
     parser.add_argument("--latent-rate-max", type=float, default=0.07, help="Maximum latent defect rate per lot.")
     parser.add_argument("--obvious-rate-min", type=float, default=0.01, help="Minimum obvious defect rate per lot.")
