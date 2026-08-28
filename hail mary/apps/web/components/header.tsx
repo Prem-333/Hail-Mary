@@ -21,7 +21,8 @@ export function Header() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1 }}
-          className="text-sm font-medium tracking-tight text-foreground/60"
+          className="text-lg font-bold tracking-tight text-foreground/90"
+          style={{ textShadow: "0 0 20px oklch(0.7 0.05 250 / 30%)" }}
         >
           Burn-In Screening
         </motion.h2>
@@ -29,10 +30,10 @@ export function Header() {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.15 }}
-          className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[9px] font-medium uppercase tracking-widest glass-card"
-          style={{ color: "oklch(0.55 0.006 260)" }}
+          className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest glass-card"
+          style={{ color: "oklch(0.7 0.01 260)", background: "oklch(0.12 0.008 260)", border: "1px solid oklch(0.4 0.01 260 / 30%)" }}
         >
-          <Shield className="h-3 w-3" />
+          <Shield className="h-3.5 w-3.5" />
           ISRO
         </motion.div>
       </div>
@@ -74,9 +75,14 @@ export function Header() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.25 }}
           whileHover={{ scale: 1.08 }}
-          className="w-8 h-8 rounded-xl overflow-hidden flex items-center justify-center glass-card cursor-pointer"
+          className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center glass-card cursor-pointer"
+          style={{
+            background: "linear-gradient(135deg, oklch(0.15 0.005 260) 0%, oklch(0.08 0.003 260) 100%)",
+            border: "1px solid oklch(0.5 0.01 260 / 30%)",
+            boxShadow: "0 0 20px oklch(0.6 0.02 260 / 15%)"
+          }}
         >
-          <span className="text-[10px] font-medium text-muted-foreground/50">VC</span>
+          <span className="text-[11px] font-bold tracking-tight text-foreground/90" style={{ textShadow: "0 0 10px oklch(0.7 0.05 250 / 40%)" }}>VC</span>
         </motion.div>
       </div>
     </motion.header>

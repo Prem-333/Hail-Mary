@@ -142,20 +142,23 @@ export default function SimulatorPage() {
               </div>
 
               <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}>
-                <Button type="submit" className="w-full mt-2 h-11 font-semibold text-sm gap-2" disabled={loading || !formData.lot_id}
+                <Button type="submit" className="w-full mt-2 h-11 font-medium text-sm gap-2 glass-card" disabled={loading || !formData.lot_id}
                   style={{
-                    background: "linear-gradient(135deg, oklch(0.22 0.005 260) 0%, oklch(0.14 0.004 260) 100%)",
+                    background: "linear-gradient(135deg, oklch(1 0 0 / 6%) 0%, oklch(1 0 0 / 2%) 100%)",
                     border: "1px solid oklch(1 0 0 / 10%)",
+                    boxShadow: "inset 0 1px 0 oklch(1 0 0 / 8%), 0 4px 16px oklch(0 0 0 / 15%)",
+                    backdropFilter: "blur(12px) saturate(1.2)",
+                    WebkitBackdropFilter: "blur(12px) saturate(1.2)",
                   }}
                 >
                   {loading ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-muted-foreground/30 border-t-foreground rounded-full animate-spin" />
-                      Simulating…
+                      <div className="w-4 h-4 border-2 border-foreground/20 border-t-foreground rounded-full animate-spin" />
+                      <span className="text-foreground/80">Simulating…</span>
                     </>
                   ) : (
                     <>
-                      Run Simulation <ArrowRight className="h-4 w-4" />
+                      <span className="text-foreground/90">Run Simulation</span> <ArrowRight className="h-4 w-4 text-foreground/60" />
                     </>
                   )}
                 </Button>
@@ -190,8 +193,8 @@ export default function SimulatorPage() {
                     }}>
                       <FlaskConical className="h-7 w-7 text-muted-foreground/30" />
                     </div>
-                    <p className="text-muted-foreground/50 text-sm">Enter parameters and run a simulation</p>
-                    <p className="text-muted-foreground/30 text-xs mt-1">Results will appear here</p>
+                    <p className="text-foreground/80 text-base font-medium">Enter parameters and run a simulation</p>
+                    <p className="text-muted-foreground/60 text-sm mt-1">Results will appear here</p>
                   </motion.div>
                 )}
 
