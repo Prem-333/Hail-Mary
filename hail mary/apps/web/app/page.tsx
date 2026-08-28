@@ -50,29 +50,6 @@ export default function LotOverview() {
     show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.4, 0, 0.2, 1] } }
   };
 
-  if (lotsError || lotError) {
-    return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-        className="flex flex-col h-full items-center justify-center text-destructive gap-3 p-8 text-center">
-        <div className="w-12 h-12 rounded-full border-2 border-destructive/30 flex items-center justify-center glass-card">
-          <span className="text-2xl">!</span>
-        </div>
-        <h2 className="text-lg font-medium">Connection Failed</h2>
-        <p className="text-sm text-muted-foreground/60 font-light">Could not reach the API server</p>
-      </motion.div>
-    );
-  }
-
-  if (isLoading) return (
-    <div className="flex h-full items-center justify-center">
-      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-        className="flex flex-col items-center gap-4">
-        <div className="w-10 h-10 border-2 border-muted-foreground/20 border-t-chart-1 rounded-full animate-spin" />
-        <span className="text-sm text-muted-foreground/50 font-light">Loading lot data...</span>
-      </motion.div>
-    </div>
-  );
-
   const allComponents = lotDetails?.components || [];
   const flagged = allComponents.filter((c: any) => c.is_anomalous);
   const normal = allComponents.filter((c: any) => !c.is_anomalous);
@@ -96,6 +73,39 @@ export default function LotOverview() {
     { key: "anomalous", label: "Anomalous", count: flagged.length },
     { key: "normal", label: "Normal", count: normal.length },
   ];
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: { opacity: 1, transition: { staggerChildren: 0.07, delayChildren: 0.05 } }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 18 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.4, 0, 0.2, 1] } }
+  };
+
+  if (lotsError || lotError) {
+    return (
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+        className="flex flex-col h-full items-center justify-center text-destructive gap-3 p-8 text-center">
+        <div className="w-12 h-12 rounded-full border-2 border-destructive/30 flex items-center justify-center glass-card">
+          <span className="text-2xl">!</span>
+        </div>
+        <h2 className="text-lg font-medium">Connection Failed</h2>
+        <p className="text-sm text-muted-foreground/60 font-light">Could not reach the API server</p>
+      </motion.div>
+    );
+  }
+
+  if (isLoading) return (
+    <div className="flex h-full items-center justify-center">
+      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+        className="flex flex-col items-center gap-4">
+        <div className="w-10 h-10 border-2 border-muted-foreground/20 border-t-chart-1 rounded-full animate-spin" />
+        <span className="text-sm text-muted-foreground/50 font-light">Loading lot data...</span>
+      </motion.div>
+    </div>
+  );
 
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="show" className="flex flex-col gap-5">
