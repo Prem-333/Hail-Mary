@@ -79,7 +79,9 @@ export default function EvaluationSummary() {
     </div>
   );
 
-  const metrics = data?.metrics || {};
+  const anomalyMetrics = data?.anomaly_metrics || {};
+  const driftMetrics = data?.drift_metrics || {};
+  const safetySlope = data?.safety_slope || [];
 
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="show" className="flex flex-col gap-5">
@@ -92,9 +94,9 @@ export default function EvaluationSummary() {
 
       <motion.div variants={itemVariants} className="grid grid-cols-3 gap-3">
         {[
-          { label: "F2 Score", value: metrics.f2_score !== undefined ? metrics.f2_score.toFixed(4) : "0", color: "oklch(0.7 0.05 250)", icon: Target },
-          { label: "Recall", value: metrics.recall !== undefined ? `${(metrics.recall * 100).toFixed(1)}%` : "0%", color: "oklch(0.65 0.10 160)", icon: TrendingUp },
-          { label: "Precision", value: metrics.precision !== undefined ? `${(metrics.precision * 100).toFixed(1)}%` : "0%", color: "oklch(0.6 0.08 300)", icon: Crosshair },
+          { label: "F2 Score", value: anomalyMetrics.f2_score !== undefined ? anomalyMetrics.f2_score.toFixed(4) : "0.0000", color: "oklch(0.7 0.05 250)", icon: Target },
+          { label: "Recall", value: anomalyMetrics.recall !== undefined ? `${(anomalyMetrics.recall * 100).toFixed(1)}%` : "0.0%", color: "oklch(0.65 0.10 160)", icon: TrendingUp },
+          { label: "Precision", value: anomalyMetrics.precision !== undefined ? `${(anomalyMetrics.precision * 100).toFixed(1)}%` : "0.0%", color: "oklch(0.6 0.08 300)", icon: Crosshair },
         ].map((stat, i) => {
           const rawValue = String(stat.value || "0");
           return (
@@ -122,8 +124,8 @@ export default function EvaluationSummary() {
 
       <motion.div variants={itemVariants} className="grid grid-cols-2 gap-3">
         {[
-          { label: "False Negatives", value: metrics.false_negatives, total: metrics.total_defects, color: "oklch(0.65 0.14 30)", desc: "Catastrophic escapes" },
-          { label: "False Positives", value: metrics.false_positives, total: metrics.total_normal, color: "oklch(0.6 0.08 80)", desc: "Unnecessary rejections" },
+          { label: "False Negatives", value: anomalyMetrics.false_negatives ?? 0, total: anomalyMetrics.total_defects ?? 0, color: "oklch(0.65 0.14 30)", desc: "Catastrophic escapes" },
+          { label: "False Positives", value: anomalyMetrics.false_positives ?? 0, total: anomalyMetrics.total_normal ?? 0, color: "oklch(0.6 0.08 80)", desc: "Unnecessary rejections" },
         ].map((stat, i) => (
           <motion.div
             key={stat.label}
@@ -153,8 +155,8 @@ export default function EvaluationSummary() {
         </div>
         <div className="grid grid-cols-2 gap-4">
           {[
-            { param: "Leakage Current", mae: metrics.leakage_mae, unit: "µA", baseline: "1.36" },
-            { param: "Propagation Delay", mae: metrics.delay_mae, unit: "ns", baseline: "0.42" },
+            { param: "Leakage Current", mae: driftMetrics.leakage_mae, unit: "µA", baseline: 1.36 },
+            { param: "Propagation Delay", mae: driftMetrics.delay_mae, unit: "ns", baseline: 0.42 },
           ].map((pred, i) => (
             <motion.div
               key={pred.param}
@@ -169,7 +171,7 @@ export default function EvaluationSummary() {
               </p>
               <div className="flex items-baseline gap-1">
                 <p className="text-xl font-semibold tabular-nums text-chart-1">
-                  <AnimatedNumber value={pred.mae || parseFloat(pred.baseline)} decimals={2} />
+                  <AnimatedNumber value={pred.mae ?? pred.baseline} decimals={2} />
                 </p>
                 <p className="text-xs text-muted-foreground/40">{pred.unit} MAE</p>
               </div>

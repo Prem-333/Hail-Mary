@@ -1,26 +1,47 @@
 'use client';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import useSWR from "swr";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@workspace/ui/components/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select";
 import { useRouter } from "next/navigation";
-import { Activity, AlertTriangle, CheckCircle, ArrowRight } from "lucide-react";
+import { Activity, AlertTriangle, CheckCircle, ArrowRight, Search, X } from "lucide-react";
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data);
 const swrOpts = { revalidateOnFocus: false, dedupingInterval: 5000 };
 
 export default function ComponentsIndex() {
   const { data: lotsData } = useSWR(`${process.env.NEXT_PUBLIC_API_URL}/api/lots/`, fetcher, swrOpts);
+  const [lotSearch, setLotSearch] = useState<string>("");
   const [selectedLot, setSelectedLot] = useState<string>("");
   const router = useRouter();
 
   useEffect(() => {
     if (lotsData?.lots?.length > 0 && !selectedLot) {
       setSelectedLot(lotsData.lots[0]);
+      setLotSearch(lotsData.lots[0]);
     }
   }, [lotsData, selectedLot]);
+
+  const filteredLots = useMemo(() => {
+    if (!lotsData?.lots) return [];
+    if (!lotSearch.trim()) return lotsData.lots;
+    return lotsData.lots.filter((lot: string) => 
+      lot.toLowerCase().includes(lotSearch.toLowerCase())
+    );
+  }, [lotsData, lotSearch]);
+
+  const handleLotSearch = (value: string) => {
+    setLotSearch(value);
+    if (filteredLots.includes(value)) {
+      setSelectedLot(value);
+    }
+  };
+
+  const handleSelectLot = (lot: string) => {
+    setLotSearch(lot);
+    setSelectedLot(lot);
+  };
 
   const { data: lotDetails, isLoading } = useSWR(
     selectedLot ? `${process.env.NEXT_PUBLIC_API_URL}/api/lots/${selectedLot}` : null,
@@ -50,17 +71,36 @@ export default function ComponentsIndex() {
           <h1 className="text-2xl font-bold tracking-tight">Component Deep-Dive</h1>
           <p className="text-sm text-muted-foreground mt-0.5">Select a component to view its trajectory, SHAP explanation, and AI assessment</p>
         </div>
-        <div className="w-48">
-          <Select value={selectedLot} onValueChange={setSelectedLot}>
-            <SelectTrigger className="bg-card border-border/50 h-9 text-sm">
-              <SelectValue placeholder="Select Lot" />
-            </SelectTrigger>
-            <SelectContent>
-              {lotsData?.lots?.map((lot: string) => (
-                <SelectItem key={lot} value={lot}>{lot}</SelectItem>
+        <div className="relative w-64">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40" />
+          <input
+            type="text"
+            value={lotSearch}
+            onChange={(e) => handleLotSearch(e.target.value)}
+            placeholder="Search lot..."
+            className="w-full pl-9 pr-8 py-2 rounded-lg text-sm bg-card border border-border/50 focus:outline-none focus:ring-1 focus:ring-ring/40 placeholder:text-muted-foreground/40"
+          />
+          {lotSearch && (
+            <button
+              onClick={() => setLotSearch("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/40 hover:text-muted-foreground transition-colors"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+          {lotSearch && filteredLots.length > 0 && !filteredLots.includes(lotSearch) && (
+            <div className="absolute top-full left-0 right-0 mt-1 rounded-lg border border-border/50 bg-card shadow-lg z-10 max-h-48 overflow-y-auto">
+              {filteredLots.slice(0, 5).map((lot: string) => (
+                <button
+                  key={lot}
+                  onClick={() => handleSelectLot(lot)}
+                  className="w-full px-4 py-2 text-sm text-left hover:bg-accent/20 transition-colors"
+                >
+                  {lot}
+                </button>
               ))}
-            </SelectContent>
-          </Select>
+            </div>
+          )}
         </div>
       </div>
 
