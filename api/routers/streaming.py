@@ -6,7 +6,7 @@ replays it as a continuous time-series stream. Between the real measurement
 timepoints (0h, 24h, 96h, 168h), values are linearly interpolated with
 small Gaussian noise to simulate live sensor readings.
 
-FIX: Monotonic timestamps to prevent graph reset on data loop.
+FIX: More interpolation steps + continuous time prevents graph reset.
 """
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
@@ -21,11 +21,14 @@ router = APIRouter(tags=["Streaming"])
 
 
 def _interpolate_trajectory(values: list[float], timepoints: list[float],
-                            steps_between: int = 10, noise_scale: float = 0.02):
+                            steps_between: int = 40, noise_scale: float = 0.005):
     """
     Given 4 real measurements at timepoints [0, 24, 96, 168],
     produce a smooth interpolated stream with small noise.
     Returns list of (relative_time_in_hours, value) tuples.
+
+    40 steps between each pair = 40 points per segment × 3 segments = 120+ points.
+    At 1 point/sec, this gives ~120 seconds (~2 minutes) per full cycle before looping.
     """
     result = []
     for i in range(len(timepoints) - 1):
@@ -79,7 +82,7 @@ async def sensor_stream(websocket: WebSocket):
             row = param_data.iloc[0]
             values = [float(row[f"value_{t}h"]) for t in [0, 24, 96, 168]]
             trajectories[param] = _interpolate_trajectory(
-                values, timepoints, steps_between=12, noise_scale=0.005
+                values, timepoints, steps_between=40, noise_scale=0.005
             )
 
         await websocket.send_json({
@@ -99,27 +102,23 @@ async def sensor_stream(websocket: WebSocket):
             await websocket.close(code=1011, reason="No trajectory data")
             return
 
-        # FIX: Track continuous time instead of looping
+        # Stream data with continuous monotonic timestamps
         idx = 0
         cycle_count = 0
-        base_real_time = time.time()
+        start_time = time.time()
 
         while True:
-            # Calculate continuous burn_in_hour across cycles
             if idx >= max_points:
                 idx = 0
                 cycle_count += 1
-            
-            # Continuous hour = (cycle * 168) + current_position
+
+            # Continuous burn_in_hour across cycles
             current_hour = leak_points[idx][0] if idx < len(leak_points) else 0
             continuous_hour = (cycle_count * 168.0) + current_hour
 
-            # Use real timestamp for LiveLineChart time domain
-            real_time = time.time()
-
             point = {
                 "type": "data",
-                "time": real_time,
+                "time": time.time(),
                 "index": idx,
                 "cycle": cycle_count,
                 "burn_in_hour": round(continuous_hour, 2),
@@ -133,6 +132,7 @@ async def sensor_stream(websocket: WebSocket):
             await websocket.send_json(point)
             idx += 1
 
+            # 1 point per second
             await asyncio.sleep(1.0)
 
     except WebSocketDisconnect:

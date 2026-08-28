@@ -1,9 +1,8 @@
 'use client';
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import useSWR from "swr";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select";
 import { Button } from "@workspace/ui/components/button";
 import { LiveLineChart } from "@workspace/ui/components/charts/live-line-chart";
@@ -11,7 +10,7 @@ import { LiveLine } from "@workspace/ui/components/charts/live-line";
 import { ChartTooltip } from "@workspace/ui/components/charts/tooltip";
 import { LiveXAxis } from "@workspace/ui/components/charts/live-x-axis";
 import { LiveYAxis } from "@workspace/ui/components/charts/live-y-axis";
-import { Radio, Pause, Play, RotateCcw, AlertTriangle, CheckCircle, Zap } from "lucide-react";
+import { Radio, Pause, Play, RotateCcw, AlertTriangle, CheckCircle, Zap, Wifi, WifiOff } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 const WS_URL = process.env.NEXT_PUBLIC_WS_URL || "ws://127.0.0.1:8000";
@@ -20,7 +19,7 @@ const fetcher = (url: string) => axios.get(url).then(res => res.data);
 const swrOpts = { revalidateOnFocus: false, dedupingInterval: 5000 };
 
 interface SensorPoint {
-  time: number;
+  time: number;    // unix seconds
   value: number;
 }
 
@@ -49,18 +48,13 @@ export default function SensorMonitor() {
 
   const pausedRef = useRef(paused);
   const metaRef = useRef<StreamMeta | null>(null);
-  
-  useEffect(() => {
-    pausedRef.current = paused;
-  }, [paused]);
+  const leakDataRef = useRef<SensorPoint[]>([]);
+  const delayDataRef = useRef<SensorPoint[]>([]);
 
-  useEffect(() => {
-    metaRef.current = meta;
-  }, [meta]);
+  useEffect(() => { pausedRef.current = paused; }, [paused]);
+  useEffect(() => { metaRef.current = meta; }, [meta]);
 
   const wsRef = useRef<WebSocket | null>(null);
-  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
-  const reconnectAttemptsRef = useRef(0);
 
   const { data: lotComponents } = useSWR(
     selectedLot ? `${API_URL}/api/streaming/components/${selectedLot}` : null,
@@ -74,7 +68,7 @@ export default function SensorMonitor() {
     }
   }, [lotsData, selectedLot]);
 
-  const connectWs = useCallback(() => {
+  const connectWs = () => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {
       wsRef.current.close();
     }
@@ -84,7 +78,6 @@ export default function SensorMonitor() {
 
     ws.onopen = () => {
       setConnected(true);
-      reconnectAttemptsRef.current = 0;
       ws.send(JSON.stringify({
         lot_id: selectedLot || undefined,
         component_id: selectedComponent || undefined,
@@ -96,36 +89,34 @@ export default function SensorMonitor() {
 
       if (msg.type === "init") {
         const prevMeta = metaRef.current;
-        // FIX: Only clear data if lot/component actually changed
-        const isDifferentComponent = !prevMeta || 
+        const isDifferentComponent = !prevMeta ||
           prevMeta.component_id !== msg.component_id ||
           prevMeta.lot_id !== msg.lot_id;
-        
+
         setMeta(msg);
         if (isDifferentComponent) {
           setLeakageData([]);
           setDelayData([]);
+          leakDataRef.current = [];
+          delayDataRef.current = [];
         }
         return;
       }
 
       if (msg.type === "data" && !pausedRef.current) {
-        // FIX: Use real timestamp from server (unix seconds)
         const timeSec = msg.time;
 
         if (msg.leakage !== undefined) {
+          const leakPoint: SensorPoint = { time: timeSec, value: msg.leakage };
           setCurrentLeakage(msg.leakage);
-          setLeakageData(prev => {
-            const next = [...prev, { time: timeSec, value: msg.leakage }];
-            return next.slice(-500);
-          });
+          leakDataRef.current = [...leakDataRef.current, leakPoint].slice(-600);
+          setLeakageData(leakDataRef.current);
         }
         if (msg.delay !== undefined) {
+          const delayPoint: SensorPoint = { time: timeSec, value: msg.delay };
           setCurrentDelay(msg.delay);
-          setDelayData(prev => {
-            const next = [...prev, { time: timeSec, value: msg.delay }];
-            return next.slice(-500);
-          });
+          delayDataRef.current = [...delayDataRef.current, delayPoint].slice(-600);
+          setDelayData(delayDataRef.current);
         }
         if (msg.burn_in_hour !== undefined) {
           setCurrentHour(msg.burn_in_hour);
@@ -135,34 +126,28 @@ export default function SensorMonitor() {
 
     ws.onclose = () => {
       setConnected(false);
-      const delay = Math.min(3000 * Math.pow(1.5, reconnectAttemptsRef.current), 30000);
-      reconnectAttemptsRef.current++;
-      
-      reconnectTimeoutRef.current = setTimeout(() => {
-        connectWs();
-      }, delay);
     };
 
     ws.onerror = () => {
       setConnected(false);
     };
-  }, [selectedLot, selectedComponent]);
+  };
 
   useEffect(() => {
     connectWs();
     return () => {
       if (wsRef.current) wsRef.current.close();
-      if (reconnectTimeoutRef.current) clearTimeout(reconnectTimeoutRef.current);
     };
-  }, [connectWs]);
+  }, [selectedLot, selectedComponent]);
 
   const handleRestart = () => {
     setLeakageData([]);
     setDelayData([]);
+    leakDataRef.current = [];
+    delayDataRef.current = [];
     setCurrentLeakage(0);
     setCurrentDelay(0);
     setCurrentHour(0);
-    reconnectAttemptsRef.current = 0;
     connectWs();
   };
 
@@ -176,164 +161,141 @@ export default function SensorMonitor() {
     show: { opacity: 1, y: 0, transition: { duration: 0.35 } },
   };
 
-  const leakageMomentum = {
-    up: "oklch(0.65 0.22 25)",
-    down: "oklch(0.68 0.12 160)",
-    flat: "oklch(0.55 0.01 260)",
-  };
-
-  const delayMomentum = {
-    up: "oklch(0.65 0.22 25)",
-    down: "oklch(0.68 0.12 160)",
+  const momentumColors = {
+    up: "oklch(0.65 0.12 160)",
+    down: "oklch(0.62 0.18 25)",
     flat: "oklch(0.55 0.01 260)",
   };
 
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="show" className="flex flex-col gap-5">
-      <div className="flex justify-between items-end">
+      {/* Header */}
+      <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold tracking-tight">Sensor Monitor</h1>
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest"
-              style={{
-                background: connected ? "oklch(0.68 0.12 160 / 15%)" : "oklch(0.65 0.22 25 / 15%)",
-                border: connected ? "1px solid oklch(0.68 0.12 160 / 30%)" : "1px solid oklch(0.65 0.22 25 / 30%)",
-                color: connected ? "oklch(0.68 0.12 160)" : "oklch(0.65 0.22 25)",
-              }}
+            <h1 className="text-xl font-semibold tracking-tight">Sensor Monitor</h1>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[9px] font-medium uppercase tracking-widest glass-card ${
+                connected ? 'text-emerald-500/80' : 'text-destructive/80'
+              }`}
             >
-              <div className={`w-1.5 h-1.5 rounded-full ${connected ? 'live-dot' : ''}`}
-                style={{ background: connected ? "oklch(0.68 0.12 160)" : "oklch(0.65 0.22 25)" }}
-              />
+              {connected ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
               {connected ? "Live" : "Offline"}
-            </div>
+              {connected && (
+                <span className="w-1.5 h-1.5 rounded-full live-dot ml-0.5" style={{ background: "oklch(0.65 0.12 160)" }} />
+              )}
+            </motion.div>
           </div>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            Real-time parametric monitoring · Leakage current & propagation delay
+          <p className="text-[13px] text-muted-foreground/40 mt-0.5 font-light">
+            Real-time WebSocket stream · {leakageData.length} points · 60s window
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="w-40">
-            <Select value={selectedLot} onValueChange={(v) => { setSelectedLot(v); setSelectedComponent(""); }}>
-              <SelectTrigger className="bg-card border-border/50 h-9 text-sm">
-                <SelectValue placeholder="Select Lot" />
-              </SelectTrigger>
-              <SelectContent>
-                {lotsData?.lots?.map((lot: string) => (
-                  <SelectItem key={lot} value={lot}>{lot}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+        <div className="flex items-center gap-2">
+          <Select value={selectedLot} onValueChange={(v) => { setSelectedLot(v); setSelectedComponent(""); }}>
+            <SelectTrigger className="w-40 h-9 glass-card text-sm font-medium rounded-xl">
+              <SelectValue placeholder="Lot" />
+            </SelectTrigger>
+            <SelectContent className="glass-card rounded-xl">
+              {lotsData?.lots?.map((lot: string) => (
+                <SelectItem key={lot} value={lot} className="text-sm">{lot}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-          <div className="w-48">
-            <Select value={selectedComponent} onValueChange={setSelectedComponent}>
-              <SelectTrigger className="bg-card border-border/50 h-9 text-sm">
-                <SelectValue placeholder="Auto (random)" />
-              </SelectTrigger>
-              <SelectContent>
-                {lotComponents?.components?.map((c: any) => (
-                  <SelectItem key={c.component_id} value={c.component_id}>
-                    {c.component_id}
-                    <span className="ml-1 text-muted-foreground text-xs">({c.defect_type})</span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <Select value={selectedComponent} onValueChange={setSelectedComponent}>
+            <SelectTrigger className="w-48 h-9 glass-card text-sm font-medium rounded-xl">
+              <SelectValue placeholder="Component (random)" />
+            </SelectTrigger>
+            <SelectContent className="glass-card rounded-xl">
+              {lotComponents?.components?.map((c: any) => (
+                <SelectItem key={c.component_id} value={c.component_id} className="text-sm font-mono">
+                  {c.component_id}
+                  <span className="ml-2 text-muted-foreground/40 text-xs font-sans normal-case">({c.defect_type})</span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-            <Button variant="outline" size="icon" className="h-9 w-9 border-border/50"
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-9 w-9 rounded-xl glass-card"
               onClick={() => setPaused(!paused)}
             >
               {paused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
             </Button>
           </motion.div>
-          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-            <Button variant="outline" size="icon" className="h-9 w-9 border-border/50" onClick={handleRestart}>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button variant="outline" size="icon" className="h-9 w-9 rounded-xl glass-card" onClick={handleRestart}>
               <RotateCcw className="h-4 w-4" />
             </Button>
           </motion.div>
         </div>
-      </div>
+      </motion.div>
 
+      {/* Stream info strip */}
       {meta && (
         <motion.div variants={itemVariants} className="grid grid-cols-4 gap-3">
-          <div className="flex items-center gap-3 px-4 py-3 rounded-lg" style={{
-            background: "linear-gradient(135deg, var(--card) 0%, oklch(0.09 0.004 260) 100%)",
-            border: "1px solid oklch(1 0 0 / 6%)",
-          }}>
-            <Radio className="h-4 w-4 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground uppercase tracking-widest">Component</span>
-            <span className="ml-auto text-sm font-mono font-bold tabular-nums">{meta.component_id}</span>
-          </div>
-          <div className="flex items-center gap-3 px-4 py-3 rounded-lg" style={{
-            background: "linear-gradient(135deg, var(--card) 0%, oklch(0.09 0.004 260) 100%)",
-            border: "1px solid oklch(1 0 0 / 6%)",
-          }}>
-            <span className="text-xs text-muted-foreground uppercase tracking-widest">Lot</span>
-            <span className="ml-auto text-sm font-mono font-bold">{meta.lot_id}</span>
-          </div>
-          <div className="flex items-center gap-3 px-4 py-3 rounded-lg" style={{
-            background: meta.defect_type !== "normal"
-              ? "linear-gradient(135deg, oklch(0.13 0.04 25) 0%, oklch(0.09 0.004 260) 100%)"
-              : "linear-gradient(135deg, oklch(0.11 0.03 160) 0%, oklch(0.09 0.004 260) 100%)",
-            border: meta.defect_type !== "normal"
-              ? "1px solid oklch(0.65 0.22 25 / 15%)"
-              : "1px solid oklch(0.6 0.12 160 / 15%)",
-          }}>
-            <span className="text-xs text-muted-foreground uppercase tracking-widest">Type</span>
-            <span className={`ml-auto text-sm font-bold capitalize ${meta.defect_type !== "normal" ? "text-destructive" : "text-emerald-400"}`}>
-              {meta.defect_type}
-            </span>
-          </div>
-          <div className="flex items-center gap-3 px-4 py-3 rounded-lg" style={{
-            background: "linear-gradient(135deg, var(--card) 0%, oklch(0.09 0.004 260) 100%)",
-            border: "1px solid oklch(1 0 0 / 6%)",
-          }}>
-            <Zap className="h-4 w-4 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground uppercase tracking-widest">Burn-In Hour</span>
-            <span className="ml-auto text-sm font-mono font-bold tabular-nums">{currentHour.toFixed(1)}h</span>
-          </div>
+          {[
+            { icon: Radio, label: "Component", value: meta.component_id, mono: true },
+            { icon: null, label: "Lot", value: meta.lot_id, mono: false },
+            { icon: null, label: "Type", value: meta.defect_type, mono: false, color: meta.defect_type !== "normal" ? "text-destructive" : "text-emerald-400" },
+            { icon: Zap, label: "Burn-In Hour", value: `${currentHour.toFixed(1)}h`, mono: true },
+          ].map((item) => (
+            <div key={item.label} className="glass-card rounded-xl px-4 py-3 flex items-center gap-3">
+              {item.icon && <item.icon className="w-3.5 h-3.5 text-muted-foreground/30" />}
+              <span className="text-[9px] text-muted-foreground/40 uppercase tracking-widest font-medium">{item.label}</span>
+              <span className={`ml-auto text-sm font-medium tabular-nums ${item.mono ? 'font-mono' : ''} ${item.color || 'text-foreground/70'}`}>
+                {item.value}
+              </span>
+            </div>
+          ))}
         </motion.div>
       )}
 
+      {/* Live charts - 60 second window */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        {/* Leakage Current */}
         <motion.div variants={itemVariants}>
-          <div className="rounded-lg overflow-hidden" style={{
-            background: "linear-gradient(180deg, var(--card) 0%, oklch(0.085 0.004 260) 100%)",
-            border: "1px solid oklch(1 0 0 / 6%)",
-          }}>
-            <div className="p-5 border-b border-border/10 flex items-center justify-between">
+          <div className="glass-card rounded-2xl overflow-hidden">
+            <div className="p-5 border-b border-border/5 flex items-center justify-between">
               <div>
-                <h3 className="font-semibold text-sm">Leakage Current</h3>
-                <p className="text-xs text-muted-foreground mt-0.5">µA · Datasheet limit: 50.0 µA</p>
+                <h3 className="text-sm font-medium">Leakage Current</h3>
+                <p className="text-[10px] text-muted-foreground/35 mt-0.5 font-light">µA · Datasheet limit: 50.0 µA</p>
               </div>
               <div className="flex items-center gap-2">
                 {currentLeakage > 50 ? (
-                  <AlertTriangle className="h-4 w-4 text-destructive" />
+                  <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 0.5, repeat: Infinity }}>
+                    <AlertTriangle className="h-4 w-4 text-destructive" />
+                  </motion.div>
                 ) : (
-                  <CheckCircle className="h-4 w-4 text-emerald-400" />
+                  <CheckCircle className="h-4 w-4 text-emerald-400/60" />
                 )}
-                <span className={`text-lg font-bold font-mono tabular-nums ${currentLeakage > 50 ? 'text-destructive' : ''}`}>
-                  {currentLeakage.toFixed(2)} µA
+                <span className={`text-lg font-mono font-semibold tabular-nums ${currentLeakage > 50 ? 'text-destructive' : 'text-foreground/70'}`}>
+                  {currentLeakage.toFixed(2)}
                 </span>
+                <span className="text-[10px] text-muted-foreground/30 font-light">µA</span>
               </div>
             </div>
-            <div className="p-4 h-[280px]">
+            <div className="p-4" style={{ height: 320 }}>
               {leakageData.length > 1 ? (
                 <LiveLineChart
                   data={leakageData}
                   value={currentLeakage}
-                  window={40}
+                  window={60}
                   paused={paused}
-                  numXTicks={5}
+                  numXTicks={6}
                   nowOffsetUnits={1}
                   exaggerate
+                  dataKey="value"
                 >
                   <LiveLine
                     dataKey="value"
-                    momentumColors={leakageMomentum}
+                    momentumColors={momentumColors}
                     formatValue={(v) => `${v.toFixed(2)} µA`}
                     strokeWidth={2}
                     dotSize={4}
@@ -347,49 +309,56 @@ export default function SensorMonitor() {
                 </LiveLineChart>
               ) : (
                 <div className="flex flex-col items-center justify-center h-full">
-                  <div className="w-8 h-8 border-2 border-muted-foreground/20 border-t-foreground rounded-full animate-spin mb-3" />
-                  <p className="text-xs text-muted-foreground">Waiting for sensor data…</p>
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                    className="w-8 h-8 border-2 border-muted-foreground/15 border-t-chart-1/50 rounded-full mb-3"
+                  />
+                  <p className="text-[11px] text-muted-foreground/35 font-light">Waiting for sensor data...</p>
+                  <p className="text-[9px] text-muted-foreground/20 mt-1 font-light">Auto-connects on load</p>
                 </div>
               )}
             </div>
           </div>
         </motion.div>
 
+        {/* Propagation Delay */}
         <motion.div variants={itemVariants}>
-          <div className="rounded-lg overflow-hidden" style={{
-            background: "linear-gradient(180deg, var(--card) 0%, oklch(0.085 0.004 260) 100%)",
-            border: "1px solid oklch(1 0 0 / 6%)",
-          }}>
-            <div className="p-5 border-b border-border/10 flex items-center justify-between">
+          <div className="glass-card rounded-2xl overflow-hidden">
+            <div className="p-5 border-b border-border/5 flex items-center justify-between">
               <div>
-                <h3 className="font-semibold text-sm">Propagation Delay</h3>
-                <p className="text-xs text-muted-foreground mt-0.5">ns · Datasheet limit: 18.0 ns</p>
+                <h3 className="text-sm font-medium">Propagation Delay</h3>
+                <p className="text-[10px] text-muted-foreground/35 mt-0.5 font-light">ns · Datasheet limit: 18.0 ns</p>
               </div>
               <div className="flex items-center gap-2">
                 {currentDelay > 18 ? (
-                  <AlertTriangle className="h-4 w-4 text-destructive" />
+                  <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 0.5, repeat: Infinity }}>
+                    <AlertTriangle className="h-4 w-4 text-destructive" />
+                  </motion.div>
                 ) : (
-                  <CheckCircle className="h-4 w-4 text-emerald-400" />
+                  <CheckCircle className="h-4 w-4 text-emerald-400/60" />
                 )}
-                <span className={`text-lg font-bold font-mono tabular-nums ${currentDelay > 18 ? 'text-destructive' : ''}`}>
-                  {currentDelay.toFixed(4)} ns
+                <span className={`text-lg font-mono font-semibold tabular-nums ${currentDelay > 18 ? 'text-destructive' : 'text-foreground/70'}`}>
+                  {currentDelay.toFixed(4)}
                 </span>
+                <span className="text-[10px] text-muted-foreground/30 font-light">ns</span>
               </div>
             </div>
-            <div className="p-4 h-[280px]">
+            <div className="p-4" style={{ height: 320 }}>
               {delayData.length > 1 ? (
                 <LiveLineChart
                   data={delayData}
                   value={currentDelay}
-                  window={40}
+                  window={60}
                   paused={paused}
-                  numXTicks={5}
+                  numXTicks={6}
                   nowOffsetUnits={1}
                   exaggerate
+                  dataKey="value"
                 >
                   <LiveLine
                     dataKey="value"
-                    momentumColors={delayMomentum}
+                    momentumColors={momentumColors}
                     formatValue={(v) => `${v.toFixed(4)} ns`}
                     strokeWidth={2}
                     dotSize={4}
@@ -403,8 +372,12 @@ export default function SensorMonitor() {
                 </LiveLineChart>
               ) : (
                 <div className="flex flex-col items-center justify-center h-full">
-                  <div className="w-8 h-8 border-2 border-muted-foreground/20 border-t-foreground rounded-full animate-spin mb-3" />
-                  <p className="text-xs text-muted-foreground">Waiting for sensor data…</p>
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                    className="w-8 h-8 border-2 border-muted-foreground/15 border-t-chart-1/50 rounded-full mb-3"
+                  />
+                  <p className="text-[11px] text-muted-foreground/35 font-light">Waiting for sensor data...</p>
                 </div>
               )}
             </div>
@@ -412,20 +385,18 @@ export default function SensorMonitor() {
         </motion.div>
       </div>
 
+      {/* Datasheet reference */}
       <motion.div variants={itemVariants}>
-        <div className="rounded-lg p-5" style={{
-          background: "linear-gradient(135deg, var(--card) 0%, oklch(0.09 0.004 260) 100%)",
-          border: "1px solid oklch(1 0 0 / 6%)",
-        }}>
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Datasheet Limits Reference</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex items-center justify-between text-sm px-3 py-2.5 rounded-lg" style={{ background: "oklch(0.09 0.004 260)", border: "1px solid oklch(1 0 0 / 4%)" }}>
-              <span className="text-muted-foreground">Leakage Current Max</span>
-              <span className="font-mono font-bold tabular-nums">50.0 µA</span>
+        <div className="glass-card rounded-2xl p-5">
+          <h3 className="text-[9px] text-muted-foreground/40 uppercase tracking-widest font-medium mb-3">Datasheet Limits</h3>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex items-center justify-between text-xs px-3 py-2 rounded-lg" style={{ background: "oklch(0.09 0.002 260)" }}>
+              <span className="text-muted-foreground/40 font-light">Leakage Current Max</span>
+              <span className="font-mono font-medium tabular-nums text-foreground/60">50.0 µA</span>
             </div>
-            <div className="flex items-center justify-between text-sm px-3 py-2.5 rounded-lg" style={{ background: "oklch(0.09 0.004 260)", border: "1px solid oklch(1 0 0 / 4%)" }}>
-              <span className="text-muted-foreground">Propagation Delay Max</span>
-              <span className="font-mono font-bold tabular-nums">18.0 ns</span>
+            <div className="flex items-center justify-between text-xs px-3 py-2 rounded-lg" style={{ background: "oklch(0.09 0.002 260)" }}>
+              <span className="text-muted-foreground/40 font-light">Propagation Delay Max</span>
+              <span className="font-mono font-medium tabular-nums text-foreground/60">18.0 ns</span>
             </div>
           </div>
         </div>

@@ -24,6 +24,16 @@ def get_lot_details(lot_id: str, system=Depends(get_system)):
     # Fill NaN to allow JSON serialization
     lot_outlier = lot_outlier.fillna(0)
     
+    measurements = system["measurements"]
+    lot_meas = measurements[measurements["lot_id"] == lot_id].copy()
+    lot_meas["median_val"] = lot_meas[["value_0h", "value_24h", "value_96h", "value_168h"]].median(axis=1)
+    
+    leakage = lot_meas[lot_meas["param_name"] == "leakage_current_uA"][["component_id", "median_val"]].rename(columns={"median_val": "leakage_median"})
+    delay = lot_meas[lot_meas["param_name"] == "propagation_delay_ns"][["component_id", "median_val"]].rename(columns={"median_val": "delay_median"})
+    
+    lot_outlier = lot_outlier.merge(leakage, on="component_id", how="left")
+    lot_outlier = lot_outlier.merge(delay, on="component_id", how="left")
+    
     total = len(lot_outlier)
     flagged = int(lot_outlier["is_anomalous"].sum())
     latent = int((lot_outlier["defect_type"] == "latent").sum())
