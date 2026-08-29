@@ -7,24 +7,24 @@
 ## 1. Anomaly Detection Score (Module A)
 
 > [!IMPORTANT]
-> **F2-score: 0.9311** — F2 (not F1) is used because the
+> **F2-score: 0.9347** — F2 (not F1) is used because the
 > problem brief states "a False Negative is catastrophic." F2 weights
 > recall 4x more than precision, directly encoding this asymmetric cost.
 
 | Metric | Value |
 |--------|:-----:|
-| **Precision** | 0.8440 |
-| **Recall** | 0.9558 |
-| **F2-Score** | 0.9311 |
-| True Positives | 238 |
-| False Positives | 44 |
-| **False Negatives** | **11** |
-| True Negatives | 3266 |
-| Total Defects | 249 |
-| Total Components | 3559 |
+| **Precision** | 0.8383 |
+| **Recall** | 0.9624 |
+| **F2-Score** | 0.9347 |
+| True Positives | 2406 |
+| False Positives | 464 |
+| **False Negatives** | **94** |
+| True Negatives | 35054 |
+| Total Defects | 2500 |
+| Total Components | 38018 |
 
 > [!WARNING]
-> **11 false negatives** — 11
+> **94 false negatives** — 94
 > defective components were NOT flagged and would have shipped.
 
 ---
@@ -35,31 +35,31 @@
 
 | Metric | XGBoost | Linear Regression |
 |--------|:-------:|:-----------------:|
-| **MAE (overall)** | **1.3553** | 1.5894 |
-| **RMSE (overall)** | **2.9289** | 3.7001 |
+| **MAE (overall)** | **1.4450** | 1.4048 |
+| **RMSE (overall)** | **3.4096** | 3.4235 |
 
 **Per-class MAE breakdown:**
 
 | Component Class | XGBoost MAE | Linear MAE | Notes |
 |-----------------|:-----------:|:----------:|-------|
-| Normal | 0.7727 | 0.8467 | Model learns normal drift well |
-| Latent | 10.6739 | 13.9747 | Expected high: latent defects diverge unpredictably |
-| Obvious | 2.9903 | 1.7076 |  |
+| Normal | 0.7721 | 0.7475 | Model learns normal drift well |
+| Latent | 13.0902 | 13.4732 | Expected high: latent defects diverge unpredictably |
+| Obvious | 4.1514 | 1.7650 |  |
 
 ### Propagation Delay Ns
 
 | Metric | XGBoost | Linear Regression |
 |--------|:-------:|:-----------------:|
-| **MAE (overall)** | **0.4202** | 0.4990 |
-| **RMSE (overall)** | **0.8850** | 1.1619 |
+| **MAE (overall)** | **0.4679** | 0.4550 |
+| **RMSE (overall)** | **1.0725** | 1.0901 |
 
 **Per-class MAE breakdown:**
 
 | Component Class | XGBoost MAE | Linear MAE | Notes |
 |-----------------|:-----------:|:----------:|-------|
-| Normal | 0.2507 | 0.2696 | Model learns normal drift well |
-| Latent | 3.1925 | 4.3469 | Expected high: latent defects diverge unpredictably |
-| Obvious | 0.6585 | 0.4451 |  |
+| Normal | 0.2587 | 0.2470 | Model learns normal drift well |
+| Latent | 4.1543 | 4.2991 | Expected high: latent defects diverge unpredictably |
+| Obvious | 1.0955 | 0.4893 |  |
 
 ### Safety-Slope Early Rejection (Module B)
 
@@ -67,9 +67,9 @@
 
 | Component Class | Total | Flagged | Flag Rate |
 |-----------------|:-----:|:-------:|:---------:|
-| Normal | 3310 | 2 | 0.1% |
-| Latent | 198 | 74 | 37.4% |
-| Obvious | 51 | 32 | 62.7% |
+| Normal | 35518 | 2 | 0.0% |
+| Latent | 1917 | 25 | 1.3% |
+| Obvious | 583 | 397 | 68.1% |
 
 ---
 
@@ -98,13 +98,13 @@
 
 | Component | Score | Checklist |
 |-----------|:-----:|-----------|
-| `LOT_009_C0168` | 8/8 | trajectory, cites shap contributions, references measured values, recommendation, anomaly justification, drift residual, safety slope status, lot context |
-| `LOT_006_C0054` | 8/8 | trajectory, cites shap contributions, references measured values, recommendation, anomaly justification, drift residual, safety slope status, lot context |
-| `LOT_006_C0226` | 8/8 | trajectory, cites shap contributions, references measured values, recommendation, anomaly justification, drift residual, safety slope status, lot context |
-| `LOT_008_C0214` | 8/8 | trajectory, cites shap contributions, references measured values, recommendation, anomaly justification, drift residual, safety slope status, lot context |
-| `LOT_007_C0151` | 8/8 | trajectory, cites shap contributions, references measured values, recommendation, anomaly justification, drift residual, safety slope status, lot context |
-| `LOT_000_C0056` | 8/8 | trajectory, cites shap contributions, references measured values, recommendation, anomaly justification, drift residual, safety slope status, lot context |
-| `LOT_002_C0028` | 8/8 | trajectory, cites shap contributions, references measured values, recommendation, anomaly justification, drift residual, safety slope status, lot context |
-| `LOT_003_C0360` | 8/8 | trajectory, cites shap contributions, references measured values, recommendation, anomaly justification, drift residual, safety slope status, lot context |
-| `LOT_003_C0207` | 8/8 | trajectory, cites shap contributions, references measured values, recommendation, anomaly justification, drift residual, safety slope status, lot context |
-| `LOT_000_C0218` | 8/8 | trajectory, cites shap contributions, references measured values, recommendation, anomaly justification, drift residual, safety slope status, lot context |
+| `LOT_021_C0378` | 8/8 | trajectory, cites shap contributions, references measured values, recommendation, anomaly justification, drift residual, safety slope status, lot context |
+| `LOT_030_C0766` | 8/8 | trajectory, cites shap contributions, references measured values, recommendation, anomaly justification, drift residual, safety slope status, lot context |
+| `LOT_035_C0587` | 8/8 | trajectory, cites shap contributions, references measured values, recommendation, anomaly justification, drift residual, safety slope status, lot context |
+| `LOT_021_C0080` | 8/8 | trajectory, cites shap contributions, references measured values, recommendation, anomaly justification, drift residual, safety slope status, lot context |
+| `LOT_035_C0096` | 8/8 | trajectory, cites shap contributions, references measured values, recommendation, anomaly justification, drift residual, safety slope status, lot context |
+| `LOT_010_C0208` | 8/8 | trajectory, cites shap contributions, references measured values, recommendation, anomaly justification, drift residual, safety slope status, lot context |
+| `LOT_044_C0265` | 8/8 | trajectory, cites shap contributions, references measured values, recommendation, anomaly justification, drift residual, safety slope status, lot context |
+| `LOT_025_C0034` | 8/8 | trajectory, cites shap contributions, references measured values, recommendation, anomaly justification, drift residual, safety slope status, lot context |
+| `LOT_046_C0607` | 8/8 | trajectory, cites shap contributions, references measured values, recommendation, anomaly justification, drift residual, safety slope status, lot context |
+| `LOT_021_C0358` | 8/8 | trajectory, cites shap contributions, references measured values, recommendation, anomaly justification, drift residual, safety slope status, lot context |

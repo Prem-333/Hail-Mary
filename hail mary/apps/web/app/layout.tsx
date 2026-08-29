@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, IBM_Plex_Mono } from "next/font/google"
 
 import "@workspace/ui/globals.css"
@@ -5,6 +6,14 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@workspace/ui/lib/utils";
 import { Sidebar } from "@/components/sidebar";
 import { Header } from "@/components/header";
+
+export const metadata: Metadata = {
+  title: {
+    default: "LATENT — Burn-In Screening · ISRO",
+    template: "%s — LATENT",
+  },
+  description: "AI-powered burn-in screening and anomaly detection system for ISRO spacecraft components.",
+};
 
 const fontSans = Plus_Jakarta_Sans({
   subsets: ["latin"],

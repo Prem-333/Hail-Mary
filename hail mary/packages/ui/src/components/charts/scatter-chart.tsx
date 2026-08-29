@@ -28,7 +28,7 @@ interface Margin {
 interface SeriesMeta {
   dataKey: string;
   fill: string;
-  label?: string;
+  label: string;
 }
 
 interface ChartContext {
@@ -351,14 +351,16 @@ export interface YAxisProps {
 }
 
 export function YAxis({ tickCount = 5, formatTick }: YAxisProps) {
-  const { yScale } = useChart();
+  const { yScale, yDomain } = useChart();
 
   const ticks = useMemo(() => {
-    return (yScale as ReturnType<typeof scaleLinear>).ticks(tickCount);
-  }, [yScale, tickCount]);
+    const [min, max] = yDomain;
+    const range = max - min;
+    const step = range / (tickCount - 1);
+    return Array.from({ length: tickCount }, (_, i) => min + i * step);
+  }, [yDomain, tickCount]);
 
-  const fmt =
-    formatTick ?? ((v: number) => String(Math.round(v * 100) / 100));
+  const fmt = formatTick ?? ((v: number) => v.toFixed(2));
 
   return (
     <g>
@@ -475,12 +477,12 @@ export function Scatter({
   const data = dataProp ?? ctx.data;
   const seriesIdx = useMemo(() => ctx.bumpSeriesIndex(), []);
 
-  const seriesColor = fillProp ?? PALETTE[seriesIdx % PALETTE.length];
+  const seriesColor = fillProp ?? PALETTE[seriesIdx % PALETTE.length] ?? "#888";
   const gradientId = `scatter-ygrad-${seriesIdx}`;
 
   // Register this series for the tooltip (must be in useEffect, not useMemo)
   React.useEffect(() => {
-    registerSeries({ dataKey, fill: seriesColor, label: label ?? dataKey });
+    registerSeries({ dataKey, fill: seriesColor, label: String(label ?? dataKey ?? "") });
   }, [dataKey, seriesColor, label, registerSeries]);
 
   const gradFrom =

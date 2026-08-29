@@ -10,13 +10,51 @@ import { LiveLine } from "@workspace/ui/components/charts/live-line";
 import { ChartTooltip } from "@workspace/ui/components/charts/tooltip";
 import { LiveXAxis } from "@workspace/ui/components/charts/live-x-axis";
 import { LiveYAxis } from "@workspace/ui/components/charts/live-y-axis";
+import { useChartStable } from "@workspace/ui/components/charts/chart-context";
 import { Radio, Pause, Play, RotateCcw, AlertTriangle, CheckCircle, Zap, Wifi, WifiOff } from "lucide-react";
+import { scaleLinear } from "@visx/scale";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 const WS_URL = process.env.NEXT_PUBLIC_WS_URL || "ws://127.0.0.1:8000";
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data);
 const swrOpts = { revalidateOnFocus: false, dedupingInterval: 5000 };
+
+const LEAKAGE_LIMIT = 50.0; // µA
+const DELAY_LIMIT = 18.0;   // ns
+
+// Threshold reference line for live charts
+function LiveThresholdLine({ threshold, label, color = "oklch(0.62 0.18 25)" }: { threshold: number; label?: string; color?: string }) {
+  const { yScale, innerWidth, margin } = useChartStable();
+  const y = yScale(threshold);
+  return (
+    <g transform={`translate(${margin.left},${margin.top})`}>
+      <line
+        x1={0}
+        x2={innerWidth}
+        y1={y}
+        y2={y}
+        stroke={color}
+        strokeDasharray="6 4"
+        strokeWidth={1.5}
+        opacity={0.7}
+      />
+      {label && (
+        <text
+          x={innerWidth - 8}
+          y={y - 8}
+          textAnchor="end"
+          fill={color}
+          fontSize={10}
+          fontWeight={600}
+          opacity={0.7}
+        >
+          {label}
+        </text>
+      )}
+    </g>
+  );
+}
 
 interface SensorPoint {
   time: number;    // unix seconds
@@ -33,6 +71,8 @@ interface StreamMeta {
 
 export default function SensorMonitor() {
   const { data: lotsData } = useSWR(`${API_URL}/api/lots/`, fetcher, swrOpts);
+
+  useEffect(() => { document.title = "Sensor Monitor — LATENT"; }, []);
 
   const [selectedLot, setSelectedLot] = useState<string>("");
   const [selectedComponent, setSelectedComponent] = useState<string>("");
@@ -167,6 +207,8 @@ export default function SensorMonitor() {
     flat: "oklch(0.55 0.01 260)",
   };
 
+  const isDefective = meta && meta.defect_type !== "normal";
+
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="show" className="flex flex-col gap-5">
       {/* Header */}
@@ -189,12 +231,12 @@ export default function SensorMonitor() {
             </motion.div>
           </div>
           <p className="text-[13px] text-muted-foreground/40 mt-0.5 font-light">
-            Real-time WebSocket stream · {leakageData.length} points · 60s window
+            Streaming live burn-in telemetry · Real-time threshold monitoring
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <Select value={selectedLot} onValueChange={(v) => { setSelectedLot(v); setSelectedComponent(""); }}>
+          <Select value={selectedLot} onValueChange={(v) => { setSelectedLot(v ?? ""); setSelectedComponent(""); }}>
             <SelectTrigger className="w-40 h-9 glass-card text-sm font-medium rounded-xl">
               <SelectValue placeholder="Lot" />
             </SelectTrigger>
@@ -205,9 +247,9 @@ export default function SensorMonitor() {
             </SelectContent>
           </Select>
 
-          <Select value={selectedComponent} onValueChange={setSelectedComponent}>
-            <SelectTrigger className="w-48 h-9 glass-card text-sm font-medium rounded-xl">
-              <SelectValue placeholder="Component (random)" />
+          <Select value={selectedComponent} onValueChange={(v) => setSelectedComponent(v ?? "")}>
+            <SelectTrigger className="w-52 h-9 glass-card text-sm font-medium rounded-xl">
+              <SelectValue placeholder="All Components (random)" />
             </SelectTrigger>
             <SelectContent className="glass-card rounded-xl">
               {lotComponents?.components?.map((c: any) => (
@@ -225,12 +267,19 @@ export default function SensorMonitor() {
               size="icon"
               className="h-9 w-9 rounded-xl glass-card"
               onClick={() => setPaused(!paused)}
+              title={paused ? "Resume stream" : "Pause stream"}
             >
               {paused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
             </Button>
           </motion.div>
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button variant="outline" size="icon" className="h-9 w-9 rounded-xl glass-card" onClick={handleRestart}>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-9 w-9 rounded-xl glass-card"
+              onClick={handleRestart}
+              title="Restart stream and clear data"
+            >
               <RotateCcw className="h-4 w-4" />
             </Button>
           </motion.div>
@@ -238,13 +287,19 @@ export default function SensorMonitor() {
       </motion.div>
 
       {/* Stream info strip */}
-      {meta && (
+      {meta ? (
         <motion.div variants={itemVariants} className="grid grid-cols-4 gap-3">
           {[
             { icon: Radio, label: "Component", value: meta.component_id, mono: true },
             { icon: null, label: "Lot", value: meta.lot_id, mono: false },
-            { icon: null, label: "Type", value: meta.defect_type, mono: false, color: meta.defect_type !== "normal" ? "text-destructive" : "text-emerald-400" },
-            { icon: Zap, label: "Burn-In Hour", value: `${currentHour.toFixed(1)}h`, mono: true },
+            {
+              icon: null,
+              label: "Type",
+              value: meta.defect_type,
+              mono: false,
+              color: isDefective ? "text-destructive font-semibold" : "text-emerald-400"
+            },
+            { icon: Zap, label: "Burn-In Hour", value: `${currentHour.toFixed(1)} h`, mono: true },
           ].map((item) => (
             <div key={item.label} className="glass-card rounded-xl px-4 py-3 flex items-center gap-3">
               {item.icon && <item.icon className="w-3.5 h-3.5 text-muted-foreground/30" />}
@@ -255,9 +310,16 @@ export default function SensorMonitor() {
             </div>
           ))}
         </motion.div>
+      ) : (
+        /* Skeleton while waiting for init message */
+        <motion.div variants={itemVariants} className="grid grid-cols-4 gap-3">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="glass-card rounded-xl px-4 py-3 h-12 animate-pulse" style={{ background: "oklch(0.10 0.002 260)" }} />
+          ))}
+        </motion.div>
       )}
 
-      {/* Live charts - 60 second window */}
+      {/* Live charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Leakage Current */}
         <motion.div variants={itemVariants}>
@@ -265,17 +327,19 @@ export default function SensorMonitor() {
             <div className="p-5 border-b border-border/5 flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-medium">Leakage Current</h3>
-                <p className="text-[10px] text-muted-foreground/35 mt-0.5 font-light">µA · Datasheet limit: 50.0 µA</p>
+                <p className="text-[10px] text-muted-foreground/35 mt-0.5 font-light">
+                  µA · Limit: {LEAKAGE_LIMIT.toFixed(1)} µA (MIL-STD datasheet)
+                </p>
               </div>
               <div className="flex items-center gap-2">
-                {currentLeakage > 50 ? (
-                  <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 0.5, repeat: Infinity }}>
+                {currentLeakage > LEAKAGE_LIMIT ? (
+                  <motion.div animate={{ scale: [1, 1.15, 1] }} transition={{ duration: 0.5, repeat: Infinity }}>
                     <AlertTriangle className="h-4 w-4 text-destructive" />
                   </motion.div>
                 ) : (
                   <CheckCircle className="h-4 w-4 text-emerald-400/60" />
                 )}
-                <span className={`text-lg font-mono font-semibold tabular-nums ${currentLeakage > 50 ? 'text-destructive' : 'text-foreground/70'}`}>
+                <span className={`text-lg font-mono font-semibold tabular-nums ${currentLeakage > LEAKAGE_LIMIT ? 'text-destructive' : 'text-foreground/70'}`}>
                   {currentLeakage.toFixed(2)}
                 </span>
                 <span className="text-[10px] text-muted-foreground/30 font-light">µA</span>
@@ -305,7 +369,8 @@ export default function SensorMonitor() {
                   />
                   <ChartTooltip showDatePill={false} />
                   <LiveXAxis />
-                  <LiveYAxis position="left" formatValue={(v) => `${v.toFixed(1)}`} />
+                  <LiveYAxis position="left" formatValue={(v) => `${v.toFixed(2)}`} />
+                  <LiveThresholdLine threshold={LEAKAGE_LIMIT} label={`Limit ${LEAKAGE_LIMIT} µA`} />
                 </LiveLineChart>
               ) : (
                 <div className="flex flex-col items-center justify-center h-full">
@@ -315,9 +380,31 @@ export default function SensorMonitor() {
                     className="w-8 h-8 border-2 border-muted-foreground/15 border-t-chart-1/50 rounded-full mb-3"
                   />
                   <p className="text-[11px] text-muted-foreground/35 font-light">Waiting for sensor data...</p>
-                  <p className="text-[9px] text-muted-foreground/20 mt-1 font-light">Auto-connects on load</p>
+                  <p className="text-[9px] text-muted-foreground/20 mt-1 font-light">Connects automatically on load</p>
                 </div>
               )}
+            </div>
+            {/* Threshold context bar */}
+            <div className="px-5 pb-4">
+              <div className="flex items-center justify-between text-[9px] text-muted-foreground/35 mb-1">
+                <span>0 µA</span>
+                <span className="text-destructive/50">⬆ Limit: {LEAKAGE_LIMIT} µA</span>
+                <span>{LEAKAGE_LIMIT * 1.5} µA</span>
+              </div>
+              <div className="h-1 rounded-full overflow-hidden" style={{ background: "oklch(1 0 0 / 4%)" }}>
+                <motion.div
+                  className="h-full rounded-full"
+                  animate={{ width: `${Math.min((currentLeakage / (LEAKAGE_LIMIT * 1.5)) * 100, 100)}%` }}
+                  transition={{ duration: 0.3 }}
+                  style={{
+                    background: currentLeakage > LEAKAGE_LIMIT
+                      ? "oklch(0.62 0.18 25)"
+                      : currentLeakage > LEAKAGE_LIMIT * 0.8
+                        ? "oklch(0.65 0.14 55)"
+                        : "oklch(0.65 0.12 160)",
+                  }}
+                />
+              </div>
             </div>
           </div>
         </motion.div>
@@ -328,17 +415,19 @@ export default function SensorMonitor() {
             <div className="p-5 border-b border-border/5 flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-medium">Propagation Delay</h3>
-                <p className="text-[10px] text-muted-foreground/35 mt-0.5 font-light">ns · Datasheet limit: 18.0 ns</p>
+                <p className="text-[10px] text-muted-foreground/35 mt-0.5 font-light">
+                  ns · Limit: {DELAY_LIMIT.toFixed(1)} ns (MIL-STD datasheet)
+                </p>
               </div>
               <div className="flex items-center gap-2">
-                {currentDelay > 18 ? (
-                  <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 0.5, repeat: Infinity }}>
+                {currentDelay > DELAY_LIMIT ? (
+                  <motion.div animate={{ scale: [1, 1.15, 1] }} transition={{ duration: 0.5, repeat: Infinity }}>
                     <AlertTriangle className="h-4 w-4 text-destructive" />
                   </motion.div>
                 ) : (
                   <CheckCircle className="h-4 w-4 text-emerald-400/60" />
                 )}
-                <span className={`text-lg font-mono font-semibold tabular-nums ${currentDelay > 18 ? 'text-destructive' : 'text-foreground/70'}`}>
+                <span className={`text-lg font-mono font-semibold tabular-nums ${currentDelay > DELAY_LIMIT ? 'text-destructive' : 'text-foreground/70'}`}>
                   {currentDelay.toFixed(4)}
                 </span>
                 <span className="text-[10px] text-muted-foreground/30 font-light">ns</span>
@@ -368,7 +457,8 @@ export default function SensorMonitor() {
                   />
                   <ChartTooltip showDatePill={false} />
                   <LiveXAxis />
-                  <LiveYAxis position="left" formatValue={(v) => `${v.toFixed(2)}`} />
+                  <LiveYAxis position="left" formatValue={(v) => `${v.toFixed(3)}`} />
+                  <LiveThresholdLine threshold={DELAY_LIMIT} label={`Limit ${DELAY_LIMIT} ns`} />
                 </LiveLineChart>
               ) : (
                 <div className="flex flex-col items-center justify-center h-full">
@@ -381,26 +471,31 @@ export default function SensorMonitor() {
                 </div>
               )}
             </div>
+            {/* Threshold context bar */}
+            <div className="px-5 pb-4">
+              <div className="flex items-center justify-between text-[9px] text-muted-foreground/35 mb-1">
+                <span>0 ns</span>
+                <span className="text-destructive/50">⬆ Limit: {DELAY_LIMIT} ns</span>
+                <span>{DELAY_LIMIT * 1.5} ns</span>
+              </div>
+              <div className="h-1 rounded-full overflow-hidden" style={{ background: "oklch(1 0 0 / 4%)" }}>
+                <motion.div
+                  className="h-full rounded-full"
+                  animate={{ width: `${Math.min((currentDelay / (DELAY_LIMIT * 1.5)) * 100, 100)}%` }}
+                  transition={{ duration: 0.3 }}
+                  style={{
+                    background: currentDelay > DELAY_LIMIT
+                      ? "oklch(0.62 0.18 25)"
+                      : currentDelay > DELAY_LIMIT * 0.8
+                        ? "oklch(0.65 0.14 55)"
+                        : "oklch(0.65 0.12 160)",
+                  }}
+                />
+              </div>
+            </div>
           </div>
         </motion.div>
       </div>
-
-      {/* Datasheet reference */}
-      <motion.div variants={itemVariants}>
-        <div className="glass-card rounded-2xl p-5">
-          <h3 className="text-[9px] text-muted-foreground/40 uppercase tracking-widest font-medium mb-3">Datasheet Limits</h3>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="flex items-center justify-between text-xs px-3 py-2 rounded-lg" style={{ background: "oklch(0.09 0.002 260)" }}>
-              <span className="text-muted-foreground/40 font-light">Leakage Current Max</span>
-              <span className="font-mono font-medium tabular-nums text-foreground/60">50.0 µA</span>
-            </div>
-            <div className="flex items-center justify-between text-xs px-3 py-2 rounded-lg" style={{ background: "oklch(0.09 0.002 260)" }}>
-              <span className="text-muted-foreground/40 font-light">Propagation Delay Max</span>
-              <span className="font-mono font-medium tabular-nums text-foreground/60">18.0 ns</span>
-            </div>
-          </div>
-        </div>
-      </motion.div>
     </motion.div>
   );
 }

@@ -142,8 +142,11 @@ const LiveYAxisInner = memo(function LiveYAxisInner({
     if (interval <= 0 || valRange <= 0) {
       return [];
     }
-    const expandedMin = minVal - interval * 0.5;
-    const expandedMax = maxVal + interval * 0.5;
+    // Use quantized boundaries for stable tick generation - prevents tick values from drifting during lerp
+    const quantizedMinVal = quantizedMin * interval;
+    const quantizedMaxVal = quantizedMax * interval;
+    const expandedMin = quantizedMinVal - interval * 0.5;
+    const expandedMax = quantizedMaxVal + interval * 0.5;
     const first = Math.ceil(expandedMin / interval) * interval;
     const values: number[] = [];
     for (let v = first; v <= expandedMax; v += interval) {
@@ -159,9 +162,6 @@ const LiveYAxisInner = memo(function LiveYAxisInner({
     quantizedMin,
     quantizedMax,
     interval,
-    minVal,
-    maxVal,
-    valRange,
     allowDecimals,
   ]);
 
