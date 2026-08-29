@@ -1,8 +1,8 @@
 "use client";
 
 import { ParentSize } from "@visx/responsive";
-import { motion, type Transition, useReducedMotion } from "motion/react";
-import { type ReactNode, useId, useMemo } from "react";
+import { type ReactNode, useId, useMemo, useEffect, useRef } from "react";
+import { animate, createScope, spring } from "animejs";
 import { cn } from "@workspace/ui/lib/utils";
 import {
   type ChartStatFlowFormat,
@@ -28,7 +28,7 @@ import {
 } from "./notch-gauge-shared";
 import { PieCenterShell } from "./pie-center-shell";
 
-const DEFAULT_NOTCH_ENTER_TRANSITION: Transition = {
+const DEFAULT_NOTCH_ENTER_TRANSITION: any = {
   type: "spring",
   stiffness: 300,
   damping: 20,
@@ -77,7 +77,7 @@ export interface GaugeProps {
   notchWidthPercent?: number;
   /** Linear only — bar thickness in px when responsive (default 24) */
   linearHeight?: number;
-  enterTransition?: Transition;
+  enterTransition?: any;
   enterStaggerScale?: number;
   /** Studio-only: static paths while scrubbing geometry controls */
   geometryScrubbing?: boolean;
@@ -111,7 +111,7 @@ function GaugeNotchSvg({
   notchCornerRadius: number;
   cornerDepth: number;
   geometryScrubbing: boolean;
-  notchTransition: Transition;
+  notchTransition: any;
   stagger: number;
   defsChildren: ReactNode[];
   useThemePaletteGradient: boolean;
@@ -121,8 +121,39 @@ function GaugeNotchSvg({
   resolveBgFill: (index: number) => string;
   resolveActiveFill: (notch: ComputedNotch) => string;
 }) {
+  const svgRef = useRef<SVGSVGElement>(null);
+
+  useEffect(() => {
+    if (!svgRef.current || geometryScrubbing) return;
+    
+    // Default spring settings matching the previous Transition
+    const ease = spring({ stiffness: notchTransition?.stiffness ?? 300, damping: notchTransition?.damping ?? 20 });
+    const dur = notchTransition?.duration ? notchTransition.duration * 1000 : undefined;
+
+    const ctxScope = createScope({ root: svgRef }).add(() => {
+      animate('.gauge-notch-bg', {
+        opacity: [0, 1],
+        scale: [0, 1],
+        delay: (el: any, i: number) => i * 15 * stagger,
+        ease: dur ? 'outQuad' : ease,
+        duration: dur
+      });
+
+      animate('.gauge-notch-active', {
+        opacity: [0, 1],
+        scale: [0, 1],
+        delay: (el: any, i: number) => (300 + i * 20) * stagger,
+        ease: dur ? 'outQuad' : ease,
+        duration: dur
+      });
+    });
+
+    return () => ctxScope.revert();
+  }, [stagger, notchTransition, geometryScrubbing, notches.length]);
+
   return (
     <svg
+      ref={svgRef}
       aria-hidden="true"
       className="block w-full overflow-visible"
       height={height}
@@ -163,19 +194,16 @@ function GaugeNotchSvg({
           );
         }
         return (
-          <motion.path
-            animate={{ opacity: 1, scale: 1 }}
+          <path
+            className="gauge-notch-bg"
             d={pathD}
             fill={resolveBgFill(notch.index)}
             fillOpacity={resolvedInactiveFillOpacity}
-            initial={{ opacity: 0, scale: 0 }}
             key={`bg-${notch.index}`}
             style={{
               transformOrigin: `${notch.xCenter}px ${notch.yCenter}px`,
-            }}
-            transition={{
-              ...notchTransition,
-              delay: notch.index * 0.015 * stagger,
+              opacity: 0,
+              transform: "scale(0)",
             }}
           />
         );
@@ -199,19 +227,16 @@ function GaugeNotchSvg({
             );
           }
           return (
-            <motion.path
-              animate={{ opacity: 1, scale: 1 }}
+            <path
+              className="gauge-notch-active"
               d={pathD}
               fill={resolveActiveFill(notch)}
               fillOpacity={resolvedActiveFillOpacity}
-              initial={{ opacity: 0, scale: 0 }}
               key={`active-${notch.index}`}
               style={{
                 transformOrigin: `${notch.xCenter}px ${notch.yCenter}px`,
-              }}
-              transition={{
-                ...notchTransition,
-                delay: (0.3 + notch.index * 0.02) * stagger,
+                opacity: 0,
+                transform: "scale(0)",
               }}
             />
           );
@@ -290,10 +315,10 @@ function GaugeArcInner(props: GaugeInnerProps) {
     enterStaggerScale = 1,
   } = props;
 
-  const prefersReducedMotion = useReducedMotion();
+  const prefersReducedMotion = false; // We can integrate a custom hook later if needed
   const fillState = useGaugeFillState(props);
 
-  const notchTransition: Transition = prefersReducedMotion
+  const notchTransition: any = prefersReducedMotion
     ? { duration: 0 }
     : (enterTransition ?? DEFAULT_NOTCH_ENTER_TRANSITION);
   const stagger = Math.max(0.25, Math.min(2.5, enterStaggerScale));
@@ -476,10 +501,10 @@ function GaugeLinearInner(props: GaugeInnerProps) {
     geometryScrubbing = false,
   } = props;
 
-  const prefersReducedMotion = useReducedMotion();
+  const prefersReducedMotion = false;
   const fillState = useGaugeFillState(props);
 
-  const notchTransition: Transition = prefersReducedMotion
+  const notchTransition: any = prefersReducedMotion
     ? { duration: 0 }
     : (enterTransition ?? DEFAULT_NOTCH_ENTER_TRANSITION);
   const stagger = Math.max(0.25, Math.min(2.5, enterStaggerScale));

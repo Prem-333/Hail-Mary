@@ -7,12 +7,13 @@ import React, {
   useMemo,
   useCallback,
   useRef,
+  useEffect,
   type ReactNode,
 } from "react";
 import { scaleLinear, scaleTime } from "d3-scale";
 import { extent } from "d3-array";
 import useMeasure from "react-use-measure";
-import { motion } from "motion/react";
+import { animate, createScope, spring } from "animejs";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -501,9 +502,65 @@ export function Scatter({
       })
       .filter((pt) => isFinite(pt.cx) && isFinite(pt.cy));
   }, [data, ctx.xDataKey, dataKey, xScale, yScale]);
+  const rootRef = useRef<SVGGElement>(null);
+  const scopeRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (!rootRef.current) return;
+    const ctxScope = createScope({ root: rootRef }).add(() => {
+      animate('.scatter-point', {
+        opacity: [0, 1],
+        scale: [0, 1],
+        delay: (el: any, i: number) => i * (animationDuration / points.length),
+        ease: spring({ stiffness: 300, damping: 22 })
+      });
+    });
+    scopeRef.current = ctxScope;
+    return () => ctxScope.revert();
+  }, [points.length, animationDuration]);
+
+  useEffect(() => {
+    if (!scopeRef.current) return;
+    const anyActive = activeIndex !== null;
+    if (fadeOnHover) {
+      if (anyActive) {
+        animate('.scatter-point:not(.is-active)', {
+          opacity: inactiveOpacity,
+          filter: `blur(${inactiveBlur}px)`,
+          duration: 250,
+          ease: 'outQuad'
+        });
+        animate('.scatter-point.is-active', {
+          opacity: 1,
+          filter: 'blur(0px)',
+          duration: 250,
+          ease: 'outQuad'
+        });
+      } else {
+        animate('.scatter-point', {
+          opacity: 1,
+          filter: 'blur(0px)',
+          duration: 250,
+          ease: 'outQuad'
+        });
+      }
+    }
+  }, [activeIndex, fadeOnHover, inactiveOpacity, inactiveBlur]);
+
+  useEffect(() => {
+    if (!scopeRef.current) return;
+    if (showActiveHighlight && activeIndex !== null) {
+      animate('.scatter-highlight', {
+        scale: [0.6, 1],
+        opacity: [0, 1],
+        duration: 200,
+        ease: 'outQuad'
+      });
+    }
+  }, [activeIndex, showActiveHighlight]);
 
   return (
-    <g>
+    <g ref={rootRef}>
       {yGradient && (
         <defs>
           <linearGradient id={gradientId} x1="0" y1="1" x2="0" y2="0">
@@ -515,8 +572,6 @@ export function Scatter({
 
       {points.map((pt, i) => {
         const isActive = activeIndex === pt.index;
-        const anyActive = activeIndex !== null;
-        const shouldFade = fadeOnHover && anyActive && !isActive;
 
         let dotFill = seriesColor;
         if (yGradient) {
@@ -526,26 +581,10 @@ export function Scatter({
         const ringColor = strokeProp ?? seriesColor;
 
         return (
-          <motion.g
+          <g
             key={i}
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{
-              opacity: shouldFade ? inactiveOpacity : 1,
-              scale: 1,
-              filter: shouldFade
-                ? `blur(${inactiveBlur}px)`
-                : "blur(0px)",
-            }}
-            transition={{
-              opacity: { duration: 0.25, ease: "easeOut" },
-              filter: { duration: 0.25, ease: "easeOut" },
-              scale: {
-                type: "spring",
-                stiffness: 300,
-                damping: 22,
-                delay: i * (animationDuration / points.length / 1000),
-              },
-            }}
+            className={`scatter-point ${isActive ? 'is-active' : ''}`}
+            style={{ transformOrigin: `${pt.cx}px ${pt.cy}px` }}
           >
             {/* Outer ring */}
             {strokeWidth > 0 && (
@@ -571,19 +610,18 @@ export function Scatter({
 
             {/* Active highlight ring */}
             {showActiveHighlight && isActive && (
-              <motion.circle
+              <circle
+                className="scatter-highlight"
                 cx={pt.cx}
                 cy={pt.cy}
                 r={radius + ringGap + strokeWidth + 4}
                 fill="none"
                 stroke="rgba(255,255,255,0.2)"
                 strokeWidth={1.5}
-                initial={{ scale: 0.6, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.2 }}
+                style={{ transformOrigin: `${pt.cx}px ${pt.cy}px` }}
               />
             )}
-          </motion.g>
+          </g>
         );
       })}
     </g>

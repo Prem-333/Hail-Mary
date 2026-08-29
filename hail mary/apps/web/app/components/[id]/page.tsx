@@ -94,8 +94,9 @@ export default function ComponentDeepDive() {
           <CardContent>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {Object.entries(trajectories).map(([param, tr]: [string, any]) => {
+                const baseDate = new Date('2024-01-01T00:00:00Z');
                 const chartData = [0, 24, 96, 168].map((time, idx) => ({
-                  time,
+                  time: new Date(baseDate.getTime() + time * 60 * 60 * 1000),
                   val: tr.values[idx],
                   min: tr.envelope.lo[idx],
                   max: tr.envelope.hi[idx]
@@ -107,7 +108,7 @@ export default function ComponentDeepDive() {
                     border: "1px solid oklch(1 0 0 / 6%)",
                   }}>
                     <h4 className="font-semibold text-sm mb-4 capitalize text-center text-muted-foreground">{param.replace(/_/g, ' ')}</h4>
-                    <LineChart data={chartData} xDataKey="time">
+                    <LineChart data={chartData} xDataKey="time" margin={{ top: 40, right: 40, bottom: 40, left: 50 }}>
                       <Grid horizontal />
                       <Line dataKey="val" stroke="var(--chart-1)" strokeWidth={2} />
                       <XAxis />

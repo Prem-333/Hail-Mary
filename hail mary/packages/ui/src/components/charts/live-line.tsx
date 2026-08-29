@@ -6,8 +6,8 @@ import { curveMonotoneX } from "@visx/curve";
 type CurveFactory = any;
 
 import { AreaClosed, LinePath } from "@visx/shape";
-import { motion } from "motion/react";
-import { useCallback, useId, useMemo } from "react";
+import { useCallback, useId, useMemo, useEffect, useRef } from "react";
+import { animate, createScope } from "animejs";
 import { chartCssVars, useChart } from "./chart-context";
 
 export type Momentum = "up" | "down" | "flat";
@@ -159,6 +159,21 @@ export function LiveLine({
   const baseStroke = lineConfig?.stroke ?? stroke;
   const resolvedStroke = momentumColors ? momentumColors[momentum] : baseStroke;
 
+  const indicatorRef = useRef<SVGGElement>(null);
+  const scopeRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (!indicatorRef.current) return;
+    if (!scopeRef.current) {
+      scopeRef.current = createScope({ root: indicatorRef });
+    }
+    animate(indicatorRef.current, {
+      opacity: isScrubbing ? 0.25 : 1,
+      duration: 300,
+      ease: "easeInOutQuad"
+    });
+  }, [isScrubbing]);
+
   return (
     <>
       <defs>
@@ -241,10 +256,7 @@ export function LiveLine({
       />
 
       {/* Live indicator (dot + badge) — dims when crosshair is active */}
-      <motion.g
-        animate={{ opacity: isScrubbing ? 0.25 : 1 }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
-      >
+      <g ref={indicatorRef}>
         {/* Pulsing dot */}
         <g>
           {pulse && (
@@ -314,7 +326,7 @@ export function LiveLine({
             </text>
           </g>
         )}
-      </motion.g>
+      </g>
     </>
   );
 }

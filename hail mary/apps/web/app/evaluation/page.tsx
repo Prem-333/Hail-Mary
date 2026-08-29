@@ -4,6 +4,11 @@ import useSWR from "swr";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { TrendingUp, TrendingDown, Shield, AlertTriangle, Target, Crosshair, TrendingUp as TrendUp, CheckCircle2 } from "lucide-react";
+import { BarChart } from "@workspace/ui/components/charts/bar-chart";
+import { Bar } from "@workspace/ui/components/charts/bar";
+import { Grid } from "@workspace/ui/components/charts/grid";
+import { BarXAxis } from "@workspace/ui/components/charts/bar-x-axis";
+import { ChartTooltip } from "@workspace/ui/components/charts/tooltip";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
@@ -112,6 +117,17 @@ export default function EvaluationSummary() {
   // MAE baselines (literature / pre-tuning values)
   const LEAKAGE_MAE_BASELINE = 2.1;  // µA
   const DELAY_MAE_BASELINE = 0.68;   // ns
+
+  const safetySlopeData = data?.safety_slope?.map((s: any) => ({
+    class: s.class,
+    rate: s.flag_rate * 100
+  })) || [];
+
+  const leakageBarData = [
+    { group: "Normal", xgb: driftMetrics.leakage_current_uA?.xgb_mae_normal, linear: driftMetrics.leakage_current_uA?.linear_mae_normal },
+    { group: "Latent", xgb: driftMetrics.leakage_current_uA?.xgb_mae_latent, linear: driftMetrics.leakage_current_uA?.linear_mae_latent },
+    { group: "Obvious", xgb: driftMetrics.leakage_current_uA?.xgb_mae_obvious, linear: driftMetrics.leakage_current_uA?.linear_mae_obvious },
+  ];
 
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="show" className="flex flex-col gap-5">
@@ -301,6 +317,33 @@ export default function EvaluationSummary() {
               </motion.div>
             );
           })}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+          <div className="h-[250px] p-4 rounded-lg flex flex-col" style={{ background: "oklch(0.09 0.002 260)" }}>
+            <h4 className="text-[10px] text-muted-foreground/50 uppercase tracking-widest font-medium mb-4">MAE by Defect Class (Leakage)</h4>
+            <div className="flex-1 min-h-0">
+              <BarChart data={leakageBarData} xDataKey="group" padding={0.3}>
+                <Grid horizontal />
+                <Bar dataKey="xgb" fill="var(--chart-1)" radius={[4, 4, 0, 0]} label="XGBoost" />
+                <Bar dataKey="linear" fill="var(--chart-5)" radius={[4, 4, 0, 0]} label="Linear" />
+                <BarXAxis />
+                <ChartTooltip />
+              </BarChart>
+            </div>
+          </div>
+
+          <div className="h-[250px] p-4 rounded-lg flex flex-col" style={{ background: "oklch(0.09 0.002 260)" }}>
+            <h4 className="text-[10px] text-muted-foreground/50 uppercase tracking-widest font-medium mb-4">Safety Slope Flag Rate (%)</h4>
+            <div className="flex-1 min-h-0">
+              <BarChart data={safetySlopeData} xDataKey="class" padding={0.3}>
+                <Grid horizontal />
+                <Bar dataKey="rate" fill="oklch(0.7 0.05 250)" radius={[4, 4, 0, 0]} label="Flag Rate (%)" />
+                <BarXAxis />
+                <ChartTooltip />
+              </BarChart>
+            </div>
+          </div>
         </div>
       </motion.div>
 
