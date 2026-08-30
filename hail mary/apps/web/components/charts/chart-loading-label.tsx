@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react";
 import { cn } from "@workspace/ui/lib/utils";
-import { ShimmeringText } from "../components/shimmering-text";
+import { ShimmeringText } from "@workspace/ui/components/shimmering-text";
 import {
   LINE_LOADING_PULSE_EASE,
   LOADING_LABEL_EXIT_S,
