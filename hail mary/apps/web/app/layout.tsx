@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@workspace/ui/lib/utils";
 import { Sidebar } from "@/components/sidebar";
 import { Header } from "@/components/header";
+import { AutoFullscreen } from "@/components/auto-fullscreen";
 
 export const metadata: Metadata = {
   title: {
@@ -40,6 +41,7 @@ export default function RootLayout({
     >
       <body className="flex font-sans">
         <ThemeProvider>
+          <AutoFullscreen />
           <Sidebar />
           <div className="ml-[260px] w-[calc(100%-260px)] flex flex-col min-h-screen"
             style={{ background: "var(--background)" }}
