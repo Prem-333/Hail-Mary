@@ -43,11 +43,11 @@ export default function RootLayout({
         <ThemeProvider>
           <AutoFullscreen />
           <Sidebar />
-          <div className="ml-[260px] w-[calc(100%-260px)] flex flex-col min-h-screen"
+          <div className="ml-[280px] w-[calc(100%-280px)] flex flex-col min-h-screen"
             style={{ background: "var(--background)" }}
           >
             <Header />
-            <main className="flex-1 p-8 overflow-x-hidden">
+            <main className="flex-1 p-10 overflow-x-hidden">
               {children}
             </main>
           </div>

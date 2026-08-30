@@ -17,7 +17,7 @@ export function Sidebar() {
   ];
 
   return (
-    <aside className="fixed left-0 top-0 h-full w-[260px] border-r border-sidebar-border/50 flex flex-col py-6 z-20"
+    <aside className="fixed left-0 top-0 h-full w-[280px] border-r border-sidebar-border/50 flex flex-col py-6 z-20"
       style={{
         background: "linear-gradient(180deg, var(--sidebar) 0%, oklch(0.04 0.002 260) 100%)",
       }}
@@ -29,9 +29,9 @@ export function Sidebar() {
         className="px-6 mb-8"
       >
         <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-bold tracking-tight text-shimmer">LATENT</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-shimmer">LATENT</h1>
         </div>
-        <p className="text-[10px] text-muted-foreground mt-1 tracking-[0.15em] uppercase font-light">
+        <p className="text-xs text-muted-foreground mt-1.5 tracking-[0.15em] uppercase font-light">
           Burn-In AI · ISRO Screening
         </p>
       </motion.div>
@@ -52,13 +52,13 @@ export function Sidebar() {
                 <Link
                   href={link.href}
                   className={cn(
-                    "flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-300 interactive-scale",
+                    "flex items-center px-3 py-3 text-base font-medium rounded-lg transition-all duration-300 interactive-scale",
                     isActive 
                       ? "text-foreground glass-card" 
                       : "text-muted-foreground hover:text-foreground/80 hover:bg-accent/30"
                   )}
                 >
-                  <Icon className="mr-3 h-4 w-4" />
+                  <Icon className="mr-3 h-5 w-5" />
                   <span className="font-normal">{link.label}</span>
                   {link.live && (
                     <motion.span 
@@ -69,7 +69,7 @@ export function Sidebar() {
                       <span className="w-1.5 h-1.5 rounded-full live-dot"
                         style={{ background: "oklch(0.65 0.10 160)" }}
                       />
-                      <span className="text-[9px] font-medium uppercase tracking-wider"
+                      <span className="text-[11px] font-medium uppercase tracking-wider"
                         style={{ color: "oklch(0.65 0.10 160)" }}
                       >
                         Live
@@ -92,7 +92,7 @@ export function Sidebar() {
         <div className="px-6 pt-3">
           <div className="glass-card rounded-lg px-3 py-2.5 flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/70" />
-            <p className="text-[10px] text-muted-foreground/70 uppercase tracking-[0.15em] font-medium">
+            <p className="text-xs text-muted-foreground/70 uppercase tracking-[0.15em] font-medium">
               ISRO · Burn-In Screening System
             </p>
           </div>

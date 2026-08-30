@@ -106,8 +106,8 @@ export default function LotOverview() {
       {/* Header */}
       <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight mb-1">Lot Overview</h1>
-          <p className="text-[13px] text-muted-foreground/50 font-light">
+          <h1 className="text-2xl font-semibold tracking-tight mb-1">Lot Overview</h1>
+          <p className="text-sm text-muted-foreground/60 font-light">
             Anomaly distribution by leakage &amp; delay — {allComponents.length} components
           </p>
         </div>
@@ -142,10 +142,10 @@ export default function LotOverview() {
           <motion.div key={stat.label} whileHover={{ y: -2 }} transition={{ duration: 0.2 }}
             className="glass-card glass-card-hover rounded-xl px-4 py-3">
             <div className="flex items-center gap-2 mb-1.5">
-              <stat.icon className="w-3.5 h-3.5" style={{ color: stat.color, opacity: 0.6 }} />
-              <span className="text-[9px] text-muted-foreground/40 uppercase tracking-widest font-medium">{stat.label}</span>
+              <stat.icon className="w-4 h-4" style={{ color: stat.color, opacity: 0.6 }} />
+              <span className="text-xs text-muted-foreground/40 uppercase tracking-widest font-medium">{stat.label}</span>
             </div>
-            <p className="text-xl font-semibold tabular-nums" style={{ color: stat.color }}>{stat.value}</p>
+            <p className="text-2xl font-semibold tabular-nums" style={{ color: stat.color }}>{stat.value}</p>
           </motion.div>
         ))}
       </motion.div>
@@ -156,8 +156,8 @@ export default function LotOverview() {
           {/* Chart header + filter controls */}
           <div className="flex items-center justify-between mb-4">
 <div>
-               <h3 className="text-sm font-medium">Parametric Scatter</h3>
-               <p className="text-[10px] text-muted-foreground/35 mt-0.5 font-light">
+               <h3 className="text-base font-medium">Parametric Scatter</h3>
+               <p className="text-xs text-muted-foreground/40 mt-0.5 font-light">
                  Anomaly distribution by leakage & delay — {allComponents.length} components
                </p>
              </div>
@@ -171,7 +171,7 @@ export default function LotOverview() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className={`
-                    relative px-3 py-1.5 rounded-lg text-[10px] font-medium uppercase tracking-wider
+                    relative px-3 py-1.5 rounded-lg text-xs font-medium uppercase tracking-wider
                     transition-all duration-300 flex items-center gap-1.5
                     ${filter === f.key
                       ? 'text-foreground/90'
@@ -216,14 +216,14 @@ export default function LotOverview() {
           </div>
 
 {/* Legend */}
-           <div className="flex items-center gap-5 mb-3 text-[10px]">
+           <div className="flex items-center gap-5 mb-3 text-xs">
              <div className="flex items-center gap-1.5">
                <span className="w-2.5 h-2.5 rounded-full" style={{ background: "rgba(160, 165, 180, 0.7)", border: "1.5px solid rgba(160, 165, 180, 0.4)" }} />
-               <span className="text-muted-foreground/50 font-light">Normal</span>
+               <span className="text-muted-foreground/60 font-light">Normal</span>
              </div>
              <div className="flex items-center gap-1.5">
                <span className="w-2.5 h-2.5 rounded-full" style={{ background: "oklch(0.62 0.18 25)", border: "1.5px solid oklch(0.62 0.18 25 / 0.5)" }} />
-               <span className="text-muted-foreground/50 font-light">Anomalous</span>
+               <span className="text-muted-foreground/60 font-light">Anomalous</span>
              </div>
            </div>
 
@@ -231,7 +231,7 @@ export default function LotOverview() {
           <div className="relative">
             {/* Y-axis label */}
             <div
-              className="absolute left-0 top-1/2 -translate-x-full -translate-y-1/2 text-[9px] text-muted-foreground/35 uppercase tracking-widest font-medium"
+              className="absolute left-0 top-1/2 -translate-x-full -translate-y-1/2 text-xs text-muted-foreground/40 uppercase tracking-widest font-medium"
               style={{ writingMode: "vertical-rl", transform: "rotate(180deg) translateX(50%) translateY(50%)", marginLeft: "-2px" }}
             >
               Delay (ns)
@@ -339,7 +339,7 @@ export default function LotOverview() {
             </AnimatePresence>
 
             {/* X-axis label */}
-            <div className="text-center text-[9px] text-muted-foreground/35 uppercase tracking-widest font-medium mt-1">
+            <div className="text-center text-xs text-muted-foreground/40 uppercase tracking-widest font-medium mt-1">
               Leakage Current (µA)
             </div>
           </div>
@@ -351,10 +351,10 @@ export default function LotOverview() {
         <div className="glass-card rounded-2xl overflow-hidden">
           <div className="px-6 py-4 border-b border-border/5 flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-medium">
+              <h3 className="text-base font-medium">
                 {filter === "all" ? "All Components" : filter === "anomalous" ? "Anomalous Components" : "Normal Components"}
               </h3>
-              <p className="text-[10px] text-muted-foreground/35 mt-0.5 font-light">
+              <p className="text-xs text-muted-foreground/40 mt-0.5 font-light">
                 Showing {Math.min(TABLE_LIMIT, tableData.length)} of {tableData.length} — click to inspect
               </p>
             </div>
@@ -363,12 +363,12 @@ export default function LotOverview() {
             <table className="w-full text-left border-collapse text-sm">
               <thead>
                 <tr className="border-b border-border/5">
-                  <th className="px-6 py-3 text-[9px] font-medium text-muted-foreground/35 uppercase tracking-widest">Component</th>
-                  <th className="px-6 py-3 text-[9px] font-medium text-muted-foreground/35 uppercase tracking-widest">Lot</th>
-                  <th className="px-6 py-3 text-[9px] font-medium text-muted-foreground/35 uppercase tracking-widest">Defect Type</th>
-                  <th className="px-6 py-3 text-[9px] font-medium text-muted-foreground/35 uppercase tracking-widest">Score</th>
-                  <th className="px-6 py-3 text-[9px] font-medium text-muted-foreground/35 uppercase tracking-widest">Leakage (µA)</th>
-                  <th className="px-6 py-3 text-[9px] font-medium text-muted-foreground/35 uppercase tracking-widest">Delay (ns)</th>
+                  <th className="px-6 py-3 text-xs font-medium text-muted-foreground/40 uppercase tracking-widest">Component</th>
+                  <th className="px-6 py-3 text-xs font-medium text-muted-foreground/40 uppercase tracking-widest">Lot</th>
+                  <th className="px-6 py-3 text-xs font-medium text-muted-foreground/40 uppercase tracking-widest">Defect Type</th>
+                  <th className="px-6 py-3 text-xs font-medium text-muted-foreground/40 uppercase tracking-widest">Score</th>
+                  <th className="px-6 py-3 text-xs font-medium text-muted-foreground/40 uppercase tracking-widest">Leakage (µA)</th>
+                  <th className="px-6 py-3 text-xs font-medium text-muted-foreground/40 uppercase tracking-widest">Delay (ns)</th>
                   <th className="px-6 py-3"></th>
                 </tr>
               </thead>
@@ -385,15 +385,15 @@ export default function LotOverview() {
                       ${c.is_anomalous ? 'hover:bg-destructive/5' : 'hover:bg-accent/10'}
                     `}
                   >
-                    <td className="px-6 py-3 font-mono text-xs text-foreground/60">{c.component_id}</td>
-                    <td className="px-6 py-3 text-xs text-muted-foreground/40 font-light">{c.lot_id}</td>
+                    <td className="px-6 py-3.5 font-mono text-sm text-foreground/70">{c.component_id}</td>
+                    <td className="px-6 py-3.5 text-sm text-muted-foreground/50 font-light">{c.lot_id}</td>
                     <td className="px-6 py-3">
                       {c.is_anomalous ? (
-                        <span className="text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-md bg-destructive/10 text-destructive/80">
+                        <span className="text-xs font-medium uppercase tracking-wider px-2 py-0.5 rounded-md bg-destructive/10 text-destructive/80">
                           {c.defect_type}
                         </span>
                       ) : (
-                        <span className="text-[10px] text-emerald-500/60 font-medium flex items-center gap-1">
+                        <span className="text-xs text-emerald-500/70 font-medium flex items-center gap-1">
                           <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none">
                             <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                           </svg>
@@ -401,7 +401,7 @@ export default function LotOverview() {
                         </span>
                       )}
                     </td>
-                    <td className={`px-6 py-3 font-mono text-xs tabular-nums font-medium ${c.is_anomalous ? 'text-destructive/80' : 'text-muted-foreground/50'}`}>
+                    <td className={`px-6 py-3.5 font-mono text-sm tabular-nums font-medium ${c.is_anomalous ? 'text-destructive/80' : 'text-muted-foreground/50'}`}>
                       {c.anomaly_score?.toFixed(4)}
                     </td>
                     <td className="px-6 py-3">
@@ -412,10 +412,10 @@ export default function LotOverview() {
                             background: c.is_anomalous ? "oklch(0.62 0.18 25 / 0.6)" : "oklch(0.6 0.04 250 / 0.5)",
                           }} />
                         </div>
-                        <span className="text-[10px] text-muted-foreground/40 font-light tabular-nums">{c.leakage_median?.toFixed(2)}</span>
+                        <span className="text-xs text-muted-foreground/50 font-light tabular-nums">{c.leakage_median?.toFixed(2)}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="px-6 py-3.5">
                       <div className="flex items-center gap-2">
                         <div className="h-1 w-16 rounded-full overflow-hidden" style={{ background: "oklch(1 0 0 / 4%)" }}>
                           <div className="h-full rounded-full" style={{
@@ -423,7 +423,7 @@ export default function LotOverview() {
                             background: c.is_anomalous ? "oklch(0.62 0.18 25 / 0.6)" : "oklch(0.6 0.04 250 / 0.5)",
                           }} />
                         </div>
-                        <span className="text-[10px] text-muted-foreground/40 font-light tabular-nums">{c.delay_median?.toFixed(2)}</span>
+                        <span className="text-xs text-muted-foreground/50 font-light tabular-nums">{c.delay_median?.toFixed(2)}</span>
                       </div>
                     </td>
                     <td className="px-4 py-3">
@@ -438,7 +438,7 @@ export default function LotOverview() {
             <div className="px-6 py-3 border-t border-border/5 text-center">
               <button
                 onClick={() => router.push("/components")}
-                className="text-[10px] text-muted-foreground/40 uppercase tracking-widest font-medium hover:text-foreground/60 transition-colors"
+                className="text-xs text-muted-foreground/50 uppercase tracking-widest font-medium hover:text-foreground/60 transition-colors"
               >
                 View all {tableData.length} components →
               </button>

@@ -88,8 +88,8 @@ export default function SimulatorPage() {
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="show" className="flex flex-col gap-5">
       <div className="mb-1">
-        <h1 className="text-xl font-semibold tracking-tight">Rejection Simulator</h1>
-        <p className="text-sm text-muted-foreground/60 mt-0.5 font-light">
+        <h1 className="text-2xl font-semibold tracking-tight">Rejection Simulator</h1>
+        <p className="text-sm text-muted-foreground/60 mt-1 font-light">
           Enter early burn-in readings to predict 168h drift behaviour
         </p>
       </div>
@@ -137,24 +137,24 @@ export default function SimulatorPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-[10px] text-muted-foreground/60 uppercase font-medium">0 h reading</label>
+                    <label className="text-xs text-muted-foreground/70 uppercase font-medium">0 h reading</label>
                     <input
                       type="number" step="0.1" name="leak_0h"
                       value={formData.leak_0h} onChange={handleChange}
                       className={inputClass}
                       placeholder="e.g. 17.0"
                     />
-                    <p className="text-[9px] text-muted-foreground/35 mt-1 font-light">Typical: 15 – 25 µA</p>
+                    <p className="text-xs text-muted-foreground/40 mt-1 font-light">Typical: 15 – 25 µA</p>
                   </div>
                   <div>
-                    <label className="text-[10px] text-muted-foreground/60 uppercase font-medium">24 h reading</label>
+                    <label className="text-xs text-muted-foreground/70 uppercase font-medium">24 h reading</label>
                     <input
                       type="number" step="0.1" name="leak_24h"
                       value={formData.leak_24h} onChange={handleChange}
                       className={inputClass}
                       placeholder="e.g. 17.2"
                     />
-                    <p className="text-[9px] text-muted-foreground/35 mt-1 font-light">Must be ≥ 0 h value</p>
+                    <p className="text-xs text-muted-foreground/40 mt-1 font-light">Must be ≥ 0 h value</p>
                   </div>
                 </div>
               </div>
@@ -169,24 +169,24 @@ export default function SimulatorPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-[10px] text-muted-foreground/60 uppercase font-medium">0 h reading</label>
+                    <label className="text-xs text-muted-foreground/70 uppercase font-medium">0 h reading</label>
                     <input
                       type="number" step="0.01" name="delay_0h"
                       value={formData.delay_0h} onChange={handleChange}
                       className={inputClass}
                       placeholder="e.g. 8.0"
                     />
-                    <p className="text-[9px] text-muted-foreground/35 mt-1 font-light">Typical: 7 – 12 ns</p>
+                    <p className="text-xs text-muted-foreground/40 mt-1 font-light">Typical: 7 – 12 ns</p>
                   </div>
                   <div>
-                    <label className="text-[10px] text-muted-foreground/60 uppercase font-medium">24 h reading</label>
+                    <label className="text-xs text-muted-foreground/70 uppercase font-medium">24 h reading</label>
                     <input
                       type="number" step="0.01" name="delay_24h"
                       value={formData.delay_24h} onChange={handleChange}
                       className={inputClass}
                       placeholder="e.g. 8.04"
                     />
-                    <p className="text-[9px] text-muted-foreground/35 mt-1 font-light">Must be ≥ 0 h value</p>
+                    <p className="text-xs text-muted-foreground/40 mt-1 font-light">Must be ≥ 0 h value</p>
                   </div>
                 </div>
               </div>
@@ -255,7 +255,7 @@ export default function SimulatorPage() {
           }}>
             <div className="p-5 border-b border-border/10">
               <h3 className="font-semibold text-sm">Simulation Results</h3>
-              <p className="text-[10px] text-muted-foreground/40 font-light mt-0.5">
+              <p className="text-xs text-muted-foreground/50 font-light mt-0.5">
                 Predicted 168 h drift rate vs lot-specific safety-slope threshold
               </p>
             </div>
@@ -301,11 +301,11 @@ export default function SimulatorPage() {
                         )}
                         <div>
                           <h4 className="font-semibold text-sm">Safety-Slope Decision</h4>
-                          <p className="text-xs text-muted-foreground/60 font-light">
-                            {result.is_flagged
-                              ? "Drift rate exceeds lot threshold — component rejected"
-                              : "Drift rate within lot threshold — component passes"}
-                          </p>
+              <p className="text-xs text-muted-foreground/60 font-light">
+                {result.is_flagged
+                  ? "Drift rate exceeds lot threshold — component rejected"
+                  : "Drift rate within lot threshold — component passes"}
+              </p>
                         </div>
                       </div>
                       <span className={`px-3 py-1.5 rounded-md text-xs font-bold ${
@@ -349,8 +349,8 @@ export default function SimulatorPage() {
                                     isolate
                                   />
                                 </span>
-                                <span className="text-[9px] text-muted-foreground/50 uppercase font-medium">{unit} drift rate</span>
-                                <span className="text-[9px] text-muted-foreground/40 mt-1">Drift Rate: {(data.implied_drift).toExponential(2)} {unit}</span>
+                                <span className="text-xs text-muted-foreground/50 uppercase font-medium">{unit} drift rate</span>
+                                <span className="text-xs text-muted-foreground/40 mt-1">Drift Rate: {(data.implied_drift).toExponential(2)} {unit}</span>
                               </div>
                             </div>
                             <div className="mt-2 pt-2 border-t border-border/20 text-xs flex items-center justify-between">
@@ -373,7 +373,7 @@ export default function SimulatorPage() {
                                   }}
                                 />
                               </div>
-                              <p className="text-[9px] text-muted-foreground/35 text-right mt-0.5 font-light">
+                              <p className="text-xs text-muted-foreground/40 text-right mt-0.5 font-light">
                                 {percentOfThreshold.toFixed(0)}% of threshold
                               </p>
                             </div>

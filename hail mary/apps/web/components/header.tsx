@@ -20,7 +20,7 @@ export function Header() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1 }}
-          className="text-lg font-bold tracking-tight text-foreground/90"
+          className="text-xl font-bold tracking-tight text-foreground/90"
           style={{ textShadow: "0 0 20px oklch(0.7 0.05 250 / 30%)" }}
         >
           Burn-In Screening
@@ -29,10 +29,10 @@ export function Header() {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.15 }}
-          className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest glass-card"
+          className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-widest glass-card"
           style={{ color: "oklch(0.7 0.01 260)", background: "oklch(0.12 0.008 260)", border: "1px solid oklch(0.4 0.01 260 / 30%)" }}
         >
-          <Shield className="h-3.5 w-3.5" />
+          <Shield className="h-4 w-4" />
           ISRO
         </motion.div>
       </div>
@@ -48,7 +48,7 @@ export function Header() {
           style={{ border: "1px solid oklch(0.4 0.01 260 / 20%)" }}
         >
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/70" />
-          <span className="text-[10px] text-muted-foreground/60 font-medium uppercase tracking-widest">
+          <span className="text-xs text-muted-foreground/60 font-medium uppercase tracking-widest">
             System Operational
           </span>
         </div>

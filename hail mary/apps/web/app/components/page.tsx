@@ -69,7 +69,7 @@ export default function ComponentsIndex() {
       <div className="flex justify-between items-end">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Component Deep-Dive</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Select a component to view its trajectory, SHAP explanation, and AI assessment</p>
+          <p className="text-sm text-muted-foreground mt-1">Select a component to view its trajectory, SHAP explanation, and AI assessment</p>
         </div>
         <div className="relative w-64">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40" />
@@ -155,7 +155,7 @@ export default function ComponentsIndex() {
                   : "1px solid oklch(1 0 0 / 6%)",
               }}>
                 <div className="flex items-center justify-between mb-3">
-                  <span className="font-mono text-sm font-medium truncate">{c.component_id}</span>
+                  <span className="font-mono text-sm font-semibold truncate">{c.component_id}</span>
                   <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/0 group-hover:text-muted-foreground transition-all duration-200 -translate-x-1 group-hover:translate-x-0" />
                 </div>
 
@@ -164,7 +164,7 @@ export default function ComponentsIndex() {
                     <div className="w-2 h-2 rounded-full" style={{
                       background: c.is_anomalous ? "oklch(0.65 0.22 25)" : "oklch(0.6 0.15 160)"
                     }} />
-                    <span className="text-xs text-muted-foreground capitalize">{c.defect_type}</span>
+                    <span className="text-sm text-muted-foreground capitalize">{c.defect_type}</span>
                   </div>
                   <span className={`text-xs font-mono font-bold tabular-nums ${c.is_anomalous ? 'text-destructive' : 'text-muted-foreground'}`}>
                     {c.anomaly_score.toFixed(1)}

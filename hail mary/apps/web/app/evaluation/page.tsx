@@ -47,7 +47,7 @@ function Tooltip({ text }: { text: string }) {
   return (
     <div className="group relative inline-flex items-center">
       <span className="w-3.5 h-3.5 rounded-full border border-muted-foreground/30 flex items-center justify-center text-[8px] text-muted-foreground/50 cursor-help font-bold leading-none ml-1">?</span>
-      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-52 px-3 py-2 rounded-lg text-[10px] text-foreground/70 font-light leading-relaxed pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50"
+      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-52 px-3 py-2 rounded-lg text-xs text-foreground/70 font-light leading-relaxed pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50"
         style={{ background: "oklch(0.14 0.004 260)", border: "1px solid oklch(1 0 0 / 10%)" }}
       >
         {text}
@@ -132,8 +132,8 @@ export default function EvaluationSummary() {
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="show" className="flex flex-col gap-5">
       <motion.div variants={itemVariants}>
-        <h1 className="text-xl font-semibold tracking-tight">Evaluation Summary</h1>
-        <p className="text-sm text-muted-foreground/50 mt-0.5 font-light">
+        <h1 className="text-2xl font-semibold tracking-tight">Evaluation Summary</h1>
+        <p className="text-sm text-muted-foreground/60 mt-1 font-light">
           Model performance across anomaly detection &amp; drift prediction
         </p>
       </motion.div>
@@ -173,7 +173,7 @@ export default function EvaluationSummary() {
             >
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-1">
-                  <p className="text-[9px] text-muted-foreground/50 uppercase tracking-widest font-medium">
+                  <p className="text-xs text-muted-foreground/50 uppercase tracking-widest font-medium">
                     {stat.label}
                   </p>
                   <Tooltip text={stat.tooltip} />
@@ -199,7 +199,7 @@ export default function EvaluationSummary() {
           className={`glass-card glass-card-hover rounded-xl p-5 ${fnIsZero ? 'ring-1 ring-emerald-500/20' : ''}`}
         >
           <div className="flex items-center justify-between mb-2">
-            <p className="text-[9px] text-muted-foreground/50 uppercase tracking-widest font-medium">False Negatives</p>
+            <p className="text-xs text-muted-foreground/50 uppercase tracking-widest font-medium">False Negatives</p>
             {fnIsZero
               ? <CheckCircle2 className="w-4 h-4 text-emerald-400/60" />
               : <AlertTriangle className="w-4 h-4 text-destructive/60" />
@@ -214,7 +214,7 @@ export default function EvaluationSummary() {
             </p>
           </div>
           <div className="flex items-center gap-2 mt-2">
-            <p className="text-[10px] font-light" style={{ color: fnIsZero ? "oklch(0.65 0.12 160)" : "oklch(0.65 0.14 30)" }}>
+            <p className="text-sm font-light" style={{ color: fnIsZero ? "oklch(0.65 0.12 160)" : "oklch(0.65 0.14 30)" }}>
               {fnIsZero ? "✓ Zero missed defects — all escapes caught" : `${fnRate}% miss rate — catastrophic escape risk`}
             </p>
           </div>
@@ -226,7 +226,7 @@ export default function EvaluationSummary() {
           className={`glass-card glass-card-hover rounded-xl p-5 ${fpIsLow ? 'ring-1 ring-emerald-500/10' : ''}`}
         >
           <div className="flex items-center justify-between mb-2">
-            <p className="text-[9px] text-muted-foreground/50 uppercase tracking-widest font-medium">False Positives</p>
+            <p className="text-xs text-muted-foreground/50 uppercase tracking-widest font-medium">False Positives</p>
             {fpIsLow
               ? <CheckCircle2 className="w-4 h-4 text-emerald-400/40" />
               : <AlertTriangle className="w-4 h-4 opacity-50" style={{ color: "oklch(0.6 0.08 80)" }} />
@@ -240,7 +240,7 @@ export default function EvaluationSummary() {
               / {totalNormal > 0 ? totalNormal : "—"} normal
             </p>
           </div>
-          <p className="text-[10px] text-muted-foreground/40 mt-2 font-light">
+          <p className="text-sm text-muted-foreground/50 mt-2 font-light">
             {totalNormal > 0 ? `${fpRate}% unnecessary rejection rate` : "Unnecessary rejections — yield cost"}
           </p>
         </motion.div>
@@ -250,8 +250,8 @@ export default function EvaluationSummary() {
       <motion.div variants={itemVariants} className="glass-card rounded-xl p-5">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-sm font-medium">Drift Prediction Accuracy</h3>
-            <p className="text-[10px] text-muted-foreground/35 mt-0.5 font-light">
+            <h3 className="text-base font-medium">Drift Prediction Accuracy</h3>
+            <p className="text-xs text-muted-foreground/40 mt-0.5 font-light">
               Mean Absolute Error vs pre-tuning baseline
             </p>
           </div>
@@ -286,7 +286,7 @@ export default function EvaluationSummary() {
                 className="p-4 rounded-lg"
                 style={{ background: "oklch(0.09 0.002 260)" }}
               >
-                <p className="text-[9px] text-muted-foreground/50 uppercase tracking-widest font-medium mb-2">
+                <p className="text-xs text-muted-foreground/50 uppercase tracking-widest font-medium mb-2">
                   {pred.param}
                 </p>
                 <div className="flex items-baseline gap-1.5 mb-2">
@@ -294,7 +294,7 @@ export default function EvaluationSummary() {
                     <AnimatedNumber value={maeValue} decimals={2} />
                   </p>
                   <p className="text-xs text-muted-foreground/40">{pred.unit} MAE</p>
-                  <span className={`ml-auto text-[9px] font-medium px-1.5 py-0.5 rounded ${
+                  <span className={`ml-auto text-xs font-medium px-1.5 py-0.5 rounded ${
                     isBetter
                       ? 'bg-emerald-500/10 text-emerald-400/80'
                       : 'bg-destructive/10 text-destructive/70'
@@ -302,7 +302,7 @@ export default function EvaluationSummary() {
                     {isBetter ? `↓ ${improvement.toFixed(0)}% vs baseline` : `↑ above baseline`}
                   </span>
                 </div>
-                <div className="text-[9px] text-muted-foreground/35 flex items-center justify-between">
+                <div className="text-xs text-muted-foreground/40 flex items-center justify-between">
                   <span>Pre-tuning baseline: <span className="font-mono text-muted-foreground/50">{pred.baseline} {pred.unit}</span></span>
                 </div>
                 <div className="mt-2 h-1 rounded-full overflow-hidden" style={{ background: "oklch(1 0 0 / 4%)" }}>
@@ -321,7 +321,7 @@ export default function EvaluationSummary() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
           <div className="h-[250px] p-4 rounded-lg flex flex-col" style={{ background: "oklch(0.09 0.002 260)" }}>
-            <h4 className="text-[10px] text-muted-foreground/50 uppercase tracking-widest font-medium mb-4">MAE by Defect Class (Leakage)</h4>
+            <h4 className="text-xs text-muted-foreground/50 uppercase tracking-widest font-medium mb-4">MAE by Defect Class (Leakage)</h4>
             <div className="flex-1 min-h-0">
               <BarChart data={leakageBarData} xDataKey="group" padding={0.3}>
                 <Grid horizontal />
@@ -334,7 +334,7 @@ export default function EvaluationSummary() {
           </div>
 
           <div className="h-[250px] p-4 rounded-lg flex flex-col" style={{ background: "oklch(0.09 0.002 260)" }}>
-            <h4 className="text-[10px] text-muted-foreground/50 uppercase tracking-widest font-medium mb-4">Safety Slope Flag Rate (%)</h4>
+            <h4 className="text-xs text-muted-foreground/50 uppercase tracking-widest font-medium mb-4">Safety Slope Flag Rate (%)</h4>
             <div className="flex-1 min-h-0">
               <BarChart data={safetySlopeData} xDataKey="class" padding={0.3}>
                 <Grid horizontal />
@@ -358,9 +358,9 @@ export default function EvaluationSummary() {
               { label: "QA Status", value: "Ready" },
             ].map((item) => (
               <div key={item.label} className="flex items-center gap-1.5">
-                <span className="text-[9px] text-muted-foreground/40 uppercase tracking-widest font-medium">{item.label}</span>
+                <span className="text-xs text-muted-foreground/40 uppercase tracking-widest font-medium">{item.label}</span>
                 <span className="w-1 h-1 rounded-full bg-muted-foreground/20" />
-                <span className="text-[10px] text-emerald-400/70 font-medium">{item.value}</span>
+                <span className="text-sm text-emerald-400/70 font-medium">{item.value}</span>
               </div>
             ))}
           </div>
