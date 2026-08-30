@@ -29,13 +29,6 @@ export function Sidebar() {
         className="px-6 mb-8"
       >
         <div className="flex items-center gap-2">
-          <motion.div
-            animate={{ rotate: [0, 360] }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            className="opacity-30"
-          >
-            <Sparkles className="w-4 h-4 text-chart-1" />
-          </motion.div>
           <h1 className="text-2xl font-bold tracking-tight text-shimmer">LATENT</h1>
         </div>
         <p className="text-[10px] text-muted-foreground mt-1 tracking-[0.15em] uppercase font-light">
