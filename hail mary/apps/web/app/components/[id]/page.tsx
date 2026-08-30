@@ -163,6 +163,8 @@ export default function ComponentDeepDive() {
                     inactiveFillOpacity={0.2}
                     activeFill={anomaly.is_anomalous ? "var(--destructive)" : "var(--chart-2)"}
                     useGradient={false}
+                    enterTransition={{ stiffness: 100, damping: 25 }}
+                    enterStaggerScale={1.5}
                     formatOptions={{
                       maximumFractionDigits: 1,
                     }}

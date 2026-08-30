@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@workspace/ui/components/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select";
 import { Gauge } from "@workspace/ui/components/charts/gauge";
+import NumberFlow from "@number-flow/react";
 import { Zap, FlaskConical, ArrowRight, AlertTriangle, CheckCircle, RotateCcw } from "lucide-react";
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data);
@@ -36,6 +37,15 @@ export default function SimulatorPage() {
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [animateValues, setAnimateValues] = useState(false);
+
+  useEffect(() => {
+    if (result && !loading) {
+      setAnimateValues(false);
+      const t = setTimeout(() => setAnimateValues(true), 300);
+      return () => clearTimeout(t);
+    }
+  }, [result, loading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -325,10 +335,19 @@ export default function SimulatorPage() {
                               {param.replace(/_/g, ' ')}
                             </h4>
                             <div className="h-[160px] flex justify-center items-center relative">
-                              <Gauge value={Math.min(percentOfThreshold, 100)} enterTransition={{ duration: 0.8, ease: "easeOut" }} />
+                              <Gauge 
+                                value={Math.min(percentOfThreshold, 100)} 
+                                enterTransition={{ stiffness: 100, damping: 25 }} 
+                                enterStaggerScale={1.5}
+                              />
                               <div className="absolute flex flex-col items-center top-[55%]">
                                 <span className={`text-lg font-bold tabular-nums ${isDanger ? 'text-destructive' : 'text-emerald-400'}`}>
-                                  {data.implied_drift.toFixed(5)}
+                                  <NumberFlow 
+                                    value={animateValues ? data.implied_drift : 0} 
+                                    format={{ minimumFractionDigits: 5, maximumFractionDigits: 5 }} 
+                                    willChange
+                                    isolate
+                                  />
                                 </span>
                                 <span className="text-[9px] text-muted-foreground/50 uppercase font-medium">{unit} drift rate</span>
                                 <span className="text-[9px] text-muted-foreground/40 mt-1">Drift Rate: {(data.implied_drift).toExponential(2)} {unit}</span>
