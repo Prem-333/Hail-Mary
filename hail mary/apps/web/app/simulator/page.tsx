@@ -334,14 +334,14 @@ export default function SimulatorPage() {
                             <h4 className="text-xs font-medium uppercase tracking-widest text-center text-muted-foreground mb-3 capitalize">
                               {param.replace(/_/g, ' ')}
                             </h4>
-                            <div className="h-[160px] flex justify-center items-center relative">
+                            <div className="h-[160px] flex justify-center items-center relative mb-4 mt-2">
                               <Gauge 
                                 value={Math.min(percentOfThreshold, 100)} 
                                 enterTransition={{ stiffness: 100, damping: 25 }} 
                                 enterStaggerScale={1.5}
                               />
-                              <div className="absolute flex flex-col items-center top-[55%]">
-                                <span className={`text-lg font-bold tabular-nums ${isDanger ? 'text-destructive' : 'text-emerald-400'}`}>
+                              <div className="absolute flex flex-col items-center top-[58%]">
+                                <span className={`text-xl font-bold tabular-nums leading-none ${isDanger ? 'text-destructive' : 'text-emerald-400'}`}>
                                   <NumberFlow 
                                     value={animateValues ? data.implied_drift : 0} 
                                     format={{ minimumFractionDigits: 5, maximumFractionDigits: 5 }} 
@@ -349,9 +349,11 @@ export default function SimulatorPage() {
                                     isolate
                                   />
                                 </span>
-                                <span className="text-xs text-muted-foreground/50 uppercase font-medium">{unit} drift rate</span>
-                                <span className="text-xs text-muted-foreground/40 mt-1">Drift Rate: {(data.implied_drift).toExponential(2)} {unit}</span>
+                                <span className="text-xs text-muted-foreground/50 uppercase font-medium mt-1.5">{unit}</span>
                               </div>
+                            </div>
+                            <div className="text-center mb-3 -mt-2">
+                              <span className="text-xs text-muted-foreground/60">Drift Rate: {(data.implied_drift).toExponential(2)} {unit}</span>
                             </div>
                             <div className="mt-2 pt-2 border-t border-border/20 text-xs flex items-center justify-between">
                               <span className="text-muted-foreground/50 font-light">Lot threshold</span>
