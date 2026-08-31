@@ -403,13 +403,13 @@ export default function EvaluationSummary() {
         </div>
 
         {/* Safety Slope Flag Rate chart */}
-        <div className="h-[220px] glass-card rounded-xl p-5 flex flex-col">
+        <div className="h-[320px] glass-card rounded-xl p-6 flex flex-col">
           <div className="flex items-center gap-2 mb-3">
             <h4 className="text-xs font-medium uppercase tracking-widest text-muted-foreground/50">Safety-Slope Flag Rate by Defect Class (%)</h4>
             <InfoTooltip text="Safety Slope = the drift rate implied by 0h→24h measurements, compared against a lot-specific dynamic threshold. Shows how well the Module B predictor flags each class." />
           </div>
           <div className="flex-1 min-h-0">
-            <BarChart data={safetySlopeBarData} xDataKey="class" barGap={0.3}>
+            <BarChart data={safetySlopeBarData} xDataKey="class" barGap={0.3} aspectRatio="auto" className="h-full">
               <Grid horizontal />
               <Bar dataKey="rate" fill="oklch(0.7 0.05 250)" lineCap="round" />
               <BarXAxis />
@@ -496,14 +496,14 @@ export default function EvaluationSummary() {
         </div>
 
         {/* MAE by defect class chart */}
-        <div className="h-[230px] glass-card rounded-xl p-5 flex flex-col">
+        <div className="h-[350px] glass-card rounded-xl p-6 flex flex-col">
           <div className="flex items-center gap-2 mb-1">
             <h4 className="text-xs font-medium uppercase tracking-widest text-muted-foreground/50">MAE by Defect Class — Leakage Current (µA)</h4>
             <InfoTooltip text="XGBoost vs Linear regression MAE breakdown per defect class. XGBoost (dark) should outperform Linear on latent defects due to non-linear drift patterns." />
           </div>
           <p className="text-xs text-muted-foreground/30 font-light mb-3">Lower bars = more accurate prediction</p>
           <div className="flex-1 min-h-0">
-            <BarChart data={leakageBarData} xDataKey="group" barGap={0.3}>
+            <BarChart data={leakageBarData} xDataKey="group" barGap={0.3} aspectRatio="auto" className="h-full">
               <Grid horizontal />
               <Bar dataKey="xgb" fill="var(--chart-1)" lineCap="round" />
               <Bar dataKey="linear" fill="var(--chart-5)" lineCap="round" />

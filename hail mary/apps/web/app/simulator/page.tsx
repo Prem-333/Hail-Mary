@@ -26,11 +26,11 @@ function ShapBar({ name, value, maxAbs }: { name: string; value: number; maxAbs:
   };
   const displayName = friendlyNames[name] || name.replace(/_/g, " ");
   return (
-    <div className="flex items-center gap-3">
-      <span className="text-xs text-muted-foreground/60 font-light w-44 shrink-0 text-right truncate" title={displayName}>
+    <div className="flex items-center gap-4">
+      <span className="text-sm text-muted-foreground/70 font-light w-56 shrink-0 text-right truncate" title={displayName}>
         {displayName}
       </span>
-      <div className="flex-1 flex items-center gap-1.5" style={{ height: 18 }}>
+      <div className="flex-1 flex items-center gap-1.5" style={{ height: 20 }}>
         {/* Negative side */}
         <div className="flex-1 flex justify-end">
           {!isPos && (
@@ -38,13 +38,13 @@ function ShapBar({ name, value, maxAbs }: { name: string; value: number; maxAbs:
               initial={{ width: 0 }}
               animate={{ width: `${pct}%` }}
               transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
-              className="h-3.5 rounded-l-sm"
+              className="h-4 rounded-l-sm"
               style={{ background: "oklch(0.7 0.05 250 / 70%)" }}
             />
           )}
         </div>
         {/* Center line */}
-        <div className="w-px h-4 bg-muted-foreground/20 shrink-0" />
+        <div className="w-px h-5 bg-muted-foreground/30 shrink-0" />
         {/* Positive side */}
         <div className="flex-1">
           {isPos && (
@@ -52,13 +52,13 @@ function ShapBar({ name, value, maxAbs }: { name: string; value: number; maxAbs:
               initial={{ width: 0 }}
               animate={{ width: `${pct}%` }}
               transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
-              className="h-3.5 rounded-r-sm"
+              className="h-4 rounded-r-sm"
               style={{ background: "oklch(0.62 0.18 25 / 70%)" }}
             />
           )}
         </div>
       </div>
-      <span className={`text-xs font-mono tabular-nums w-16 text-right ${isPos ? 'text-destructive/70' : 'text-blue-400/70'}`}>
+      <span className={`text-sm font-mono tabular-nums w-20 text-left ${isPos ? 'text-destructive/80' : 'text-blue-400/80'}`}>
         {isPos ? "+" : ""}{value.toFixed(4)}
       </span>
     </div>
@@ -474,21 +474,21 @@ export default function SimulatorPage() {
                     </div>
 
                     {/* QA Inspector Justification */}
-                    <div className="rounded-lg p-4" style={{
+                    <div className="rounded-xl p-5" style={{
                       background: "oklch(0.08 0.004 260)",
                       border: "1px solid oklch(1 0 0 / 6%)",
                     }}>
-                      <div className="flex items-center gap-2 mb-3">
-                        <Eye className="h-3.5 w-3.5 text-muted-foreground/50" />
-                        <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground/60">QA Inspector Justification</span>
+                      <div className="flex items-center gap-2 mb-4">
+                        <Eye className="h-4 w-4 text-muted-foreground/50" />
+                        <span className="text-sm font-semibold uppercase tracking-widest text-muted-foreground/60">QA Inspector Justification</span>
                       </div>
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         {buildJustification(result).map((line, i) => (
-                          <div key={i} className="flex items-start gap-2">
-                            <span className="text-muted-foreground/40 mt-1 text-xs shrink-0">
+                          <div key={i} className="flex items-start gap-3">
+                            <span className="text-muted-foreground/40 mt-0.5 text-sm shrink-0">
                               {result.is_flagged ? "⚠" : "✓"}
                             </span>
-                            <p className="text-xs text-muted-foreground/70 font-light leading-relaxed">{line}</p>
+                            <p className="text-sm text-muted-foreground/80 font-light leading-relaxed">{line}</p>
                           </div>
                         ))}
                       </div>
@@ -496,18 +496,18 @@ export default function SimulatorPage() {
 
                     {/* SHAP Feature Attribution */}
                     {result.shap && Object.keys(result.shap).length > 0 && (
-                      <div className="rounded-lg p-4" style={{
+                      <div className="rounded-xl p-5" style={{
                         background: "oklch(0.08 0.004 260)",
                         border: "1px solid oklch(1 0 0 / 6%)",
                       }}>
-                        <div className="flex items-center gap-2 mb-1">
-                          <Brain className="h-3.5 w-3.5 text-muted-foreground/50" />
-                          <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground/60">SHAP Feature Attribution</span>
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <Brain className="h-4 w-4 text-muted-foreground/50" />
+                          <span className="text-sm font-semibold uppercase tracking-widest text-muted-foreground/60">SHAP Feature Attribution</span>
                         </div>
-                        <p className="text-xs text-muted-foreground/35 font-light mb-4">
+                        <p className="text-sm text-muted-foreground/40 font-light mb-6">
                           Why the model predicted this drift — red bars push prediction up (more drift), blue bars push down (less drift)
                         </p>
-                        <div className="space-y-4">
+                        <div className="space-y-6">
                           {Object.entries(result.shap).map(([param, shapData]: [string, any]) => {
                             const features: { feature: string; value: number }[] = shapData.features || [];
                             const maxAbs = Math.max(...features.map((f: any) => Math.abs(f.value)), 0.0001);
@@ -515,20 +515,25 @@ export default function SimulatorPage() {
                             const paramLabel = param.includes("leak") ? "Leakage Current" : "Propagation Delay";
                             return (
                               <div key={param}>
-                                <div className="flex items-center gap-2 mb-2">
-                                  <span className="text-xs font-semibold text-muted-foreground/70">{paramLabel}</span>
-                                  <span className="text-xs text-muted-foreground/30 font-light">
+                                <div className="flex items-center gap-3 mb-3 pl-[3.5rem]">
+                                  <span className="text-base font-semibold text-muted-foreground/80">{paramLabel}</span>
+                                  <span className="text-sm text-muted-foreground/40 font-light">
                                     Base: {shapData.base_value?.toFixed(4)}
                                   </span>
                                 </div>
-                                <div className="space-y-1.5">
+                                <div className="space-y-2">
                                   {sorted.slice(0, 6).map((f: any) => (
                                     <ShapBar key={f.feature} name={f.feature} value={f.value} maxAbs={maxAbs} />
                                   ))}
                                 </div>
-                                <div className="flex items-center justify-between mt-2 text-[10px] text-muted-foreground/30">
-                                  <span>← reduces drift prediction</span>
-                                  <span>increases drift prediction →</span>
+                                <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground/40">
+                                  <div className="w-56 shrink-0" />
+                                  <div className="flex-1 flex items-center justify-center gap-4">
+                                    <span className="text-right flex-1">← reduces drift prediction</span>
+                                    <span className="w-px h-3 bg-muted-foreground/20 shrink-0" />
+                                    <span className="text-left flex-1">increases drift prediction →</span>
+                                  </div>
+                                  <div className="w-20 shrink-0" />
                                 </div>
                               </div>
                             );
