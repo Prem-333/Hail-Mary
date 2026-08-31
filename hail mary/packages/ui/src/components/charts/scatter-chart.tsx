@@ -79,8 +79,8 @@ export interface ScatterChartProps {
   data: Record<string, unknown>[];
   xDataKey?: string;
   margin?: Partial<Margin>;
-  animationDuration?: number;
   aspectRatio?: string;
+  isInteractable?: (row: Record<string, unknown>) => boolean;
   children?: ReactNode;
 }
 
@@ -90,6 +90,7 @@ export function ScatterChart({
   margin: marginProp,
   animationDuration = 1100,
   aspectRatio = "2 / 1",
+  isInteractable,
   children,
 }: ScatterChartProps) {
   const [ref, bounds] = useMeasure();
@@ -187,9 +188,10 @@ export function ScatterChart({
     const mouseX = e.clientX - svgRect.left;
 
     // Find closest data point by x position
-    let closestIdx = 0;
+    let closestIdx = -1;
     let closestDist = Infinity;
     data.forEach((row, i) => {
+      if (isInteractable && !isInteractable(row)) return;
       const px = (xScale as (v: unknown) => number)(row[xDataKey]);
       const dist = Math.abs(px - mouseX);
       if (dist < closestDist) {
@@ -197,7 +199,9 @@ export function ScatterChart({
         closestIdx = i;
       }
     });
-    setActiveIndex(closestIdx);
+    if (closestIdx !== -1) {
+      setActiveIndex(closestIdx);
+    }
   };
 
   return (
@@ -498,7 +502,8 @@ export function Scatter({
         const yVal = Number(row[dataKey]);
         const cx = (xScale as (v: unknown) => number)(xVal);
         const cy = yScale(yVal);
-        return { cx, cy, yVal, index: i, row };
+        const globalIndex = ctx.data.indexOf(row);
+        return { cx, cy, yVal, index: globalIndex >= 0 ? globalIndex : i, row };
       })
       .filter((pt) => isFinite(pt.cx) && isFinite(pt.cy));
   }, [data, ctx.xDataKey, dataKey, xScale, yScale]);

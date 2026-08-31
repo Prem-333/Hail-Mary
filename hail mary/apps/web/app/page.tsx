@@ -265,6 +265,11 @@ export default function LotOverview() {
                   xDataKey="leakage_median"
                   aspectRatio="2.4 / 1"
                   animationDuration={900}
+                  isInteractable={(row: any) => {
+                    if (filter === "all") return true;
+                    if (filter === "anomalous") return !!row.is_anomalous;
+                    return !row.is_anomalous;
+                  }}
                 >
                   <Grid horizontal vertical />
 
