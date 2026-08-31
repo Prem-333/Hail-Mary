@@ -55,6 +55,10 @@ export default function LotOverview() {
   const allComponents = lotDetails?.components || [];
   const flagged = allComponents.filter((c: any) => c.is_anomalous);
   const normal = allComponents.filter((c: any) => !c.is_anomalous);
+  const latentCaught = flagged.filter((c: any) =>
+    c.defect_type === "latent" ||
+    (c.defect_type !== "normal" && c.leakage_median < 50 && c.delay_median < 18)
+  ).length;
 
   // Filter data for the chart
   const chartNormal = filter === "anomalous" ? [] : normal;
@@ -108,7 +112,7 @@ export default function LotOverview() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight mb-1">Lot Overview</h1>
           <p className="text-sm text-muted-foreground/60 font-light">
-            Anomaly distribution by leakage &amp; delay — {allComponents.length} components
+            {allComponents.length} components screened · LATENT catches statistically abnormal parts that pass traditional static limits
           </p>
         </div>
 
@@ -127,7 +131,7 @@ export default function LotOverview() {
       </motion.div>
 
       {/* Stat cards */}
-      <motion.div variants={itemVariants} className="grid grid-cols-4 gap-3">
+      <motion.div variants={itemVariants} className="grid grid-cols-5 gap-3">
         {[
           { label: "Total", value: allComponents.length, icon: Activity, color: "oklch(0.7 0.05 250)" },
           { label: "Flagged", value: flagged.length, icon: AlertTriangle, color: "oklch(0.62 0.18 25)" },
@@ -138,7 +142,14 @@ export default function LotOverview() {
             icon: TrendingUp,
             color: "oklch(0.6 0.10 300)"
           },
-        ].map((stat) => (
+          {
+            label: "Latent Caught",
+            value: latentCaught,
+            icon: TrendingDown,
+            color: "oklch(0.65 0.14 55)",
+            subtitle: "Missed by static rules"
+          },
+        ].map((stat: any) => (
           <motion.div key={stat.label} whileHover={{ y: -2 }} transition={{ duration: 0.2 }}
             className="glass-card glass-card-hover rounded-xl px-4 py-3">
             <div className="flex items-center gap-2 mb-1.5">
@@ -146,6 +157,9 @@ export default function LotOverview() {
               <span className="text-xs text-muted-foreground/40 uppercase tracking-widest font-medium">{stat.label}</span>
             </div>
             <p className="text-2xl font-semibold tabular-nums" style={{ color: stat.color }}>{stat.value}</p>
+            {stat.subtitle && (
+              <p className="text-[10px] text-muted-foreground/30 font-light mt-0.5">{stat.subtitle}</p>
+            )}
           </motion.div>
         ))}
       </motion.div>

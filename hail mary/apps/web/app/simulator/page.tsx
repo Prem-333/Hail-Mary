@@ -7,10 +7,63 @@ import { Button } from "@workspace/ui/components/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select";
 import { Gauge } from "@workspace/ui/components/charts/gauge";
 import NumberFlow from "@number-flow/react";
-import { Zap, FlaskConical, ArrowRight, AlertTriangle, CheckCircle, RotateCcw } from "lucide-react";
+import { Zap, FlaskConical, ArrowRight, AlertTriangle, CheckCircle, RotateCcw, Brain, Eye, Rocket } from "lucide-react";
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data);
 const swrOpts = { revalidateOnFocus: false, dedupingInterval: 5000 };
+
+// SHAP feature bar — shows a single feature contribution
+function ShapBar({ name, value, maxAbs }: { name: string; value: number; maxAbs: number }) {
+  const isPos = value >= 0;
+  const pct = Math.min((Math.abs(value) / (maxAbs || 1)) * 100, 100);
+  const friendlyNames: Record<string, string> = {
+    "value_0h": "Baseline (0h reading)",
+    "value_24h": "Early measurement (24h)",
+    "drift_rate": "Drift velocity (0→24h)",
+    "lot_median": "Batch median reference",
+    "lot_mad": "Batch spread (MAD)",
+    "z_score": "Peer comparison z-score",
+  };
+  const displayName = friendlyNames[name] || name.replace(/_/g, " ");
+  return (
+    <div className="flex items-center gap-3">
+      <span className="text-xs text-muted-foreground/60 font-light w-44 shrink-0 text-right truncate" title={displayName}>
+        {displayName}
+      </span>
+      <div className="flex-1 flex items-center gap-1.5" style={{ height: 18 }}>
+        {/* Negative side */}
+        <div className="flex-1 flex justify-end">
+          {!isPos && (
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${pct}%` }}
+              transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
+              className="h-3.5 rounded-l-sm"
+              style={{ background: "oklch(0.7 0.05 250 / 70%)" }}
+            />
+          )}
+        </div>
+        {/* Center line */}
+        <div className="w-px h-4 bg-muted-foreground/20 shrink-0" />
+        {/* Positive side */}
+        <div className="flex-1">
+          {isPos && (
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${pct}%` }}
+              transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
+              className="h-3.5 rounded-r-sm"
+              style={{ background: "oklch(0.62 0.18 25 / 70%)" }}
+            />
+          )}
+        </div>
+      </div>
+      <span className={`text-xs font-mono tabular-nums w-16 text-right ${isPos ? 'text-destructive/70' : 'text-blue-400/70'}`}>
+        {isPos ? "+" : ""}{value.toFixed(4)}
+      </span>
+    </div>
+  );
+}
 
 export default function SimulatorPage() {
   const { data: lotsData } = useSWR(`${process.env.NEXT_PUBLIC_API_URL}/api/lots/`, fetcher, swrOpts);
@@ -27,7 +80,6 @@ export default function SimulatorPage() {
 
   const [formData, setFormData] = useState(defaultForm);
 
-  // Initialize lot_id from the API once data loads
   useEffect(() => {
     if (lotsData?.lots?.length > 0 && !formData.lot_id) {
       setFormData(prev => ({ ...prev, lot_id: lotsData.lots[0] }));
@@ -85,12 +137,33 @@ export default function SimulatorPage() {
 
   const inputClass = "w-full mt-1.5 px-3 py-2.5 rounded-lg text-sm transition-all focus:outline-none focus:ring-1 focus:ring-ring/40 bg-[oklch(0.09_0.004_260)] border border-border/40 placeholder:text-muted-foreground/40 tabular-nums";
 
+  // Build human-readable QA justification from result
+  function buildJustification(result: any): string[] {
+    if (!result) return [];
+    const lines: string[] = [];
+    for (const [param, data] of Object.entries(result.results) as [string, any][]) {
+      const unit = param.includes("leak") ? "µA" : "ns";
+      const paramLabel = param.includes("leak") ? "Leakage Current" : "Propagation Delay";
+      const ratio = data.threshold > 0 ? (data.implied_drift / data.threshold) : 1;
+      if (data.implied_drift > data.threshold) {
+        lines.push(
+          `${paramLabel}: Predicted drift rate ${data.implied_drift.toExponential(3)} ${unit}/h exceeds lot safety-slope threshold ${data.threshold.toExponential(3)} ${unit}/h by ${ratio.toFixed(1)}×.`
+        );
+      } else {
+        lines.push(
+          `${paramLabel}: Predicted drift rate ${data.implied_drift.toExponential(3)} ${unit}/h is within lot safety-slope threshold (${(ratio * 100).toFixed(0)}% of limit).`
+        );
+      }
+    }
+    return lines;
+  }
+
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="show" className="flex flex-col gap-5">
       <div className="mb-1">
         <h1 className="text-2xl font-semibold tracking-tight">Rejection Simulator</h1>
         <p className="text-sm text-muted-foreground/60 mt-1 font-light">
-          Enter early burn-in readings to predict 168h drift behaviour
+          Enter early burn-in readings to predict 168h drift behaviour — with full SHAP explainability
         </p>
       </div>
 
@@ -273,7 +346,7 @@ export default function SimulatorPage() {
                       <FlaskConical className="h-7 w-7 text-muted-foreground/30" />
                     </div>
                     <p className="text-foreground/80 text-base font-medium">Enter readings and run a simulation</p>
-                    <p className="text-muted-foreground/50 text-sm mt-1 font-light">Results will appear here</p>
+                    <p className="text-muted-foreground/50 text-sm mt-1 font-light">Results + SHAP explanation will appear here</p>
                   </motion.div>
                 )}
 
@@ -301,20 +374,27 @@ export default function SimulatorPage() {
                         )}
                         <div>
                           <h4 className="font-semibold text-sm">Safety-Slope Decision</h4>
-              <p className="text-xs text-muted-foreground/60 font-light">
-                {result.is_flagged
-                  ? "Drift rate exceeds lot threshold — component rejected"
-                  : "Drift rate within lot threshold — component passes"}
-              </p>
+                          <p className="text-xs text-muted-foreground/60 font-light">
+                            {result.is_flagged
+                              ? "Drift rate exceeds lot threshold — component rejected"
+                              : "Drift rate within lot threshold — component passes"}
+                          </p>
                         </div>
                       </div>
-                      <span className={`px-3 py-1.5 rounded-md text-xs font-bold ${
-                        result.is_flagged
+                      <div className="flex flex-col items-end gap-1.5">
+                        <span className={`px-3 py-1.5 rounded-md text-xs font-bold ${result.is_flagged
                           ? 'bg-destructive/20 text-destructive border border-destructive/30'
                           : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
-                      }`}>
-                        {result.is_flagged ? 'REJECT' : 'PASS'}
-                      </span>
+                        }`}>
+                          {result.is_flagged ? 'REJECT' : 'PASS'}
+                        </span>
+                        {result.is_flagged && (
+                          <div className="flex items-center gap-1 text-[10px] text-destructive/60">
+                            <Rocket className="w-2.5 h-2.5" />
+                            <span>Would fail in mission</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     {/* Gauge cards */}
@@ -323,6 +403,7 @@ export default function SimulatorPage() {
                         const percentOfThreshold = Math.min((data.implied_drift / data.threshold) * 100, 150);
                         const isDanger = data.implied_drift > data.threshold;
                         const unit = param.toLowerCase().includes('leak') ? 'µA/h' : 'ns/h';
+                        const ratio = data.threshold > 0 ? (data.implied_drift / data.threshold) : 1;
 
                         return (
                           <motion.div key={param} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
@@ -335,16 +416,16 @@ export default function SimulatorPage() {
                               {param.replace(/_/g, ' ')}
                             </h4>
                             <div className="h-[160px] flex justify-center items-center relative mb-4 mt-2">
-                              <Gauge 
-                                value={Math.min(percentOfThreshold, 100)} 
-                                enterTransition={{ stiffness: 100, damping: 25 }} 
+                              <Gauge
+                                value={Math.min(percentOfThreshold, 100)}
+                                enterTransition={{ stiffness: 100, damping: 25 }}
                                 enterStaggerScale={1.5}
                               />
                               <div className="absolute flex flex-col items-center top-[58%]">
                                 <span className={`text-xl font-bold tabular-nums leading-none ${isDanger ? 'text-destructive' : 'text-emerald-400'}`}>
-                                  <NumberFlow 
-                                    value={animateValues ? data.implied_drift : 0} 
-                                    format={{ minimumFractionDigits: 5, maximumFractionDigits: 5 }} 
+                                  <NumberFlow
+                                    value={animateValues ? data.implied_drift : 0}
+                                    format={{ minimumFractionDigits: 5, maximumFractionDigits: 5 }}
                                     willChange
                                     isolate
                                   />
@@ -352,9 +433,17 @@ export default function SimulatorPage() {
                                 <span className="text-xs text-muted-foreground/50 uppercase font-medium mt-1.5">{unit}</span>
                               </div>
                             </div>
-                            <div className="text-center mb-3 -mt-2">
+                            <div className="text-center mb-2 -mt-2">
                               <span className="text-xs text-muted-foreground/60">Drift Rate: {(data.implied_drift).toExponential(2)} {unit}</span>
                             </div>
+                            {/* Ratio badge */}
+                            {isDanger && (
+                              <div className="text-center mb-2">
+                                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-destructive/15 text-destructive/80 border border-destructive/25">
+                                  {ratio.toFixed(1)}× above lot threshold
+                                </span>
+                              </div>
+                            )}
                             <div className="mt-2 pt-2 border-t border-border/20 text-xs flex items-center justify-between">
                               <span className="text-muted-foreground/50 font-light">Lot threshold</span>
                               <span className="font-mono tabular-nums text-foreground/60">
@@ -383,6 +472,70 @@ export default function SimulatorPage() {
                         );
                       })}
                     </div>
+
+                    {/* QA Inspector Justification */}
+                    <div className="rounded-lg p-4" style={{
+                      background: "oklch(0.08 0.004 260)",
+                      border: "1px solid oklch(1 0 0 / 6%)",
+                    }}>
+                      <div className="flex items-center gap-2 mb-3">
+                        <Eye className="h-3.5 w-3.5 text-muted-foreground/50" />
+                        <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground/60">QA Inspector Justification</span>
+                      </div>
+                      <div className="space-y-2">
+                        {buildJustification(result).map((line, i) => (
+                          <div key={i} className="flex items-start gap-2">
+                            <span className="text-muted-foreground/40 mt-1 text-xs shrink-0">
+                              {result.is_flagged ? "⚠" : "✓"}
+                            </span>
+                            <p className="text-xs text-muted-foreground/70 font-light leading-relaxed">{line}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* SHAP Feature Attribution */}
+                    {result.shap && Object.keys(result.shap).length > 0 && (
+                      <div className="rounded-lg p-4" style={{
+                        background: "oklch(0.08 0.004 260)",
+                        border: "1px solid oklch(1 0 0 / 6%)",
+                      }}>
+                        <div className="flex items-center gap-2 mb-1">
+                          <Brain className="h-3.5 w-3.5 text-muted-foreground/50" />
+                          <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground/60">SHAP Feature Attribution</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground/35 font-light mb-4">
+                          Why the model predicted this drift — red bars push prediction up (more drift), blue bars push down (less drift)
+                        </p>
+                        <div className="space-y-4">
+                          {Object.entries(result.shap).map(([param, shapData]: [string, any]) => {
+                            const features: { feature: string; value: number }[] = shapData.features || [];
+                            const maxAbs = Math.max(...features.map((f: any) => Math.abs(f.value)), 0.0001);
+                            const sorted = [...features].sort((a, b) => Math.abs(b.value) - Math.abs(a.value));
+                            const paramLabel = param.includes("leak") ? "Leakage Current" : "Propagation Delay";
+                            return (
+                              <div key={param}>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <span className="text-xs font-semibold text-muted-foreground/70">{paramLabel}</span>
+                                  <span className="text-xs text-muted-foreground/30 font-light">
+                                    Base: {shapData.base_value?.toFixed(4)}
+                                  </span>
+                                </div>
+                                <div className="space-y-1.5">
+                                  {sorted.slice(0, 6).map((f: any) => (
+                                    <ShapBar key={f.feature} name={f.feature} value={f.value} maxAbs={maxAbs} />
+                                  ))}
+                                </div>
+                                <div className="flex items-center justify-between mt-2 text-[10px] text-muted-foreground/30">
+                                  <span>← reduces drift prediction</span>
+                                  <span>increases drift prediction →</span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>

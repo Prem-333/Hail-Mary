@@ -7,6 +7,7 @@ import { cn } from "@workspace/ui/lib/utils";
 import { Sidebar } from "@/components/sidebar";
 import { Header } from "@/components/header";
 import { AutoFullscreen } from "@/components/auto-fullscreen";
+import { InitialLoader } from "@/components/initial-loader";
 
 export const metadata: Metadata = {
   title: {
@@ -41,6 +42,7 @@ export default function RootLayout({
     >
       <body className="flex font-sans">
         <ThemeProvider>
+          <InitialLoader />
           <AutoFullscreen />
           <Sidebar />
           <div className="ml-[280px] w-[calc(100%-280px)] flex flex-col min-h-screen"
