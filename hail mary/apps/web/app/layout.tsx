@@ -10,11 +10,19 @@ import { AutoFullscreen } from "@/components/auto-fullscreen";
 import { InitialLoader } from "@/components/initial-loader";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("http://localhost:3000"),
   title: {
     default: "LATENT — Burn-In Screening · ISRO",
     template: "%s — LATENT",
   },
-  description: "AI-powered burn-in screening and anomaly detection system for ISRO spacecraft components.",
+  description: "AI-powered burn-in screening and anomaly detection system for ISRO spacecraft components. Catches latent defects that pass static datasheet limits using cohort-relative outlier detection and XGBoost drift prediction.",
+  keywords: ["burn-in screening", "semiconductor testing", "anomaly detection", "ISRO", "SIH 2026", "latent defects", "XGBoost", "SHAP", "AI QA"],
+  authors: [{ name: "LATENT Team — SIH 2026" }],
+  openGraph: {
+    title: "LATENT — AI Burn-In Screening for ISRO",
+    description: "Cohort-relative anomaly detection & drift prediction for spacecraft-grade semiconductor components.",
+    type: "website",
+  },
 };
 
 const fontSans = Plus_Jakarta_Sans({
