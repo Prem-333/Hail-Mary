@@ -89,14 +89,22 @@ export function Sidebar() {
         transition={{ duration: 0.5, delay: 0.3 }}
         className="mt-auto pt-4 border-t border-sidebar-border/30"
       >
-        <div className="px-6 pt-3">
-          <div className="glass-card rounded-lg px-3 py-2.5 flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/70" />
-            <p className="text-xs text-muted-foreground/70 uppercase tracking-[0.15em] font-medium">
-              ISRO · Burn-In Screening System
-            </p>
+        <div className="px-6 pt-3 space-y-2">
+            <div className="glass-card rounded-lg px-3 py-2.5 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/70" />
+              <p className="text-xs text-muted-foreground/70 uppercase tracking-[0.15em] font-medium">
+                System Operational
+              </p>
+            </div>
+            <div className="rounded-lg px-3 py-2 flex items-center justify-between"
+              style={{ background: "oklch(0.10 0.008 270 / 60%)", border: "1px solid oklch(0.4 0.06 270 / 20%)" }}
+            >
+              <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "oklch(0.65 0.10 270)" }}>
+                SIH 2026
+              </span>
+              <span className="text-[10px] text-muted-foreground/30 font-mono">v1.0.0</span>
+            </div>
           </div>
-        </div>
       </motion.div>
     </aside>
   );

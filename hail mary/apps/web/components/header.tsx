@@ -1,8 +1,30 @@
 'use client';
 import { motion } from "framer-motion";
-import { Shield } from "lucide-react";
+import { Shield, ChevronRight } from "lucide-react";
+import { usePathname } from "next/navigation";
+
+const PAGE_LABELS: Record<string, string> = {
+  "/": "Lot Overview",
+  "/components": "Component Deep-Dive",
+  "/monitor": "Sensor Monitor",
+  "/simulator": "Rejection Simulator",
+  "/evaluation": "Evaluation Summary",
+};
+
+function getPageLabel(pathname: string): string {
+  // Exact match first
+  if (PAGE_LABELS[pathname]) return PAGE_LABELS[pathname];
+  // Prefix match for dynamic routes like /components/[id]
+  for (const [key, label] of Object.entries(PAGE_LABELS)) {
+    if (key !== "/" && pathname.startsWith(key)) return label;
+  }
+  return "LATENT";
+}
 
 export function Header() {
+  const pathname = usePathname();
+  const pageLabel = getPageLabel(pathname);
+
   return (
     <motion.header 
       initial={{ opacity: 0, y: -10 }}
@@ -15,16 +37,30 @@ export function Header() {
         WebkitBackdropFilter: "blur(24px) saturate(1.4)",
       }}
     >
-      <div className="flex items-center gap-4">
-        <motion.h2 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.1 }}
-          className="text-xl font-bold tracking-tight text-foreground/90"
-          style={{ textShadow: "0 0 20px oklch(0.7 0.05 250 / 30%)" }}
+      <div className="flex items-center gap-3">
+        {/* Breadcrumb: LATENT > Page */}
+        <motion.div
+          key={pathname}
+          initial={{ opacity: 0, x: -6 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.3 }}
+          className="flex items-center gap-2"
         >
-          Burn-In Screening
-        </motion.h2>
+          <span
+            className="text-sm font-semibold tracking-tight"
+            style={{ color: "oklch(0.55 0.03 260)" }}
+          >
+            LATENT
+          </span>
+          <ChevronRight className="w-3.5 h-3.5" style={{ color: "oklch(0.40 0.02 260)" }} />
+          <h2
+            className="text-sm font-semibold tracking-tight text-foreground/90"
+            style={{ textShadow: "0 0 20px oklch(0.7 0.05 250 / 30%)" }}
+          >
+            {pageLabel}
+          </h2>
+        </motion.div>
+
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -32,12 +68,12 @@ export function Header() {
           className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-widest glass-card"
           style={{ color: "oklch(0.7 0.01 260)", background: "oklch(0.12 0.008 260)", border: "1px solid oklch(0.4 0.01 260 / 30%)" }}
         >
-          <Shield className="h-4 w-4" />
+          <Shield className="h-3.5 w-3.5" />
           ISRO
         </motion.div>
       </div>
       
-      {/* Right side: operator badge only — no cosmetic dead buttons */}
+      {/* Right side: operator badge */}
       <motion.div
         initial={{ opacity: 0, x: 10 }}
         animate={{ opacity: 1, x: 0 }}
