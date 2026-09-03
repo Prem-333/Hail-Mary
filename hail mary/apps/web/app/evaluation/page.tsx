@@ -160,9 +160,16 @@ export default function EvaluationSummary() {
     <motion.div variants={containerVariants} initial="hidden" animate="show" className="flex flex-col gap-6">
       {/* Page Header */}
       <motion.div variants={itemVariants}>
-        <h1 className="text-2xl font-semibold tracking-tight">Evaluation Summary</h1>
+        <div className="flex items-center gap-3 mb-1">
+          <h1 className="text-2xl font-semibold tracking-tight">Evaluation Summary</h1>
+          <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest"
+            style={{ background: "oklch(0.65 0.10 270 / 15%)", color: "oklch(0.65 0.10 270)", border: "1px solid oklch(0.65 0.10 270 / 30%)" }}
+          >
+            SIH 2026
+          </span>
+        </div>
         <p className="text-sm text-muted-foreground/60 mt-1 font-light">
-          Model performance scored against hackathon rubric — three evaluation criteria
+          System performance against SIH 2026 burn-in screening evaluation criteria — three graded rubric dimensions
         </p>
       </motion.div>
 

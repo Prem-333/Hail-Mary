@@ -103,8 +103,11 @@ export function InitialLoader() {
               className="text-center flex flex-col items-center"
             >
               <h1 className="text-6xl font-bold tracking-tight text-shimmer mb-2">LATENT</h1>
-              <p className="text-sm text-muted-foreground tracking-[0.2em] uppercase font-light mb-12">
+              <p className="text-sm text-muted-foreground tracking-[0.2em] uppercase font-light mb-1">
                 Burn-In AI · ISRO Screening
+              </p>
+              <p className="text-[10px] text-muted-foreground/40 tracking-[0.25em] uppercase font-light mb-12">
+                Smart India Hackathon · 2026
               </p>
             </motion.div>
 
@@ -117,7 +120,7 @@ export function InitialLoader() {
                 className="px-8 py-3 rounded-xl border border-emerald-500/30 text-emerald-500/90 hover:bg-emerald-500/10 hover:text-emerald-400 hover:border-emerald-400/50 uppercase tracking-widest text-xs font-medium transition-all duration-300 interactive-scale glass-card"
                 style={{ boxShadow: "0 0 20px oklch(0.65 0.12 160 / 10%)" }}
               >
-                Initialize System
+                Initialize Screening System
               </motion.button>
             ) : (
               <>

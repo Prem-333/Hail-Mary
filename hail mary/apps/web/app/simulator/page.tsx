@@ -108,7 +108,7 @@ export default function SimulatorPage() {
       setResult(res.data);
     } catch (err) {
       console.error(err);
-      setError("Failed to run simulation. Is the backend running?");
+      setError("Simulation failed. Ensure the FastAPI backend is running on port 8000.");
     } finally {
       setLoading(false);
     }

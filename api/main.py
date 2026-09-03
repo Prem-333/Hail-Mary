@@ -12,7 +12,15 @@ if str(PROJECT_ROOT) not in sys.path:
 from api.routers import lots, components, simulation, evaluation, streaming
 from api.dependencies import load_system
 
-app = FastAPI(title="Burn-In Screening API")
+app = FastAPI(
+    title="LATENT \u2014 Burn-In Screening API",
+    version="1.0.0",
+    description=(
+        "AI-powered burn-in screening and anomaly detection for ISRO spacecraft-grade "
+        "semiconductor components. Cohort-relative outlier detection (MAD + Isolation Forest) "
+        "and XGBoost drift prediction with SHAP explainability. Built for SIH 2026."
+    ),
+)
 
 # Configure CORS
 app.add_middleware(
