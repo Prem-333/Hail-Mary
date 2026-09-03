@@ -169,12 +169,12 @@ export default function LotOverview() {
         <div className="glass-card rounded-2xl p-6">
           {/* Chart header + filter controls */}
           <div className="flex items-center justify-between mb-4">
-<div>
-               <h3 className="text-base font-medium">Parametric Scatter</h3>
-               <p className="text-xs text-muted-foreground/40 mt-0.5 font-light">
-                 Anomaly distribution by leakage & delay — {allComponents.length} components
-               </p>
-             </div>
+            <div>
+              <h3 className="text-base font-medium">Parametric Scatter</h3>
+              <p className="text-xs text-muted-foreground/40 mt-0.5 font-light">
+                Anomaly distribution by leakage &amp; delay — {allComponents.length} components
+              </p>
+            </div>
 
             {/* Filter toggles */}
             <div className="flex items-center gap-1 p-1 rounded-xl" style={{ background: "oklch(0.10 0.003 260)" }}>
@@ -453,16 +453,14 @@ export default function LotOverview() {
               </tbody>
             </table>
           </div>
-          {tableData.length > TABLE_LIMIT && (
-            <div className="px-6 py-3 border-t border-border/5 text-center">
-              <button
-                onClick={() => router.push("/components")}
-                className="text-xs text-muted-foreground/50 uppercase tracking-widest font-medium hover:text-foreground/60 transition-colors"
-              >
-                View all {tableData.length} components →
-              </button>
-            </div>
-          )}
+          <div className="px-6 py-2 border-t border-border/5 flex items-center gap-2">
+            <span className="text-[10px] text-muted-foreground/30 font-light uppercase tracking-widest">
+              Static datasheet limits:
+            </span>
+            <span className="text-[10px] font-mono text-muted-foreground/25">
+              Leakage &lt; 50&nbsp;µA&nbsp;·&nbsp;Delay &lt; 18&nbsp;ns — LATENT catches outliers that pass these limits
+            </span>
+          </div>
         </div>
       </motion.div>
     </motion.div>

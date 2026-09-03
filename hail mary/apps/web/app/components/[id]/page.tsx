@@ -1,10 +1,11 @@
 'use client';
+import { useEffect } from "react";
 import useSWR from "swr";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Button } from "@workspace/ui/components/button";
-import { ArrowLeft, AlertTriangle, CheckCircle, TrendingUp, Eye } from "lucide-react";
+import { ArrowLeft, AlertTriangle, CheckCircle, TrendingUp, Eye, Sparkles } from "lucide-react";
 import { Gauge } from "@workspace/ui/components/charts/gauge";
 import { LineChart } from "@/components/charts/line-chart";
 import { Line } from "@/components/charts/line";
@@ -26,6 +27,11 @@ export default function ComponentDeepDive() {
   const { id } = useParams();
   const router = useRouter();
   const { data, isLoading, error } = useSWR(`${process.env.NEXT_PUBLIC_API_URL}/api/components/${id}`, fetcher, swrOpts);
+
+  useEffect(() => {
+    if (id) document.title = `Component ${id} — LATENT`;
+    return () => { document.title = "LATENT — Burn-In Screening · ISRO"; };
+  }, [id]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -243,8 +249,8 @@ export default function ComponentDeepDive() {
               {/* Justification */}
               <div>
                 <div className="flex items-center gap-1.5 mb-3">
-                  <Eye className="w-3 h-3 text-muted-foreground/40" />
-                  <h4 className="font-semibold text-xs text-muted-foreground/60 uppercase tracking-widest">Justification</h4>
+                  <AlertTriangle className="w-3 h-3 text-muted-foreground/40" />
+                  <h4 className="font-semibold text-xs text-muted-foreground/60 uppercase tracking-widest">Why Flagged</h4>
                 </div>
                 <div className="bg-muted/20 p-4 rounded-xl border border-border/20 space-y-2.5">
                   {parseJustification(anomaly.justification || "").length > 0 ? (
@@ -366,7 +372,7 @@ export default function ComponentDeepDive() {
           border: "1px solid oklch(1 0 0 / 6%)",
         }}>
           <div className="flex items-center gap-2 mb-4">
-            <Eye className="w-4 h-4 text-muted-foreground/50" />
+            <Sparkles className="w-4 h-4 text-muted-foreground/50" />
             <h3 className="text-base font-semibold">Final AI Assessment</h3>
           </div>
           <div className="space-y-3">
