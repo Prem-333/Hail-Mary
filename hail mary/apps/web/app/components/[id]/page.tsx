@@ -111,6 +111,27 @@ export default function ComponentDeepDive() {
         </div>
       </motion.div>
 
+      {/* AI Assessment */}
+      <motion.div variants={itemVariants}>
+        <div className="rounded-xl p-6" style={{
+          background: "linear-gradient(135deg, var(--card) 0%, oklch(0.09 0.004 260) 100%)",
+          border: "1px solid oklch(1 0 0 / 6%)",
+        }}>
+          <div className="flex items-center gap-2 mb-4">
+            <Sparkles className="w-4 h-4 text-muted-foreground/50" />
+            <h3 className="text-base font-semibold">AI Disposition Summary</h3>
+          </div>
+          <div className="space-y-3">
+            {parseJustification(report.recommendation_text || "").map((point, idx) => (
+              <div key={idx} className="flex items-start gap-3">
+                <span className="text-muted-foreground/50 mt-2 text-xs shrink-0">•</span>
+                <p className="text-sm leading-relaxed text-foreground/80 flex-1 font-light">{point}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+
       {/* Parametric Trajectory */}
       <motion.div variants={itemVariants}>
         <div className="rounded-xl p-6" style={{
@@ -155,7 +176,7 @@ export default function ComponentDeepDive() {
                     background: "oklch(0.09 0.004 260)",
                     border: "1px solid oklch(1 0 0 / 6%)",
                   }}>
-                    <LineChart data={chartData} xDataKey="time" margin={{ top: 20, right: 30, bottom: 30, left: 50 }}>
+                    <LineChart data={chartData} xDataKey="time" margin={{ top: 20, right: 30, bottom: 30, left: 75 }}>
                       <Grid horizontal />
                       {/* Batch envelope */}
                       <Line dataKey="hi" stroke="oklch(1 0 0 / 8%)" strokeWidth={1} />
@@ -165,7 +186,7 @@ export default function ComponentDeepDive() {
                       {/* This component */}
                       <Line dataKey="val" stroke="var(--chart-1)" strokeWidth={2.5} />
                       <XAxis numTicks={4} />
-                      <YAxis formatValue={(v: number) => `${v.toFixed(1)}`} />
+                      <YAxis formatValue={(v: number) => `${v.toFixed(1)} ${unit}`} />
                       <ChartTooltip />
                     </LineChart>
                   </div>
@@ -365,26 +386,6 @@ export default function ComponentDeepDive() {
         </motion.div>
       </div>
 
-      {/* Final Assessment */}
-      <motion.div variants={itemVariants}>
-        <div className="rounded-xl p-6" style={{
-          background: "linear-gradient(135deg, var(--card) 0%, oklch(0.09 0.004 260) 100%)",
-          border: "1px solid oklch(1 0 0 / 6%)",
-        }}>
-          <div className="flex items-center gap-2 mb-4">
-            <Sparkles className="w-4 h-4 text-muted-foreground/50" />
-            <h3 className="text-base font-semibold">Final AI Assessment</h3>
-          </div>
-          <div className="space-y-3">
-            {parseJustification(report.recommendation_text || "").map((point, idx) => (
-              <div key={idx} className="flex items-start gap-3">
-                <span className="text-muted-foreground/50 mt-2 text-xs shrink-0">•</span>
-                <p className="text-sm leading-relaxed text-foreground/80 flex-1 font-light">{point}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </motion.div>
     </motion.div>
   );
 }
