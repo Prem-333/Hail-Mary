@@ -102,7 +102,7 @@ export function ScatterChart({
     top: marginProp?.top ?? 32,
     right: marginProp?.right ?? 32,
     bottom: marginProp?.bottom ?? 52,
-    left: marginProp?.left ?? 16,
+    left: marginProp?.left ?? 64,
   };
 
   const width = bounds.width || 1;
@@ -331,10 +331,10 @@ export function XAxis({ tickCount = 4, formatTick }: XAxisProps) {
           <text
             key={i}
             x={x}
-            y={32}
+            y={20}
             textAnchor="middle"
-            fill="rgba(255,255,255,0.3)"
-            fontSize={12}
+            fill="rgba(255,255,255,0.4)"
+            fontSize={11}
             fontFamily="inherit"
             fontWeight={500}
           >
@@ -372,11 +372,11 @@ export function YAxis({ tickCount = 5, formatTick }: YAxisProps) {
       {ticks.map((t: number) => (
         <text
           key={t}
-          x={-8}
+          x={-12}
           y={yScale(t)}
           dy="0.35em"
           textAnchor="end"
-          fill="rgba(255,255,255,0.25)"
+          fill="rgba(255,255,255,0.4)"
           fontSize={11}
           fontFamily="inherit"
         >

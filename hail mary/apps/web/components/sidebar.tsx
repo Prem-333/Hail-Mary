@@ -100,7 +100,7 @@ export function Sidebar() {
               style={{ background: "oklch(0.10 0.008 270 / 60%)", border: "1px solid oklch(0.4 0.06 270 / 20%)" }}
             >
               <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "oklch(0.65 0.10 270)" }}>
-                SIH 2026
+                LATENT
               </span>
               <span className="text-[10px] text-muted-foreground/30 font-mono">v1.0.0</span>
             </div>

@@ -165,11 +165,11 @@ export default function EvaluationSummary() {
           <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest"
             style={{ background: "oklch(0.65 0.10 270 / 15%)", color: "oklch(0.65 0.10 270)", border: "1px solid oklch(0.65 0.10 270 / 30%)" }}
           >
-            SIH 2026
+            LATENT
           </span>
         </div>
         <p className="text-sm text-muted-foreground/60 mt-1 font-light">
-          System performance against SIH 2026 burn-in screening evaluation criteria — three graded rubric dimensions
+          System performance against burn-in screening evaluation criteria — three graded rubric dimensions
         </p>
       </motion.div>
 

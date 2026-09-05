@@ -16,8 +16,8 @@ export const metadata: Metadata = {
     template: "%s — LATENT",
   },
   description: "AI-powered burn-in screening and anomaly detection system for ISRO spacecraft components. Catches latent defects that pass static datasheet limits using cohort-relative outlier detection and XGBoost drift prediction.",
-  keywords: ["burn-in screening", "semiconductor testing", "anomaly detection", "ISRO", "SIH 2026", "latent defects", "XGBoost", "SHAP", "AI QA"],
-  authors: [{ name: "LATENT Team — SIH 2026" }],
+  keywords: ["burn-in screening", "semiconductor testing", "anomaly detection", "ISRO", "latent defects", "XGBoost", "SHAP", "AI QA"],
+  authors: [{ name: "LATENT Team" }],
   openGraph: {
     title: "LATENT — AI Burn-In Screening for ISRO",
     description: "Cohort-relative anomaly detection & drift prediction for spacecraft-grade semiconductor components.",

@@ -369,7 +369,7 @@ export default function SensorMonitor() {
                   />
                   <ChartTooltip showDatePill={false} />
                   <LiveXAxis />
-                  <LiveYAxis position="left" formatValue={(v) => `${v.toFixed(2)}`} />
+                  <LiveYAxis position="left" formatValue={(v) => `${v.toFixed(1)} µA`} />
                   <LiveThresholdLine threshold={LEAKAGE_LIMIT} label={`Limit ${LEAKAGE_LIMIT} µA`} />
                 </LiveLineChart>
               ) : (
@@ -457,7 +457,7 @@ export default function SensorMonitor() {
                   />
                   <ChartTooltip showDatePill={false} />
                   <LiveXAxis />
-                  <LiveYAxis position="left" formatValue={(v) => `${v.toFixed(3)}`} />
+                  <LiveYAxis position="left" formatValue={(v) => `${v.toFixed(3)} ns`} />
                   <LiveThresholdLine threshold={DELAY_LIMIT} label={`Limit ${DELAY_LIMIT} ns`} />
                 </LiveLineChart>
               ) : (

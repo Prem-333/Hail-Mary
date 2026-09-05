@@ -273,8 +273,8 @@ export default function LotOverview() {
                 >
                   <Grid horizontal vertical />
 
-                  <XAxis formatTick={(v) => `${Number(v).toFixed(1)}`} />
-                  <YAxis formatTick={(v) => `${Number(v).toFixed(2)}`} />
+                  <XAxis formatTick={(v) => `${Number(v).toFixed(1)} µA`} />
+                  <YAxis formatTick={(v) => `${Number(v).toFixed(2)} ns`} />
 
                   {/* Normal series — grey offset ring style */}
                   {showNormal && (
