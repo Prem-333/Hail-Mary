@@ -176,7 +176,12 @@ export default function ComponentDeepDive() {
                     background: "oklch(0.09 0.004 260)",
                     border: "1px solid oklch(1 0 0 / 6%)",
                   }}>
-                    <LineChart data={chartData} xDataKey="time" margin={{ top: 20, right: 30, bottom: 30, left: 75 }}>
+                    <LineChart
+                      data={chartData}
+                      xDataKey="time"
+                      margin={{ top: 16, right: 20, bottom: 40, left: 75 }}
+                      dateLabels={["0h", "24h", "96h", "168h"]}
+                    >
                       <Grid horizontal />
                       {/* Batch envelope */}
                       <Line dataKey="hi" stroke="oklch(1 0 0 / 8%)" strokeWidth={1} />

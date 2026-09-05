@@ -61,6 +61,8 @@ export interface LineChartProps {
   style?: CSSProperties;
   /** Fires when the internal chart phase changes (e.g. OG capture readiness). */
   onPhaseChange?: (phase: ChartPhase) => void;
+  /** Optional override for X-axis tick labels (e.g. ["0h", "24h", "96h", "168h"]). */
+  dateLabels?: string[];
   /** Child components (Line, Grid, ChartTooltip, etc.) */
   children: ReactNode;
 }
@@ -157,6 +159,7 @@ interface ChartInnerProps {
   children: ReactNode;
   containerRef: React.RefObject<HTMLDivElement | null>;
   onPhaseChange: (phase: ChartPhase) => void;
+  dateLabels?: string[];
 }
 
 function ChartInner({
@@ -179,6 +182,7 @@ function ChartInner({
   children,
   containerRef,
   onPhaseChange,
+  dateLabels,
 }: ChartInnerProps) {
   const lines = useMemo(() => extractLineConfigs(children), [children]);
 
@@ -204,6 +208,7 @@ function ChartInner({
       xDomainSlotCount={xDomainSlotCount}
       yDomainTween={yDomainTween}
       yDomainTweenDuration={yDomainTweenDuration}
+      dateLabels={dateLabels}
     >
       {children}
     </TimeSeriesChartInner>
@@ -229,6 +234,7 @@ export function LineChart({
   tweenYDomainOnXDomainChange = false,
   style,
   onPhaseChange,
+  dateLabels,
   children,
 }: LineChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -283,6 +289,7 @@ export function LineChart({
             xDomainSlotCount={xDomainSlotCount}
             yDomainTween={yDomainTween}
             yDomainTweenDuration={yDomainTweenDuration}
+            dateLabels={dateLabels}
           >
             {children}
           </ChartInner>

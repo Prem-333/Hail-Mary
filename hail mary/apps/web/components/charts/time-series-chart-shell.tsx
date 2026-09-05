@@ -166,6 +166,8 @@ export interface TimeSeriesChartInnerProps {
   /** Tween y-domain when the visible x-range changes during the ready phase. */
   tweenYDomainOnXDomainChange?: boolean;
   onPhaseChange?: (phase: ChartPhase) => void;
+  /** Optional override for X-axis tick labels (e.g. ["0h", "24h", "96h", "168h"]). */
+  dateLabels?: string[];
 }
 
 export function TimeSeriesChartInner(props: TimeSeriesChartInnerProps) {
@@ -206,6 +208,7 @@ const TimeSeriesChartCore = memo(function TimeSeriesChartCore({
   xDomainSlotCount,
   tweenYDomainOnXDomainChange = false,
   onPhaseChange,
+  dateLabels: dateLabelsOverride,
 }: TimeSeriesChartInnerProps) {
   const staticPreview = useStaticChartPreview();
   const innerWidth = width - margin.left - margin.right;
@@ -399,8 +402,8 @@ const TimeSeriesChartCore = memo(function TimeSeriesChartCore({
   );
 
   const dateLabels = useMemo(
-    () => visiblePlotData.map((d) => shortDateFmt.format(xAccessor(d))),
-    [visiblePlotData, xAccessor]
+    () => dateLabelsOverride ?? visiblePlotData.map((d) => shortDateFmt.format(xAccessor(d))),
+    [dateLabelsOverride, visiblePlotData, xAccessor]
   );
 
   const canInteract = isLoaded && isChartInteractionPhase(chartPhase);
