@@ -270,6 +270,9 @@ export default function LotOverview() {
                     if (filter === "anomalous") return !!row.is_anomalous;
                     return !row.is_anomalous;
                   }}
+                  onRowClick={(row: any) => {
+                    if (row.component_id) router.push(`/components/${row.component_id}`);
+                  }}
                 >
                   <Grid horizontal vertical />
 
@@ -349,6 +352,9 @@ export default function LotOverview() {
                               </span>
                             </div>
                           )}
+                          <div style={{ marginTop: 8, paddingTop: 6, borderTop: '1px solid rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.3)', fontSize: 10, textAlign: 'center', letterSpacing: '0.05em' }}>
+                            Click to open deep-dive →
+                          </div>
                         </div>
                       );
                     }}

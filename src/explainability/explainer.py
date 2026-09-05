@@ -384,6 +384,7 @@ class BurnInExplainer:
         flag_row = self.flags_df[self.flags_df["component_id"] == component_id]
 
         drift_section = {"per_parameter": {}}
+        safety_slopes = self.predictor._compute_safety_slopes()
         for param in PARAM_DISPLAY:
             pred_row = predictions[predictions["param_name"] == param]
             if pred_row.empty:
@@ -397,11 +398,18 @@ class BurnInExplainer:
 
             shap_expl = self.get_shap_explanation(component_id, param)
 
+            # Compute per-param implied drift and safety slope
+            value_0h = self._get_value(comp_data, param, "value_0h")
+            implied_drift = round((predicted_xgb - value_0h) / 168.0, 6) if value_0h is not None else None
+            safety_slope = round(float(safety_slopes.get(lot_id, {}).get(param, 0)), 6)
+
             drift_section["per_parameter"][param] = {
                 "predicted_168h_xgb": round(predicted_xgb, 2),
                 "predicted_168h_linear": round(predicted_lr, 2),
                 "actual_168h": round(actual_168h, 2) if actual_168h else None,
                 "residual": round(residual, 2) if residual else None,
+                "implied_drift": implied_drift,
+                "safety_slope": safety_slope,
                 "shap": shap_expl,
             }
 

@@ -81,6 +81,7 @@ export interface ScatterChartProps {
   margin?: Partial<Margin>;
   aspectRatio?: string;
   isInteractable?: (row: Record<string, unknown>) => boolean;
+  onRowClick?: (row: Record<string, unknown>) => void;
   children?: ReactNode;
 }
 
@@ -91,6 +92,7 @@ export function ScatterChart({
   animationDuration = 1100,
   aspectRatio = "2 / 1",
   isInteractable,
+  onRowClick,
   children,
 }: ScatterChartProps) {
   const [ref, bounds] = useMeasure();
@@ -204,6 +206,21 @@ export function ScatterChart({
     }
   };
 
+  const handleClick = (e: React.MouseEvent<SVGRectElement>) => {
+    if (!onRowClick) return;
+    const svgRect = e.currentTarget.getBoundingClientRect();
+    const mouseX = e.clientX - svgRect.left;
+    let closestIdx = -1;
+    let closestDist = Infinity;
+    data.forEach((row, i) => {
+      if (isInteractable && !isInteractable(row)) return;
+      const px = (xScale as (v: unknown) => number)(row[xDataKey]);
+      const dist = Math.abs(px - mouseX);
+      if (dist < closestDist) { closestDist = dist; closestIdx = i; }
+    });
+    if (closestIdx !== -1) onRowClick(data[closestIdx]!);
+  };
+
   return (
     <div
       ref={ref}
@@ -236,7 +253,8 @@ export function ScatterChart({
                 fill="transparent"
                 onMouseMove={handleMouseMove}
                 onMouseLeave={() => setActiveIndex(null)}
-                style={{ cursor: "crosshair" }}
+                onClick={handleClick}
+                style={{ cursor: onRowClick ? "pointer" : "crosshair" }}
               />
             </g>
           </svg>

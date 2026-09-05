@@ -124,7 +124,7 @@ export default function ComponentDeepDive() {
           <div className="space-y-3">
             {parseJustification(report.recommendation_text || "").map((point, idx) => (
               <div key={idx} className="flex items-start gap-3">
-                <span className="text-muted-foreground/50 mt-2 text-xs shrink-0">•</span>
+                <span className="text-muted-foreground/70 mt-2 text-xs shrink-0">•</span>
                 <p className="text-sm leading-relaxed text-foreground/80 flex-1 font-light">{point}</p>
               </div>
             ))}
@@ -141,7 +141,7 @@ export default function ComponentDeepDive() {
           <div className="flex items-center gap-2 mb-5">
             <TrendingUp className="w-4 h-4 text-muted-foreground/50" />
             <h3 className="text-base font-semibold">Parametric Trajectory</h3>
-            <span className="text-xs text-muted-foreground/40 font-light">— vs batch envelope (±2 MAD)</span>
+            <span className="text-xs text-muted-foreground/60 font-light">— vs batch envelope (±2 MAD)</span>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {Object.entries(trajectories).map(([param, tr]: [string, any]) => {
@@ -165,7 +165,7 @@ export default function ComponentDeepDive() {
               return (
                 <div key={param}>
                   <div className="flex items-center justify-between mb-2">
-                    <h4 className="text-xs font-semibold text-muted-foreground/70 uppercase tracking-widest">{label}</h4>
+                    <h4 className="text-xs font-semibold text-muted-foreground/90 uppercase tracking-widest">{label}</h4>
                     {isOutlier && (
                       <span className="text-[10px] px-2 py-0.5 rounded-full bg-destructive/10 text-destructive/70 border border-destructive/20 font-medium">
                         {deviation > 0 ? "+" : ""}{deviation.toFixed(0)}% vs batch median
@@ -195,7 +195,7 @@ export default function ComponentDeepDive() {
                       <ChartTooltip />
                     </LineChart>
                   </div>
-                  <div className="flex items-center gap-4 mt-2 text-[10px] text-muted-foreground/40">
+                  <div className="flex items-center gap-4 mt-2 text-[11px] text-muted-foreground/70">
                     <div className="flex items-center gap-1.5">
                       <div className="w-4 h-0.5 rounded" style={{ background: "var(--chart-1)" }} />
                       <span>This component</span>
@@ -249,7 +249,8 @@ export default function ComponentDeepDive() {
                     {anomaly.is_anomalous ? 'ANOMALOUS' : 'Normal'}
                   </p>
                   <p className="text-xs text-muted-foreground/70 mt-0.5">
-                    Score: <span className="font-mono tabular-nums">{anomaly.anomaly_score?.toFixed(1) || '0.0'}</span> / 25
+                    Score: <span className="font-mono tabular-nums">{anomaly.anomaly_score?.toFixed(2) || '0.00'}</span>
+                    <span className="text-muted-foreground/40 ml-1">(z-score)</span>
                   </p>
                 </div>
               </div>
