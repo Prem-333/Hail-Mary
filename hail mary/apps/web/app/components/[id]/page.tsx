@@ -5,7 +5,7 @@ import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Button } from "@workspace/ui/components/button";
-import { ArrowLeft, AlertTriangle, CheckCircle, TrendingUp, Sparkles, ShieldX, ShieldCheck, ShieldAlert } from "lucide-react";
+import { ArrowLeft, AlertTriangle, CheckCircle, TrendingUp, Brain, ShieldX, ShieldCheck, ShieldAlert } from "lucide-react";
 import { Gauge } from "@workspace/ui/components/charts/gauge";
 import { LineChart } from "@/components/charts/line-chart";
 import { Line } from "@/components/charts/line";
@@ -206,7 +206,7 @@ export default function ComponentDeepDive() {
           border: "1px solid oklch(1 0 0 / 6%)",
         }}>
           <div className="flex items-center gap-2 mb-4">
-            <Sparkles className="w-4 h-4 text-muted-foreground/50" />
+            <Brain className="w-4 h-4 text-muted-foreground/50" />
             <h3 className="text-base font-semibold">SHAP Explanation</h3>
           </div>
           <div className="space-y-3">
