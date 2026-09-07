@@ -207,7 +207,7 @@ export default function ComponentDeepDive() {
         }}>
           <div className="flex items-center gap-2 mb-4">
             <Sparkles className="w-4 h-4 text-muted-foreground/50" />
-            <h3 className="text-base font-semibold">AI Disposition Summary</h3>
+            <h3 className="text-base font-semibold">SHAP Explanation</h3>
           </div>
           <div className="space-y-3">
             {parseJustification(report.recommendation_text || "").map((point, idx) => (
@@ -244,7 +244,7 @@ export default function ComponentDeepDive() {
               }));
 
               const unit = param.includes("leak") ? "µA" : "ns";
-              const label = param.includes("leak") ? "Leakage Current (µA)" : "Propagation Delay (ns)";
+              const label = param.includes("leak") ? "Iddq / Leakage Current (µA)" : "Propagation Delay (ns)";
               const finalVal = tr.values[3];
               const finalMed = tr.envelope.meds[3];
               const deviation = finalMed > 0 ? ((finalVal - finalMed) / finalMed * 100) : 0;

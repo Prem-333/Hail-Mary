@@ -326,7 +326,7 @@ export default function SensorMonitor() {
           <div className="glass-card rounded-2xl overflow-hidden">
             <div className="p-5 border-b border-border/5 flex items-center justify-between">
               <div>
-                <h3 className="text-base font-medium">Leakage Current</h3>
+                <h3 className="text-base font-medium">Iddq / Leakage Current</h3>
                 <p className="text-xs text-muted-foreground/40 mt-0.5 font-light">
                   µA · Limit: {LEAKAGE_LIMIT.toFixed(1)} µA (MIL-STD datasheet)
                 </p>

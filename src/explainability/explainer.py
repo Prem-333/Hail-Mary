@@ -57,7 +57,7 @@ from src.drift_prediction.predictor import FEATURE_NAMES, DriftPredictor
 # ---------------------------------------------------------------------------
 
 PARAM_DISPLAY = {
-    "leakage_current_uA": {"name": "Leakage Current", "unit": "\u00b5A", "unit_ascii": "uA"},
+    "leakage_current_uA": {"name": "Iddq / Leakage Current", "unit": "\u00b5A", "unit_ascii": "uA"},
     "propagation_delay_ns": {"name": "Propagation Delay", "unit": "ns", "unit_ascii": "ns"},
 }
 

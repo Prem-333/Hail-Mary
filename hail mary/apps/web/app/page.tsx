@@ -365,7 +365,7 @@ export default function LotOverview() {
 
             {/* X-axis label */}
             <div className="text-center text-xs text-muted-foreground/40 uppercase tracking-widest font-medium mt-1">
-              Leakage Current (µA)
+              Iddq / Leakage Current (µA)
             </div>
           </div>
         </div>

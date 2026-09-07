@@ -143,7 +143,7 @@ export default function SimulatorPage() {
     const lines: string[] = [];
     for (const [param, data] of Object.entries(result.results) as [string, any][]) {
       const unit = param.includes("leak") ? "µA" : "ns";
-      const paramLabel = param.includes("leak") ? "Leakage Current" : "Propagation Delay";
+      const paramLabel = param.includes("leak") ? "Iddq / Leakage Current" : "Propagation Delay";
       const ratio = data.threshold > 0 ? (data.implied_drift / data.threshold) : 1;
       if (data.implied_drift > data.threshold) {
         lines.push(
@@ -205,7 +205,7 @@ export default function SimulatorPage() {
                 <div className="flex items-center gap-2 mb-3">
                   <Zap className="h-3 w-3 text-muted-foreground/40" />
                   <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">
-                    Leakage Current (&micro;A)
+                    Iddq / Leakage Current (&micro;A)
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
@@ -512,7 +512,7 @@ export default function SimulatorPage() {
                             const features: { feature: string; value: number }[] = shapData.features || [];
                             const maxAbs = Math.max(...features.map((f: any) => Math.abs(f.value)), 0.0001);
                             const sorted = [...features].sort((a, b) => Math.abs(b.value) - Math.abs(a.value));
-                            const paramLabel = param.includes("leak") ? "Leakage Current" : "Propagation Delay";
+                            const paramLabel = param.includes("leak") ? "Iddq / Leakage Current" : "Propagation Delay";
                             return (
                               <div key={param}>
                                 <div className="flex items-center gap-3 mb-3 pl-[3.5rem]">
