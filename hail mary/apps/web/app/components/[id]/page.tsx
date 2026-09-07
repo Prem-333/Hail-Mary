@@ -5,7 +5,7 @@ import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Button } from "@workspace/ui/components/button";
-import { ArrowLeft, AlertTriangle, CheckCircle, TrendingUp, Eye, Sparkles } from "lucide-react";
+import { ArrowLeft, AlertTriangle, CheckCircle, TrendingUp, Sparkles, ShieldX, ShieldCheck, ShieldAlert } from "lucide-react";
 import { Gauge } from "@workspace/ui/components/charts/gauge";
 import { LineChart } from "@/components/charts/line-chart";
 import { Line } from "@/components/charts/line";
@@ -67,47 +67,135 @@ export default function ComponentDeepDive() {
   const anomaly = report.anomaly || {};
   const drift = report.drift || {};
 
-  // Compute drift ratio for the most-flagged parameter
-  const driftRatioText = (() => {
-    if (!drift.per_parameter) return null;
+  // Compute worst drift ratio for Module B gauge
+  const worstDriftData = (() => {
+    if (!drift.per_parameter) return { ratio: 0, label: "Drift Ratio", isFlagged: false };
     let worstRatio = 0;
-    let worstLabel = "";
+    let worstLabel = "Drift Ratio";
     for (const [param, pinfo] of Object.entries(drift.per_parameter) as [string, any][]) {
       if (pinfo.implied_drift && pinfo.safety_slope) {
         const ratio = pinfo.implied_drift / pinfo.safety_slope;
         if (ratio > worstRatio) {
           worstRatio = ratio;
-          worstLabel = param.includes("leak") ? "Leakage" : "Delay";
+          worstLabel = param.includes("leak") ? "Leakage Drift" : "Delay Drift";
         }
       }
     }
-    if (worstRatio > 1) return `${worstLabel} drift rate is ${worstRatio.toFixed(1)}× above lot safety-slope threshold`;
+    return { ratio: worstRatio, label: worstLabel, isFlagged: drift.flagged_for_rejection };
+  })();
+
+  const driftRatioText = (() => {
+    const { ratio, label, isFlagged } = worstDriftData;
+    if (isFlagged && ratio > 1)
+      return `${label} rate is ${ratio.toFixed(1)}× above lot safety-slope threshold`;
     return null;
   })();
 
+  // Final verdict config
+  const isRejected = report.recommendation === 'REJECT';
+  const isAccepted = report.recommendation === 'ACCEPT';
+
+  const verdictConfig = isRejected
+    ? {
+        Icon: ShieldX,
+        color: "text-destructive",
+        bg: "bg-destructive/10",
+        border: "border-destructive/30",
+        glow: "oklch(0.62 0.18 25 / 15%)",
+        label: "REJECTED",
+        sublabel: "This component must not be cleared for space-grade deployment.",
+      }
+    : !isAccepted
+    ? {
+        Icon: ShieldAlert,
+        color: "text-amber-400",
+        bg: "bg-amber-500/10",
+        border: "border-amber-500/30",
+        glow: "oklch(0.84 0.16 84 / 12%)",
+        label: "MANUAL REVIEW",
+        sublabel: "Borderline anomaly — a domain expert must inspect before certifying.",
+      }
+    : {
+        Icon: ShieldCheck,
+        color: "text-emerald-400",
+        bg: "bg-emerald-500/10",
+        border: "border-emerald-500/30",
+        glow: "oklch(0.65 0.19 150 / 12%)",
+        label: "CLEARED",
+        sublabel: "No anomalous signals detected. Component meets all screening criteria.",
+      };
+
   return (
-    <motion.div variants={containerVariants} initial="hidden" animate="show" className="flex flex-col gap-6">
+    <motion.div variants={containerVariants} initial="hidden" animate="show" className="flex flex-col gap-6 pb-10">
       {/* Back + Header */}
       <motion.div variants={itemVariants} className="flex items-center gap-4 mb-1">
-        <Button variant="outline" size="icon" onClick={() => router.back()} className="border-border/50 hover:bg-accent/40">
+        <Button variant="outline" size="icon" onClick={() => router.back()} className="border-border/50 hover:bg-accent/40 shrink-0">
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Component: {data.component_id}</h1>
-          <p className="text-sm text-muted-foreground">
-            Lot: {data.lot_id} · Ground truth: <span className="font-medium text-foreground/70">{data.defect_type}</span>
+        <div className="flex-1 min-w-0">
+          <h1 className="text-2xl font-bold tracking-tight truncate">Component: {data.component_id}</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            Lot: <span className="text-foreground/70">{data.lot_id}</span>
+            <span className="mx-2 text-border">·</span>
+            Ground truth: <span className="font-medium text-foreground/70">{data.defect_type}</span>
           </p>
         </div>
-        <div className="ml-auto">
-          <span className={`px-4 py-2 text-sm rounded-md font-bold ${
-            report.recommendation === 'REJECT'
-              ? 'bg-destructive/20 text-destructive border border-destructive/30'
-              : report.recommendation === 'ACCEPT'
-                ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
-                : 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
-          }`}>
-            {report.recommendation}
-          </span>
+        <span className={`shrink-0 px-4 py-2 text-sm rounded-lg font-bold ${
+          isRejected
+            ? 'bg-destructive/20 text-destructive border border-destructive/30'
+            : isAccepted
+              ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+              : 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
+        }`}>
+          {report.recommendation}
+        </span>
+      </motion.div>
+
+      {/* ── Final Verdict ─────────────────────────────────────────────── */}
+      <motion.div variants={itemVariants}>
+        <div
+          className={`rounded-xl p-6 border ${verdictConfig.border} ${verdictConfig.bg}`}
+          style={{ boxShadow: `0 0 40px 0 ${verdictConfig.glow}` }}
+        >
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+            {/* Icon */}
+            <div className={`shrink-0 w-14 h-14 rounded-xl flex items-center justify-center ${verdictConfig.bg} border ${verdictConfig.border}`}>
+              <verdictConfig.Icon className={`w-7 h-7 ${verdictConfig.color}`} />
+            </div>
+
+            {/* Text */}
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground/50 mb-1">Screening Verdict</p>
+              <p className={`text-3xl font-black tracking-tight ${verdictConfig.color}`}>
+                {verdictConfig.label}
+              </p>
+              <p className="text-sm text-muted-foreground/70 font-light mt-1">
+                {verdictConfig.sublabel}
+              </p>
+            </div>
+
+            {/* Signal summary pills */}
+            <div className="flex flex-col gap-2 shrink-0">
+              <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold border ${
+                anomaly.is_anomalous
+                  ? 'bg-destructive/10 border-destructive/30 text-destructive'
+                  : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+              }`}>
+                {anomaly.is_anomalous ? <AlertTriangle className="w-3 h-3" /> : <CheckCircle className="w-3 h-3" />}
+                Module A: {anomaly.is_anomalous ? `z = ${anomaly.anomaly_score?.toFixed(1)}` : 'Normal'}
+              </div>
+              <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold border ${
+                drift.flagged_for_rejection
+                  ? 'bg-destructive/10 border-destructive/30 text-destructive'
+                  : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+              }`}>
+                {drift.flagged_for_rejection ? <AlertTriangle className="w-3 h-3" /> : <CheckCircle className="w-3 h-3" />}
+                Module B: {drift.flagged_for_rejection
+                  ? `${worstDriftData.ratio.toFixed(1)}× slope`
+                  : `${worstDriftData.ratio.toFixed(2)}× slope`}
+              </div>
+            </div>
+          </div>
         </div>
       </motion.div>
 
@@ -256,7 +344,7 @@ export default function ComponentDeepDive() {
               </div>
 
               {/* Gauge */}
-              <div className="flex flex-col items-center justify-center">
+              <div className="flex flex-col items-center justify-center py-1">
                 <div className="w-full max-w-[240px]">
                   <Gauge
                     value={Math.min(((anomaly.anomaly_score || 0) / 25) * 100, 100)}
@@ -271,6 +359,7 @@ export default function ComponentDeepDive() {
                     formatOptions={{ maximumFractionDigits: 1 }}
                   />
                 </div>
+                <p className="text-[11px] text-muted-foreground/40 mt-1">Scale: 0 – 25 z-score</p>
               </div>
 
               {/* Justification */}
@@ -347,6 +436,27 @@ export default function ComponentDeepDive() {
                 )}
               </div>
 
+              {/* Gauge for Drift Ratio */}
+              <div className="flex flex-col items-center justify-center py-1">
+                <div className="w-full max-w-[240px]">
+                  <Gauge
+                    value={Math.min((worstDriftData.ratio / 2) * 100, 100)}
+                    centerValue={worstDriftData.ratio}
+                    defaultLabel="Drift Ratio"
+                    spacing={20}
+                    inactiveFillOpacity={0.2}
+                    activeFill={worstDriftData.isFlagged ? "var(--destructive)" : "oklch(0.7 0.05 250)"}
+                    useGradient={false}
+                    enterTransition={{ stiffness: 100, damping: 25 }}
+                    enterStaggerScale={1.5}
+                    formatOptions={{ maximumFractionDigits: 2 }}
+                  />
+                </div>
+                <p className="text-[11px] text-muted-foreground/40 mt-1">
+                  {worstDriftData.label} · Scale: 0 – 2× threshold
+                </p>
+              </div>
+
               {/* Per-parameter table */}
               <div>
                 <h4 className="font-semibold mb-3 text-xs text-muted-foreground/60 uppercase tracking-widest">Per-Parameter Forecast</h4>
@@ -367,7 +477,7 @@ export default function ComponentDeepDive() {
                         const isOver = ratio !== null && ratio > 1;
                         const unit = param.includes("leak") ? "µA" : "ns";
                         return (
-                          <tr key={param} className="border-b border-border/20 last:border-0">
+                          <tr key={param} className="border-b border-border/20 last:border-0 hover:bg-muted/5 transition-colors">
                             <td className="px-4 py-3 capitalize text-sm text-muted-foreground/70">{param.replace(/_/g, ' ').replace('u a', 'µA').replace(' n s', ' ns')}</td>
                             <td className="px-4 py-3 font-mono tabular-nums text-sm">
                               {pinfo.predicted_168h_xgb?.toFixed(3)} {unit}
