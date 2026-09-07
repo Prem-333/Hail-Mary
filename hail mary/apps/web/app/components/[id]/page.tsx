@@ -207,7 +207,7 @@ export default function ComponentDeepDive() {
         }}>
           <div className="flex items-center gap-2 mb-4">
             <Brain className="w-4 h-4 text-muted-foreground/50" />
-            <h3 className="text-base font-semibold">SHAP Explanation</h3>
+            <h3 className="text-base font-semibold">SHAP Decision Breakdown</h3>
           </div>
           <div className="space-y-3">
             {parseJustification(report.recommendation_text || "").map((point, idx) => (
