@@ -242,60 +242,73 @@ python validate_physics.py
 ```
 SIH - 2026/
 │
-├── api/                              # FastAPI backend
-│   ├── main.py                       # App entry point; router registration; CORS config
-│   ├── dependencies.py               # load_system() — singleton ML pipeline loader
+├── api/                                  # ── FastAPI Backend ──────────────────
+│   ├── main.py                           # Application entry point · CORS · router registration
+│   ├── dependencies.py                   # load_system() — singleton ML pipeline loader
 │   └── routers/
-│       ├── lots.py                   # GET /api/lots/, GET /api/lots/{lot_id}
-│       ├── components.py             # GET /api/components/{id} — QA report + trajectories
-│       ├── simulation.py             # POST /api/simulate/ — ad-hoc prediction + SHAP
-│       ├── evaluation.py             # GET /api/evaluation/ — aggregate metrics report
-│       └── streaming.py              # WS /ws/sensor-stream — live trajectory replay
+│       ├── lots.py                       # GET /api/lots/ · GET /api/lots/{lot_id}
+│       ├── components.py                 # GET /api/components/{id} — full QA report + trajectories
+│       ├── simulation.py                 # POST /api/simulate/ — ad-hoc prediction + SHAP
+│       ├── evaluation.py                 # GET /api/evaluation/ — aggregate metrics report
+│       └── streaming.py                  # WS /ws/sensor-stream — live trajectory replay
 │
-├── src/                              # ML pipeline source code
+├── src/                                  # ── ML Pipeline ─────────────────────
 │   ├── data_generation/
-│   │   ├── generate_dataset.py       # Arrhenius-based synthetic burn-in data generator
-│   │   └── visualize_trajectories.py # Trajectory plotting utilities
+│   │   ├── generate_dataset.py           # Arrhenius-based synthetic burn-in data generator
+│   │   └── visualize_trajectories.py     # Trajectory plotting utilities
 │   ├── outlier_detection/
-│   │   └── detector.py               # Module A: MAD Z-score + Isolation Forest ensemble
+│   │   └── detector.py                   # Module A: MAD Z-score + Isolation Forest ensemble
 │   ├── drift_prediction/
-│   │   ├── predictor.py              # Module B: XGBoost regressor + safety-slope logic
-│   │   └── run_evaluation.py         # Standalone evaluation runner
+│   │   ├── predictor.py                  # Module B: XGBoost regressor + safety-slope logic
+│   │   └── run_evaluation.py             # Standalone evaluation runner
 │   ├── explainability/
-│   │   └── explainer.py              # SHAP TreeExplainer + rule-based QA report generator
+│   │   └── explainer.py                  # SHAP TreeExplainer + rule-based QA report generator
 │   └── evaluation/
-│       └── evaluate.py               # F2, MAE, per-class metrics; generates results/metrics.md
+│       └── evaluate.py                   # F2, MAE, per-class metrics · writes results/metrics.md
 │
-├── hail mary/                        # Turborepo monorepo
-│   ├── apps/web/                     # Next.js 16 dashboard
+├── hail mary/                            # ── Turborepo Monorepo ──────────────
+│   ├── apps/web/                         # Next.js 16 dashboard
 │   │   ├── app/
-│   │   │   ├── page.tsx              # / — Lot overview with scatter plots
+│   │   │   ├── layout.tsx                # Root layout · fonts · providers
+│   │   │   ├── page.tsx                  # / — Lot overview with scatter plots
 │   │   │   ├── components/
-│   │   │   │   ├── page.tsx          # /components — Component listing
-│   │   │   │   └── [id]/page.tsx     # /components/[id] — Deep-dive QA report
-│   │   │   ├── simulator/page.tsx    # /simulator — Interactive prediction with SHAP
-│   │   │   ├── monitor/page.tsx      # /monitor — Live WebSocket sensor charts
-│   │   │   └── evaluation/page.tsx   # /evaluation — Auto-generated metrics dashboard
-│   │   └── components/
-│   │       ├── charts/               # 60+ custom chart components (line, scatter, gauge, etc.)
-│   │       ├── header.tsx            # App header with navigation
-│   │       └── sidebar.tsx           # App sidebar with route links
+│   │   │   │   ├── page.tsx              # /components — Component listing
+│   │   │   │   └── [id]/page.tsx         # /components/[id] — Deep-dive QA report
+│   │   │   ├── simulator/page.tsx        # /simulator — Interactive prediction with SHAP
+│   │   │   ├── monitor/page.tsx          # /monitor — Live WebSocket sensor charts
+│   │   │   └── evaluation/page.tsx       # /evaluation — Auto-generated metrics dashboard
+│   │   ├── components/
+│   │   │   ├── charts/                   # 64 custom chart primitives (line, scatter, gauge, …)
+│   │   │   ├── header.tsx                # App header with navigation
+│   │   │   ├── sidebar.tsx               # App sidebar with route links
+│   │   │   ├── initial-loader.tsx        # Cinematic startup loader animation
+│   │   │   └── shimmering-text.tsx       # Shimmer text effect component
+│   │   ├── lib/
+│   │   │   └── utils.ts                  # Shared utility helpers
+│   │   └── .env.local                    # API / WebSocket base URLs
 │   └── packages/
-│       └── ui/                       # Shared UI component library
+│       ├── ui/                           # Shared UI component library
+│       ├── eslint-config/                # Shared ESLint rules
+│       └── typescript-config/            # Shared tsconfig presets
 │
-├── data/generated/                   # Synthetic dataset (generated, .gitignored)
-│   ├── burnin_measurements.csv       # 38,018 components × 4 timepoints × 2 parameters
-│   ├── burnin_labels.csv             # Ground-truth defect labels per component
-│   └── datasheet_limits.json         # Static limits (50 µA leakage, 18 ns delay)
+├── data/                                 # ── Dataset Layer ───────────────────
+│   ├── raw/                              # Reserved for real ATE / STDF imports
+│   └── generated/                        # Synthetic dataset (.gitignored CSVs)
+│       ├── burnin_measurements.csv       # 38,018 components × 4 timepoints × 2 parameters
+│       ├── burnin_labels.csv             # Ground-truth defect labels per component
+│       ├── datasheet_limits.json         # Static limits (50 µA leakage, 18 ns delay)
+│       ├── sample_trajectories.png       # Visual reference of generated trajectories
+│       └── models/                       # Trained model artefacts (XGBoost, Linear, lot stats)
 │
-├── docs/                             # Project documentation
-│   ├── TECHNICAL_REFERENCE.md        # ⬅ Full technical documentation (see below)
-│   ├── PROJECT_REPORT.md             # Comprehensive project report
-│   ├── DATA_MODELLING.md             # Physics-grounded data generation rationale
-│   ├── DESIGN_BOUNDARIES.md          # Design boundary analysis & deployment considerations
-│   ├── SAMPLE_QA_REPORT.md           # Example QA report for LOT_008_C0130
-│   ├── FAQ.md                        # Anticipated evaluation questions with answers
-│   └── evaluation/                   # Per-person presentation preparation sheets
+├── docs/                                 # ── Documentation Suite ─────────────
+│   ├── TECHNICAL_REFERENCE.md            # ⬅ Comprehensive technical reference
+│   ├── PROJECT_REPORT.md                 # Formal project report for judges
+│   ├── DATA_MODELLING.md                 # Physics-grounded data generation rationale
+│   ├── DESIGN_BOUNDARIES.md              # Design boundary analysis & deployment considerations
+│   ├── SAMPLE_QA_REPORT.md               # Example QA report for LOT_008_C0130
+│   ├── FAQ.md                            # Anticipated evaluation questions with answers
+│   ├── module_b_feature_importance.png   # XGBoost feature importance visualisation
+│   └── evaluation/                       # Per-person presentation preparation sheets
 │       ├── 01_METRICS_AND_EVALUATION.md  # Metrics & evaluation strategy
 │       ├── 02_HARDWARE_PHYSICS.md        # Burn-in physics & Arrhenius model
 │       ├── 03_OUTLIER_DETECTION.md       # Module A deep-dive
@@ -304,17 +317,19 @@ SIH - 2026/
 │       └── 06_BACKEND_API.md             # Backend architecture & API
 │
 ├── results/
-│   └── metrics.md                    # Auto-generated evaluation report
+│   └── metrics.md                        # Auto-generated evaluation report
 │
-├── tests/                            # Pytest test suite
-│   ├── test_outlier_detection.py     # Module A unit tests
-│   ├── test_drift_prediction.py      # Module B unit tests
-│   └── api/                          # API endpoint tests
+├── tests/                                # ── Test Suite ──────────────────────
+│   ├── test_outlier_detection.py         # Module A unit tests
+│   ├── test_drift_prediction.py          # Module B unit tests
+│   └── test_placeholder.py              # Placeholder for future test modules
 │
-├── test_obvious.py                   # Sanity check: obvious defect detection
-├── validate_physics.py               # Arrhenius trajectory validation
-├── requirements.txt                  # Python dependencies
-└── README.md                         # ⬅ You are here
+├── notebooks/                            # Reserved for exploratory Jupyter notebooks
+│
+├── test_obvious.py                       # Sanity check: obvious defect detection
+├── validate_physics.py                   # Arrhenius trajectory validation
+├── requirements.txt                      # Python dependencies
+└── README.md                             # ⬅ You are here
 ```
 
 ---

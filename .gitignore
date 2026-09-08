@@ -1,4 +1,4 @@
-﻿# Virtual environment
+# Virtual environment
 .venv/
 venv/
 env/
@@ -33,14 +33,30 @@ data/raw/*.csv
 data/raw/*.parquet
 data/generated/*.csv
 data/generated/*.parquet
+data/generated/*.png
+data/generated/models/
 
-# Streamlit
-.streamlit/secrets.toml
+# Trained model artefacts
+*.joblib
 
-# Misc
+# Logs
 *.log
-.env
 
-# Frontend
-frontend/node_modules/
+# Environment
+.env
+.env.local
+
+# Agent tooling
+.agents/
+skills-lock.json
+
+# Node
+node_modules/
+
+# Next.js
+.next/
+.turbo/
+
+# Pytest
+.pytest_cache/
 
