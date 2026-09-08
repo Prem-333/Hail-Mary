@@ -133,14 +133,14 @@ function GaugeNotchSvg({
     const ctxScope = createScope({ root: svgRef }).add(() => {
       animate('.gauge-notch-bg', {
         opacity: [0, 1],
-        delay: (el: any, i: number) => i * 15 * stagger,
+        delay: (el: any, i: number, _total: number) => i * 15 * stagger,
         ease: dur ? 'outQuad' : ease,
         duration: dur
       });
 
       animate('.gauge-notch-active', {
         opacity: [0, 1],
-        delay: (el: any, i: number) => (300 + i * 20) * stagger,
+        delay: (el: any, i: number, _total: number) => (300 + i * 20) * stagger,
         ease: dur ? 'outQuad' : ease,
         duration: dur
       });
