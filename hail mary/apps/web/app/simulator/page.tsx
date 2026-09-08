@@ -72,10 +72,10 @@ export default function SimulatorPage() {
 
   const defaultForm = {
     lot_id: "",
-    leak_0h: 17.0,
-    leak_24h: 17.2,
-    delay_0h: 8.0,
-    delay_24h: 8.04
+    leak_0h: "17.0",
+    leak_24h: "17.2",
+    delay_0h: "8.0",
+    delay_24h: "8.04",
   };
 
   const [formData, setFormData] = useState(defaultForm);
@@ -104,7 +104,15 @@ export default function SimulatorPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/simulate/`, formData);
+      // Coerce string fields to numbers only at submit time
+      const payload = {
+        ...formData,
+        leak_0h: parseFloat(formData.leak_0h) || 0,
+        leak_24h: parseFloat(formData.leak_24h) || 0,
+        delay_0h: parseFloat(formData.delay_0h) || 0,
+        delay_24h: parseFloat(formData.delay_24h) || 0,
+      };
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/simulate/`, payload);
       setResult(res.data);
     } catch (err) {
       console.error(err);
@@ -116,7 +124,9 @@ export default function SimulatorPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: name === 'lot_id' ? value : parseFloat(value) }));
+    // Keep numeric fields as strings so partially-typed values (e.g. "", ".", "1.") never
+    // become NaN and trigger the React "Received NaN for value attribute" warning.
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleClear = () => {
@@ -400,7 +410,9 @@ export default function SimulatorPage() {
                     {/* Gauge cards */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {Object.entries(result.results).map(([param, data]: [string, any]) => {
-                        const percentOfThreshold = Math.min((data.implied_drift / data.threshold) * 100, 150);
+                        const percentOfThreshold = data.threshold > 0
+                          ? Math.min((data.implied_drift / data.threshold) * 100, 150)
+                          : 0;
                         const isDanger = data.implied_drift > data.threshold;
                         const unit = param.toLowerCase().includes('leak') ? 'µA/h' : 'ns/h';
                         const ratio = data.threshold > 0 ? (data.implied_drift / data.threshold) : 1;
