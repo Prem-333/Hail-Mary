@@ -435,14 +435,14 @@ cd "hail mary" && npm run dev
 
 ## Team
 
-| | Member | Role |
-| :---: | :--- | :--- |
-| 🧠 | **Premnath V R** | ML |
-| ⚡ | **Bharathraj** | Hardware and Electronics |
-| 🔌 | **Kanish S** | Hardware and Electronics |
-| 🤖 | **Rithikha B** | ML |
-| ⚙️ | **Mirthika S** | Backend |
-| 🎨 | **Dharshini T** | Frontend |
+| Contributor | Area of Expertise |
+|:---|:---|
+| **Premnath V R** | Predictive Analytics & Anomaly Detection |
+| **Bharathraj** | Advanced Hardware Architecture |
+| **Kanish S** | Embedded Systems & Microelectronics |
+| **Rithikha B** | Applied Artificial Intelligence |
+| **Mirthika S** | Distributed Systems & API Architecture |
+| **Dharshini T** | Data Visualization & User Experience |
 
 ---
 
