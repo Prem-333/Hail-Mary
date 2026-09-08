@@ -161,7 +161,7 @@ sequenceDiagram
 ### 1. Clone & Setup Python Backend
 
 ```bash
-git clone <repo-url>
+git clone "https://github.com/Prem-333/Hail-Mary"
 cd "SIH - 2026"
 
 # Create virtual environment
