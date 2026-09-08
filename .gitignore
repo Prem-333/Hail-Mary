@@ -31,10 +31,10 @@ desktop.ini
 # Data (keep structure, ignore large files)
 data/raw/*.csv
 data/raw/*.parquet
-data/generated/*.csv
-data/generated/*.parquet
-data/generated/*.png
-data/generated/models/
+# data/generated/*.csv
+# data/generated/*.parquet
+# data/generated/*.png
+# data/generated/models/
 
 # Trained model artefacts
 *.joblib
