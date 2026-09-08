@@ -289,19 +289,19 @@ SIH - 2026/
 │   └── datasheet_limits.json         # Static limits (50 µA leakage, 18 ns delay)
 │
 ├── docs/                             # Project documentation
-│   ├── DOCUMENTATION.md              # ⬅ Full technical documentation (see below)
-│   ├── project_report.md             # Comprehensive project report
-│   ├── data_generation_rationale.md  # Physics justification for synthetic data
-│   ├── known_limitations.md          # Honest constraint disclosure
-│   ├── sample_qa_report.md           # Example QA report for LOT_008_C0130
-│   ├── judge_faq.md                  # Anticipated judge questions with answers
+│   ├── TECHNICAL_REFERENCE.md        # ⬅ Full technical documentation (see below)
+│   ├── PROJECT_REPORT.md             # Comprehensive project report
+│   ├── DATA_MODELLING.md             # Physics-grounded data generation rationale
+│   ├── DESIGN_BOUNDARIES.md          # Design boundary analysis & deployment considerations
+│   ├── SAMPLE_QA_REPORT.md           # Example QA report for LOT_008_C0130
+│   ├── FAQ.md                        # Anticipated evaluation questions with answers
 │   └── evaluation/                   # Per-person presentation preparation sheets
-│       ├── doc1_metrics.md           # Person 1: Metrics & evaluation strategy
-│       ├── doc2_hardware_physics.md  # Person 2: Burn-in physics & Arrhenius model
-│       ├── doc3_module_a_outlier.md  # Person 3: Outlier detection deep-dive
-│       ├── doc4_module_b_drift.md    # Person 4: Drift prediction & SHAP
-│       ├── doc5_frontend.md          # Person 5: Dashboard UI walkthrough
-│       └── doc6_backend.md           # Person 6: Backend architecture & API
+│       ├── 01_METRICS_AND_EVALUATION.md  # Metrics & evaluation strategy
+│       ├── 02_HARDWARE_PHYSICS.md        # Burn-in physics & Arrhenius model
+│       ├── 03_OUTLIER_DETECTION.md       # Module A deep-dive
+│       ├── 04_DRIFT_PREDICTION.md        # Module B & SHAP explainability
+│       ├── 05_FRONTEND_DASHBOARD.md      # Dashboard UI walkthrough
+│       └── 06_BACKEND_API.md             # Backend architecture & API
 │
 ├── results/
 │   └── metrics.md                    # Auto-generated evaluation report
@@ -321,18 +321,18 @@ SIH - 2026/
 
 ## Documentation
 
-> **📖 Full technical documentation is at [`docs/DOCUMENTATION.md`](docs/DOCUMENTATION.md)**
+> **📖 Full technical documentation is at [`docs/TECHNICAL_REFERENCE.md`](docs/TECHNICAL_REFERENCE.md)**
 
 The documentation suite is organized for different audiences:
 
 | Document | Audience | Description |
 |:---|:---|:---|
-| **[`docs/DOCUMENTATION.md`](docs/DOCUMENTATION.md)** | Evaluators & Developers | Complete technical reference — architecture, algorithms, API, physics, and deployment |
-| [`docs/project_report.md`](docs/project_report.md) | Judges | Formal project report covering problem, approach, results, and future enhancements |
-| [`docs/data_generation_rationale.md`](docs/data_generation_rationale.md) | Technical reviewers | Physics-grounded data modelling (Arrhenius kinetics, JEDEC JESD22-A108 standards) |
-| [`docs/known_limitations.md`](docs/known_limitations.md) | Technical reviewers | Design boundary analysis and production deployment considerations |
-| [`docs/sample_qa_report.md`](docs/sample_qa_report.md) | QA Engineers | Example AI-generated inspection report with full SHAP breakdown |
-| [`docs/judge_faq.md`](docs/judge_faq.md) | Judges | Pre-emptive answers to anticipated evaluation questions |
+| **[`docs/TECHNICAL_REFERENCE.md`](docs/TECHNICAL_REFERENCE.md)** | Evaluators & Developers | Complete technical reference — architecture, algorithms, API, physics, and deployment |
+| [`docs/PROJECT_REPORT.md`](docs/PROJECT_REPORT.md) | Judges | Formal project report covering problem, approach, results, and future enhancements |
+| [`docs/DATA_MODELLING.md`](docs/DATA_MODELLING.md) | Technical reviewers | Physics-grounded data modelling (Arrhenius kinetics, JEDEC JESD22-A108 standards) |
+| [`docs/DESIGN_BOUNDARIES.md`](docs/DESIGN_BOUNDARIES.md) | Technical reviewers | Design boundary analysis and production deployment considerations |
+| [`docs/SAMPLE_QA_REPORT.md`](docs/SAMPLE_QA_REPORT.md) | QA Engineers | Example AI-generated inspection report with full SHAP breakdown |
+| [`docs/FAQ.md`](docs/FAQ.md) | Judges | Pre-emptive answers to anticipated evaluation questions |
 | [`docs/evaluation/`](docs/evaluation/) | Team members | Per-person preparation sheets for the live presentation |
 | [`results/metrics.md`](results/metrics.md) | Everyone | Auto-generated evaluation metrics (F2, MAE, safety-slope, explainability rubric) |
 | `http://127.0.0.1:8000/docs` | Developers | Auto-generated Swagger/OpenAPI documentation (when backend is running) |
