@@ -1,6 +1,6 @@
 # LATENT — Full Technical Documentation
 
-> **Navigation**: [← Back to README](../README.md) · [Project Report](project_report.md) · [Data Rationale](data_generation_rationale.md) · [Known Limitations](known_limitations.md) · [Sample QA Report](sample_qa_report.md) · [Judge FAQ](judge_faq.md)
+> **Navigation**: [← Back to README](../README.md) · [Project Report](PROJECT_REPORT.md) · [Data Modelling](DATA_MODELLING.md) · [Design Boundaries](DESIGN_BOUNDARIES.md) · [Sample QA Report](SAMPLE_QA_REPORT.md) · [FAQ](FAQ.md)
 
 ---
 
@@ -122,7 +122,7 @@ The datasheet limits are intentionally **wide** — they represent functional co
 ## 3. Data Generation Pipeline
 
 **Source:** `src/data_generation/generate_dataset.py`  
-**Full rationale:** [`docs/data_generation_rationale.md`](data_generation_rationale.md)
+**Full rationale:** [`docs/DATA_MODELLING.md`](DATA_MODELLING.md)
 
 ### 3.1 Physics-Grounded Data Modelling
 
@@ -328,7 +328,7 @@ The `generate_qa_report()` function produces a structured report with four secti
 3. **Drift Prediction (Module B)** — predicted vs. actual, SHAP per-feature breakdown, safety-slope comparison
 4. **Final Recommendation** — ACCEPT / REJECT / MANUAL REVIEW with bullet-point reasoning
 
-See [`docs/sample_qa_report.md`](sample_qa_report.md) for a complete example.
+See [`docs/SAMPLE_QA_REPORT.md`](SAMPLE_QA_REPORT.md) for a complete example.
 
 ### 6.4 Explainability Rubric
 
@@ -594,4 +594,4 @@ python validate_physics.py
 
 ---
 
-<p align="center"><em>For the full project report, see <a href="project_report.md">docs/project_report.md</a></em></p>
+<p align="center"><em>For the full project report, see <a href="PROJECT_REPORT.md">docs/PROJECT_REPORT.md</a></em></p>
