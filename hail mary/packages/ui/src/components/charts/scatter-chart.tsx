@@ -80,6 +80,7 @@ export interface ScatterChartProps {
   xDataKey?: string;
   margin?: Partial<Margin>;
   aspectRatio?: string;
+  animationDuration?: number;
   isInteractable?: (row: Record<string, unknown>) => boolean;
   onRowClick?: (row: Record<string, unknown>) => void;
   children?: ReactNode;
@@ -534,7 +535,7 @@ export function Scatter({
       animate('.scatter-point', {
         opacity: [0, 1],
         scale: [0, 1],
-        delay: (el: any, i: number) => i * (animationDuration / points.length),
+        delay: ((el: any, i: number) => i * (animationDuration / points.length)) as any,
         ease: spring({ stiffness: 300, damping: 22 })
       });
     });

@@ -135,15 +135,15 @@ function GaugeNotchSvg({
         opacity: [0, 1],
         delay: ((el: any, i: number) => i * 15 * stagger) as any,
         ease: dur ? 'outQuad' : ease,
-        duration: dur
-      });
+        ...(dur !== undefined ? { duration: dur } : {})
+      } as any);
 
       animate('.gauge-notch-active', {
         opacity: [0, 1],
         delay: ((el: any, i: number) => (300 + i * 20) * stagger) as any,
         ease: dur ? 'outQuad' : ease,
-        duration: dur
-      });
+        ...(dur !== undefined ? { duration: dur } : {})
+      } as any);
     });
 
     return () => ctxScope.revert();
