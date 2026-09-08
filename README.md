@@ -438,7 +438,7 @@ cd "hail mary" && npm run dev
 | Contributor | Area of Expertise |
 |:---|:---|
 | **Premnath V R** | Predictive Analytics & Anomaly Detection |
-| **Bharathraj** | Advanced Hardware Architecture |
+| **Bharathraj Nagarajan** | Advanced Hardware Architecture |
 | **Kanish S** | Embedded Systems & Microelectronics |
 | **Rithikha B** | Applied Artificial Intelligence |
 | **Mirthika S** | Distributed Systems & API Architecture |
