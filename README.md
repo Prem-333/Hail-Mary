@@ -435,11 +435,14 @@ cd "hail mary" && npm run dev
 
 ## Team
 
-<!-- TODO: add team members -->
-
-| Name | Role | Link |
-|:---|:---|:---|
-| — | — | — |
+| | Member | Role |
+| :---: | :--- | :--- |
+| 🧠 | **Premnath V R** | ML |
+| ⚡ | **Bharathraj** | Hardware and Electronics |
+| 🔌 | **Kanish S** | Hardware and Electronics |
+| 🤖 | **Rithikha B** | ML |
+| ⚙️ | **Mirthika S** | Backend |
+| 🎨 | **Dharshini T** | Frontend |
 
 ---
 
