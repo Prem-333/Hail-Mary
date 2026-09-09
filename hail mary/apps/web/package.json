@@ -44,7 +44,7 @@
     "@types/react-dom": "^19",
     "@workspace/eslint-config": "*",
     "@workspace/typescript-config": "*",
-    "eslint": "^9",
+    "eslint": "^10",
     "typescript": "^5"
   }
 }
