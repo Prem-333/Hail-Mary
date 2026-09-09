@@ -1,0 +1,5 @@
+# API-only dependencies (backend server)
+# Install these on top of requirements.txt to run the FastAPI backend
+fastapi>=0.100.0
+uvicorn[standard]>=0.23.0
+python-multipart>=0.0.6
