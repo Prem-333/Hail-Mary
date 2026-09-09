@@ -9,8 +9,8 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 # Import routers
-from api.routers import lots, components, simulation, evaluation, streaming
-from api.dependencies import load_system
+from backend.routers import lots, components, simulation, evaluation, streaming
+from backend.dependencies import load_system
 
 app = FastAPI(
     title="LATENT \u2014 Burn-In Screening API",

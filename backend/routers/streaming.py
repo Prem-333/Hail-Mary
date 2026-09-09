@@ -10,7 +10,7 @@ FIX: More interpolation steps + continuous time prevents graph reset.
 """
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
-from api.dependencies import get_system
+from backend.dependencies import get_system
 import asyncio
 import json
 import time

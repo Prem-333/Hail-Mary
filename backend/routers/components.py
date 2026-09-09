@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from api.dependencies import get_system
+from backend.dependencies import get_system
 import numpy as np
 
 router = APIRouter(prefix="/api/components", tags=["Components"])
