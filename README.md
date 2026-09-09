@@ -89,7 +89,7 @@ flowchart TD
         EV["evaluate.py\nF2, MAE, Safety-slope metrics"]
     end
 
-    subgraph Backend["FastAPI Backend (api/)"]
+    subgraph Backend["FastAPI Backend (backend/)"]
         DEP["dependencies.py\nload_system() — singleton"]
         R1["GET /api/lots/"]
         R2["GET /api/components/{id}"]
@@ -98,7 +98,7 @@ flowchart TD
         WS["WS /ws/sensor-stream"]
     end
 
-    subgraph Frontend["Next.js Dashboard (hail mary/apps/web/)"]
+    subgraph Frontend["Next.js Dashboard (dashboard/apps/web/)"]
         P1["/ — Lot Overview\nScatter plots · Defect rates"]
         P2["/components/[id]\nTrajectory envelopes · SHAP · Verdict"]
         P3["/simulator\nLive prediction · Gauge charts"]
@@ -183,7 +183,7 @@ pip install -r requirements.txt
 python -m src.data_generation.generate_dataset
 
 # Start the FastAPI server (trains both ML modules on startup, ~10–20s cold boot)
-uvicorn api.main:app --reload --host 127.0.0.1 --port 8000
+uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
 > **API documentation** is auto-generated at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) (Swagger UI) and [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc) (ReDoc).
@@ -191,7 +191,7 @@ uvicorn api.main:app --reload --host 127.0.0.1 --port 8000
 ### 3. Start Next.js Dashboard
 
 ```bash
-cd "hail mary"
+cd dashboard
 npm install
 npm run dev
 # Dashboard opens at http://localhost:3000
@@ -201,8 +201,8 @@ npm run dev
 
 | Variable | Default | Location |
 |:---|:---|:---|
-| `NEXT_PUBLIC_API_URL` | `http://127.0.0.1:8000` | `hail mary/apps/web/.env.local` |
-| `NEXT_PUBLIC_WS_URL` | `ws://127.0.0.1:8000` | `hail mary/apps/web/.env.local` |
+| `NEXT_PUBLIC_API_URL` | `http://127.0.0.1:8000` | `dashboard/apps/web/.env.local` |
+| `NEXT_PUBLIC_WS_URL` | `ws://127.0.0.1:8000` | `dashboard/apps/web/.env.local` |
 
 ### 4. Run Tests
 
@@ -211,10 +211,10 @@ npm run dev
 pytest tests/ -v
 
 # Sanity check — obvious defect detection validation
-python test_obvious.py
+python scripts/test_obvious.py
 
 # Physics validation — Arrhenius trajectory verification
-python validate_physics.py
+python scripts/validate_physics.py
 ```
 
 ---
@@ -242,9 +242,9 @@ python validate_physics.py
 ```
 SIH - 2026/
 │
-├── api/                                  # ── FastAPI Backend ──────────────────
-│   ├── main.py                           # Application entry point · CORS · router registration
-│   ├── dependencies.py                   # load_system() — singleton ML pipeline loader
+├── backend/                              # ── FastAPI Backend ──────────────────
+│   ├── main.py                           # Server entry point · CORS · router registration
+│   ├── dependencies.py                   # load_system() — loads and caches the ML pipeline
 │   └── routers/
 │       ├── lots.py                       # GET /api/lots/ · GET /api/lots/{lot_id}
 │       ├── components.py                 # GET /api/components/{id} — full QA report + trajectories
@@ -252,7 +252,7 @@ SIH - 2026/
 │       ├── evaluation.py                 # GET /api/evaluation/ — aggregate metrics report
 │       └── streaming.py                  # WS /ws/sensor-stream — live trajectory replay
 │
-├── src/                                  # ── ML Pipeline ─────────────────────
+├── src/                                  # ── AI / ML Pipeline ────────────────
 │   ├── data_generation/
 │   │   ├── generate_dataset.py           # Arrhenius-based synthetic burn-in data generator
 │   │   └── visualize_trajectories.py     # Trajectory plotting utilities
@@ -266,8 +266,8 @@ SIH - 2026/
 │   └── evaluation/
 │       └── evaluate.py                   # F2, MAE, per-class metrics · writes results/metrics.md
 │
-├── hail mary/                            # ── Turborepo Monorepo ──────────────
-│   ├── apps/web/                         # Next.js 16 dashboard
+├── dashboard/                            # ── Web Dashboard (Turborepo Monorepo) ──
+│   ├── apps/web/                         # Next.js 16 web app
 │   │   ├── app/
 │   │   │   ├── layout.tsx                # Root layout · fonts · providers
 │   │   │   ├── page.tsx                  # / — Lot overview with scatter plots
@@ -278,13 +278,11 @@ SIH - 2026/
 │   │   │   ├── monitor/page.tsx          # /monitor — Live WebSocket sensor charts
 │   │   │   └── evaluation/page.tsx       # /evaluation — Auto-generated metrics dashboard
 │   │   ├── components/
-│   │   │   ├── charts/                   # 64 custom chart primitives (line, scatter, gauge, …)
+│   │   │   ├── charts/                   # Custom chart primitives (line, scatter, gauge, …)
 │   │   │   ├── header.tsx                # App header with navigation
 │   │   │   ├── sidebar.tsx               # App sidebar with route links
 │   │   │   ├── initial-loader.tsx        # Cinematic startup loader animation
 │   │   │   └── shimmering-text.tsx       # Shimmer text effect component
-│   │   ├── lib/
-│   │   │   └── utils.ts                  # Shared utility helpers
 │   │   └── .env.local                    # API / WebSocket base URLs
 │   └── packages/
 │       ├── ui/                           # Shared UI component library
@@ -307,7 +305,6 @@ SIH - 2026/
 │   ├── DESIGN_BOUNDARIES.md              # Design boundary analysis & deployment considerations
 │   ├── SAMPLE_QA_REPORT.md               # Example QA report for LOT_008_C0130
 │   ├── FAQ.md                            # Anticipated evaluation questions with answers
-│   ├── module_b_feature_importance.png   # XGBoost feature importance visualisation
 │   └── evaluation/                       # Per-person presentation preparation sheets
 │       ├── 01_METRICS_AND_EVALUATION.md  # Metrics & evaluation strategy
 │       ├── 02_HARDWARE_PHYSICS.md        # Burn-in physics & Arrhenius model
@@ -316,8 +313,14 @@ SIH - 2026/
 │       ├── 05_FRONTEND_DASHBOARD.md      # Dashboard UI walkthrough
 │       └── 06_BACKEND_API.md             # Backend architecture & API
 │
-├── results/
-│   └── metrics.md                        # Auto-generated evaluation report
+├── results/                              # ── Evaluation Outputs ──────────────
+│   ├── metrics.md                        # Auto-generated evaluation metrics report
+│   └── figures/                          # Charts and visualisation exports
+│       └── module_b_feature_importance.png  # XGBoost feature importance chart
+│
+├── scripts/                              # ── Utility Scripts ─────────────────
+│   ├── test_obvious.py                   # Sanity check: obvious defect detection
+│   └── validate_physics.py              # Arrhenius trajectory validation
 │
 ├── tests/                                # ── Test Suite ──────────────────────
 │   ├── test_outlier_detection.py         # Module A unit tests
@@ -326,9 +329,8 @@ SIH - 2026/
 │
 ├── notebooks/                            # Reserved for exploratory Jupyter notebooks
 │
-├── test_obvious.py                       # Sanity check: obvious defect detection
-├── validate_physics.py                   # Arrhenius trajectory validation
-├── requirements.txt                      # Python dependencies
+├── requirements.txt                      # Python dependencies (ML core)
+├── requirements-api.txt                  # Additional dependencies for the backend server
 └── README.md                             # ⬅ You are here
 ```
 
@@ -442,8 +444,8 @@ python validate_physics.py
 pytest tests/ -v
 
 # 5. Start both servers
-uvicorn api.main:app --reload --host 127.0.0.1 --port 8000
-cd "hail mary" && npm run dev
+uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
+cd dashboard && npm run dev
 ```
 
 ---
