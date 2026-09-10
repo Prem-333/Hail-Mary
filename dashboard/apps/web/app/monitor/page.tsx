@@ -327,7 +327,7 @@ export default function SensorMonitor() {
             <div className="p-5 border-b border-border/5 flex items-center justify-between">
               <div>
                 <h3 className="text-base font-medium">Iddq / Leakage Current</h3>
-                <p className="text-xs text-muted-foreground/40 mt-0.5 font-light">
+                <p className="text-xs text-muted-foreground/40 uppercase tracking-widest font-medium mt-0.5">
                   µA · Limit: {LEAKAGE_LIMIT.toFixed(1)} µA (MIL-STD datasheet)
                 </p>
               </div>
@@ -342,7 +342,7 @@ export default function SensorMonitor() {
                 <span className={`text-lg font-mono font-semibold tabular-nums ${currentLeakage > LEAKAGE_LIMIT ? 'text-destructive' : 'text-foreground/70'}`}>
                   {currentLeakage.toFixed(2)}
                 </span>
-                <span className="text-[11px] text-muted-foreground/40 font-light">µA</span>
+                <span className="text-xs text-muted-foreground/40 uppercase tracking-widest font-medium ml-1">µA</span>
               </div>
             </div>
             <div className="p-4" style={{ height: 320 }}>
@@ -415,7 +415,7 @@ export default function SensorMonitor() {
             <div className="p-5 border-b border-border/5 flex items-center justify-between">
               <div>
                 <h3 className="text-base font-medium">Propagation Delay</h3>
-                <p className="text-xs text-muted-foreground/40 mt-0.5 font-light">
+                <p className="text-xs text-muted-foreground/40 uppercase tracking-widest font-medium mt-0.5">
                   ns · Limit: {DELAY_LIMIT.toFixed(1)} ns (MIL-STD datasheet)
                 </p>
               </div>
@@ -430,7 +430,7 @@ export default function SensorMonitor() {
                 <span className={`text-lg font-mono font-semibold tabular-nums ${currentDelay > DELAY_LIMIT ? 'text-destructive' : 'text-foreground/70'}`}>
                   {currentDelay.toFixed(4)}
                 </span>
-                <span className="text-[11px] text-muted-foreground/40 font-light">ns</span>
+                <span className="text-xs text-muted-foreground/40 uppercase tracking-widest font-medium ml-1">ns</span>
               </div>
             </div>
             <div className="p-4" style={{ height: 320 }}>

@@ -158,7 +158,7 @@ export default function LotOverview() {
             </div>
             <p className="text-2xl font-semibold tabular-nums" style={{ color: stat.color }}>{stat.value}</p>
             {stat.subtitle && (
-              <p className="text-[10px] text-muted-foreground/30 font-light mt-0.5">{stat.subtitle}</p>
+              <p className="text-xs font-medium mt-1" style={{ color: stat.color, opacity: 0.85 }}>{stat.subtitle}</p>
             )}
           </motion.div>
         ))}
@@ -171,7 +171,7 @@ export default function LotOverview() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-base font-medium">Parametric Scatter</h3>
-              <p className="text-xs text-muted-foreground/40 mt-0.5 font-light">
+              <p className="text-xs text-muted-foreground/40 uppercase tracking-widest font-medium mt-0.5">
                 Anomaly distribution by leakage &amp; delay — {allComponents.length} components
               </p>
             </div>
@@ -378,7 +378,7 @@ export default function LotOverview() {
               <h3 className="text-base font-medium">
                 {filter === "all" ? "All Components" : filter === "anomalous" ? "Anomalous Components" : "Normal Components"}
               </h3>
-              <p className="text-xs text-muted-foreground/40 mt-0.5 font-light">
+              <p className="text-xs text-muted-foreground/40 uppercase tracking-widest font-medium mt-0.5">
                 Showing {Math.min(TABLE_LIMIT, tableData.length)} of {tableData.length} — click to inspect
               </p>
             </div>
@@ -459,10 +459,10 @@ export default function LotOverview() {
             </table>
           </div>
           <div className="px-6 py-2 border-t border-border/5 flex items-center gap-2">
-            <span className="text-[10px] text-muted-foreground/30 font-light uppercase tracking-widest">
+            <span className="text-xs text-muted-foreground/40 uppercase tracking-widest font-medium">
               Static datasheet limits:
             </span>
-            <span className="text-[10px] font-mono text-muted-foreground/25">
+            <span className="text-xs text-muted-foreground/40 uppercase tracking-widest font-medium">
               Leakage &lt; 50&nbsp;µA&nbsp;·&nbsp;Delay &lt; 18&nbsp;ns — LATENT catches outliers that pass these limits
             </span>
           </div>

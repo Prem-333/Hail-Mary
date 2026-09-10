@@ -106,7 +106,7 @@ export function InitialLoader() {
               <p className="text-sm text-muted-foreground tracking-[0.2em] uppercase font-light mb-1">
                 Burn-In AI · ISRO Screening
               </p>
-              <p className="text-[10px] text-muted-foreground/40 tracking-[0.25em] uppercase font-light mb-12">
+              <p className="text-xs text-muted-foreground/40 uppercase tracking-widest font-medium mb-12">
                 Smart India Hackathon · 2026
               </p>
             </motion.div>
