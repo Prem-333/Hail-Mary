@@ -202,8 +202,8 @@ export default function SensorMonitor() {
   };
 
   const momentumColors = {
-    up: "oklch(0.65 0.12 160)",
-    down: "oklch(0.62 0.18 25)",
+    up: "oklch(0.62 0.18 25)",    // Red (increasing is bad)
+    down: "oklch(0.65 0.12 160)",  // Green (decreasing/stable is good)
     flat: "oklch(0.55 0.01 260)",
   };
 
