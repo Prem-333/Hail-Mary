@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { LayoutDashboard, Activity, FlaskConical, FileBarChart, Radio, Sparkles } from "lucide-react";
+import { LayoutDashboard, Activity, Gauge, FileBarChart, Radio, Sparkles } from "lucide-react";
 import { cn } from "@workspace/ui/lib/utils";
 
 export function Sidebar() {
@@ -12,7 +12,7 @@ export function Sidebar() {
     { href: "/", label: "Lot Overview", icon: LayoutDashboard },
     { href: "/components", label: "Component Deep-Dive", icon: Activity },
     { href: "/monitor", label: "Sensor Monitor", icon: Radio, live: true },
-    { href: "/simulator", label: "Rejection Simulator", icon: FlaskConical },
+    { href: "/simulator", label: "Rejection Simulator", icon: Gauge },
     { href: "/evaluation", label: "Evaluation Summary", icon: FileBarChart },
   ];
 

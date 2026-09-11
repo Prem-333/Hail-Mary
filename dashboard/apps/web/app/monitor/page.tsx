@@ -220,11 +220,11 @@ export default function SensorMonitor() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium uppercase tracking-widest glass-card ${
-                connected ? 'text-emerald-500/80' : 'text-destructive/80'
+                connected ? 'text-emerald-500/80' : 'text-amber-500/80'
               }`}
             >
-              {connected ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
-              {connected ? "Live" : "Offline"}
+              {connected ? <Wifi className="w-3 h-3" /> : <div className="w-3 h-3 border-2 border-amber-500/20 border-t-amber-500 rounded-full animate-spin" />}
+              {connected ? "Live" : "Connecting..."}
               {connected && (
                 <span className="w-1.5 h-1.5 rounded-full live-dot ml-0.5" style={{ background: "oklch(0.65 0.12 160)" }} />
               )}
