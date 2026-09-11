@@ -20,39 +20,23 @@ export interface MomentumColors {
 
 export function detectMomentum(
   data: Record<string, unknown>[],
-  dataKey: string,
-  lookback = 20
+  dataKey: string
 ): Momentum {
-  if (data.length < 5) {
+  // Ignore the 2 virtual points added for smooth rendering
+  const realData = data.length > 2 ? data.slice(0, -2) : data;
+
+  if (realData.length < 2) {
     return "flat";
   }
-  const start = Math.max(0, data.length - lookback);
-  let min = Number.POSITIVE_INFINITY;
-  let max = Number.NEGATIVE_INFINITY;
-  for (let i = start; i < data.length; i++) {
-    const v = data[i]?.[dataKey];
-    if (typeof v === "number") {
-      if (v < min) {
-        min = v;
-      }
-      if (v > max) {
-        max = v;
-      }
-    }
-  }
-  const range = max - min;
-  if (range === 0) {
-    return "flat";
-  }
-  const tailStart = Math.max(start, data.length - 5);
-  const first = (data[tailStart]?.[dataKey] as number) ?? 0;
-  const last = (data.at(-1)?.[dataKey] as number) ?? 0;
-  const delta = last - first;
-  const threshold = range * 0.12;
-  if (delta > threshold) {
+
+  // Compare exactly the last two real data points to get instantaneous momentum with zero latency
+  const last = (realData.at(-1)?.[dataKey] as number) ?? 0;
+  const prev = (realData.at(-2)?.[dataKey] as number) ?? 0;
+
+  if (last > prev) {
     return "up";
   }
-  if (delta < -threshold) {
+  if (last < prev) {
     return "down";
   }
   return "flat";
