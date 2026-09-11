@@ -353,7 +353,8 @@ export default function SensorMonitor() {
                   window={60}
                   paused={paused}
                   numXTicks={6}
-                  nowOffsetUnits={1}
+                  nowOffsetUnits={0}
+                  margin={{ right: 80 }}
                   exaggerate
                   dataKey="value"
                 >
@@ -369,7 +370,7 @@ export default function SensorMonitor() {
                   />
                   <ChartTooltip showDatePill={false} />
                   <LiveXAxis />
-                  <LiveYAxis position="left" formatValue={(v) => `${v.toFixed(1)} µA`} />
+                  <LiveYAxis position="left" formatValue={(v) => `${v.toFixed(1)} µA`} minInterval={0.1} />
                   <LiveThresholdLine threshold={LEAKAGE_LIMIT} label={`Limit ${LEAKAGE_LIMIT} µA`} />
                 </LiveLineChart>
               ) : (
@@ -441,7 +442,8 @@ export default function SensorMonitor() {
                   window={60}
                   paused={paused}
                   numXTicks={6}
-                  nowOffsetUnits={1}
+                  nowOffsetUnits={0}
+                  margin={{ right: 80 }}
                   exaggerate
                   dataKey="value"
                 >
@@ -457,7 +459,7 @@ export default function SensorMonitor() {
                   />
                   <ChartTooltip showDatePill={false} />
                   <LiveXAxis />
-                  <LiveYAxis position="left" formatValue={(v) => `${v.toFixed(3)} ns`} />
+                  <LiveYAxis position="left" formatValue={(v) => `${v.toFixed(3)} ns`} minInterval={0.001} />
                   <LiveThresholdLine threshold={DELAY_LIMIT} label={`Limit ${DELAY_LIMIT} ns`} />
                 </LiveLineChart>
               ) : (

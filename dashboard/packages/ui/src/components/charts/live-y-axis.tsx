@@ -16,7 +16,8 @@ function pickNiceInterval(
   valRange: number,
   chartHeight: number,
   minGap: number,
-  prevInterval: number
+  prevInterval: number,
+  minInterval: number
 ): number {
   if (valRange <= 0 || chartHeight <= 0) {
     return 1;
@@ -51,7 +52,8 @@ function pickNiceInterval(
       best = span;
     }
   }
-  return best === Number.POSITIVE_INFINITY ? valRange / 5 : best;
+  const result = best === Number.POSITIVE_INFINITY ? valRange / 5 : best;
+  return minInterval > 0 ? Math.max(result, minInterval) : result;
 }
 
 // ---------------------------------------------------------------------------
@@ -84,6 +86,8 @@ export interface LiveYAxisProps {
   formatValue?: (v: number) => string;
   /** Allow decimal tick values. Default: true */
   allowDecimals?: boolean;
+  /** Minimum interval size to prevent duplicate labels when formatting truncates precision. */
+  minInterval?: number;
 }
 
 const tickSpring = { type: "spring" as const, stiffness: 180, damping: 24 };
@@ -109,6 +113,7 @@ const LiveYAxisInner = memo(function LiveYAxisInner({
   position = "left",
   formatValue = (v: number) => v.toFixed(2),
   allowDecimals = true,
+  minInterval = 0,
   container,
 }: LiveYAxisProps & { container: HTMLDivElement }) {
   const { yScale, margin, innerHeight } = useChartStable();
@@ -125,11 +130,12 @@ const LiveYAxisInner = memo(function LiveYAxisInner({
       valRange,
       innerHeight,
       minGap,
-      intervalRef.current
+      intervalRef.current,
+      minInterval
     );
     intervalRef.current = next;
     return next;
-  }, [valRange, innerHeight, minGap]);
+  }, [valRange, innerHeight, minGap, minInterval]);
 
   // Stabilize the tick VALUE set: only recompute which ticks exist when the
   // domain crosses an interval boundary. We quantize min/max to interval
@@ -166,22 +172,26 @@ const LiveYAxisInner = memo(function LiveYAxisInner({
   ]);
 
   // Pixel positions update every frame for smooth movement
-  const tickData = useMemo(
-    () =>
-      stableTickValues
-        .map((value) => {
-          const y = yScale(value) ?? 0;
-          return {
-            value,
-            y,
-            label: formatValue(value),
-            key: value.toPrecision(10),
-            edgeAlpha: edgeOpacity(y, innerHeight),
-          };
-        })
-        .filter((t) => t.y >= -10 && t.y <= innerHeight + 10),
-    [stableTickValues, yScale, innerHeight, formatValue]
-  );
+  const tickData = useMemo(() => {
+    const seenLabels = new Set<string>();
+    return stableTickValues
+      .map((value) => {
+        const y = yScale(value) ?? 0;
+        return {
+          value,
+          y,
+          label: formatValue(value),
+          key: value.toPrecision(10),
+          edgeAlpha: edgeOpacity(y, innerHeight),
+        };
+      })
+      .filter((t) => {
+        if (t.y < -10 || t.y > innerHeight + 10) return false;
+        if (seenLabels.has(t.label)) return false;
+        seenLabels.add(t.label);
+        return true;
+      });
+  }, [stableTickValues, yScale, innerHeight, formatValue]);
 
   const isLeft = position === "left";
 

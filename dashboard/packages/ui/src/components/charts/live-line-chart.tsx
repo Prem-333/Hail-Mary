@@ -121,9 +121,10 @@ function nextAnimFrame(
   targetRange: { yMin: number; yMax: number },
   targetValue: number,
   speed: number,
-  isPaused: boolean
+  isPaused: boolean,
+  timeOffset: number = 0
 ): AnimFrame {
-  const nextNow = isPaused ? prev.now : Date.now();
+  const nextNow = isPaused ? prev.now : Date.now() + timeOffset;
   const nextYMin =
     targetRange.yMin < prev.yMin
       ? targetRange.yMin
@@ -373,6 +374,20 @@ const LiveLineChartCore = memo(function LiveLineChartCore({
   const lastFrameCommitRef = useRef(0);
   const lastTooltipKeyRef = useRef<string | null>(null);
 
+  const timeOffsetRef = useRef<number>(0);
+
+  // Sync our local time to the latest data timestamp to avoid zigzags
+  useEffect(() => {
+    if (dataRef.current.length > 0) {
+      const latestDataTime = dataRef.current[dataRef.current.length - 1].time * 1000;
+      const localTime = Date.now();
+      // If the difference is more than 50ms, resync our offset
+      if (Math.abs((localTime + timeOffsetRef.current) - latestDataTime) > 50) {
+        timeOffsetRef.current = latestDataTime - localTime;
+      }
+    }
+  }, [data]);
+
   useEffect(() => {
     let raf: number;
     const tick = () => {
@@ -381,7 +396,8 @@ const LiveLineChartCore = memo(function LiveLineChartCore({
         targetRange,
         value,
         lerpSpeed,
-        pausedRef.current
+        pausedRef.current,
+        timeOffsetRef.current
       );
       animRef.current = next;
 
@@ -464,9 +480,7 @@ const LiveLineChartCore = memo(function LiveLineChartCore({
   );
 
   // ---- Build context-compatible data ----
-  // Convert LiveLinePoint[] to Record<string, unknown>[] with 2 virtual points:
-  // 1. At "now" — the live tip where the dot sits
-  // 2. At "now + 1 unit" — a queued point that the line fades into
+  // Convert LiveLinePoint[] to Record<string, unknown>[]
   const contextData = useMemo(() => {
     const windowStart = domainEndMs - windowMs;
     let startIdx = bisectTime(data, windowStart / 1000, 0);
@@ -478,16 +492,23 @@ const LiveLineChartCore = memo(function LiveLineChartCore({
       date: new Date(p.time * 1000),
       [dataKey]: p.value,
     }));
+    
+    // Add virtual points to ensure smooth line extension and prevent jumping.
+    // We clamp to the latest data time so the line never zig-zags backwards if local time jitters.
+    const latestDataTime = data.length > 0 ? data[data.length - 1].time * 1000 : frame.now;
+    const virtualNow = Math.max(frame.now, latestDataTime);
+
     // Virtual point 1: the "now" position (where the live dot sits)
     records.push({
-      date: new Date(frame.now),
+      date: new Date(virtualNow),
       [dataKey]: frame.displayValue,
     });
     // Virtual point 2: queued ahead (the line extends and fades into this)
     records.push({
-      date: new Date(frame.now + xTickUnitMs),
+      date: new Date(virtualNow + xTickUnitMs),
       [dataKey]: frame.displayValue,
     });
+
     return records;
   }, [
     data,
