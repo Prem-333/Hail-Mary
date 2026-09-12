@@ -379,11 +379,14 @@ const LiveLineChartCore = memo(function LiveLineChartCore({
   // Sync our local time to the latest data timestamp to avoid zigzags
   useEffect(() => {
     if (dataRef.current.length > 0) {
-      const latestDataTime = dataRef.current[dataRef.current.length - 1].time * 1000;
-      const localTime = Date.now();
-      // If the difference is more than 50ms, resync our offset
-      if (Math.abs((localTime + timeOffsetRef.current) - latestDataTime) > 50) {
-        timeOffsetRef.current = latestDataTime - localTime;
+      const lastItem = dataRef.current[dataRef.current.length - 1];
+      if (lastItem) {
+        const latestDataTime = lastItem.time * 1000;
+        const localTime = Date.now();
+        // If the difference is more than 50ms, resync our offset
+        if (Math.abs((localTime + timeOffsetRef.current) - latestDataTime) > 50) {
+          timeOffsetRef.current = latestDataTime - localTime;
+        }
       }
     }
   }, [data]);
