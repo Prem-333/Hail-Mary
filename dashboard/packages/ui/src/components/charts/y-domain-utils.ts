@@ -85,7 +85,7 @@ export function computeYDomainsByAxis({
   const domains: Record<string, YDomain> = {};
 
   for (const [axisId, axisLines] of groups) {
-    const dataKeys = axisLines.map((line) => line.dataKey);
+    const dataKeys = axisLines.map((line: LineConfig) => line.dataKey);
     domains[normalizeYAxisId(axisId)] = niceYDomain(resolveDomain(dataKeys));
   }
 

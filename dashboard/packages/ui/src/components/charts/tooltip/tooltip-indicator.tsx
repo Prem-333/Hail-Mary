@@ -176,7 +176,7 @@ function TooltipIndicatorInner({
     <g>
       <defs>
         <linearGradient id={gradientId} x1="0%" x2="0%" y1="0%" y2="100%">
-          {fadeStops.map((stop) => (
+          {fadeStops.map((stop: any) => (
             <stop
               key={stop.offset}
               offset={stop.offset}
