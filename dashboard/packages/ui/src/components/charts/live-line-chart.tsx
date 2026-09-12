@@ -498,7 +498,8 @@ const LiveLineChartCore = memo(function LiveLineChartCore({
     
     // Add virtual points to ensure smooth line extension and prevent jumping.
     // We clamp to the latest data time so the line never zig-zags backwards if local time jitters.
-    const latestDataTime = data.length > 0 ? data[data.length - 1].time * 1000 : frame.now;
+    const lastData = data[data.length - 1];
+    const latestDataTime = lastData ? lastData.time * 1000 : frame.now;
     const virtualNow = Math.max(frame.now, latestDataTime);
 
     // Virtual point 1: the "now" position (where the live dot sits)
