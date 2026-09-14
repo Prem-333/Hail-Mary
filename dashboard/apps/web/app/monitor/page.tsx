@@ -215,7 +215,7 @@ export default function SensorMonitor() {
       <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-xl font-semibold tracking-tight">Sensor Monitor</h1>
+            <h1 className="text-lg font-semibold tracking-tight">Sensor Monitor</h1>
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}

@@ -156,7 +156,7 @@ export default function LotOverview() {
               <stat.icon className="w-4 h-4" style={{ color: stat.color, opacity: 0.6 }} />
               <span className="text-xs text-muted-foreground/40 dark:text-muted-foreground uppercase tracking-widest font-medium">{stat.label}</span>
             </div>
-            <p className="text-2xl font-semibold tabular-nums" style={{ color: stat.color }}>{stat.value}</p>
+            <p className="text-xl font-semibold tabular-nums" style={{ color: stat.color }}>{stat.value}</p>
             {stat.subtitle && (
               <p className="text-xs font-medium mt-1" style={{ color: stat.color, opacity: 0.85 }}>{stat.subtitle}</p>
             )}

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, IBM_Plex_Mono } from "next/font/google"
+import { Inter, IBM_Plex_Mono } from "next/font/google"
 
 import "@workspace/ui/globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -25,10 +25,10 @@ export const metadata: Metadata = {
   },
 };
 
-const fontSans = Plus_Jakarta_Sans({
+const fontSans = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600"],
 })
 
 const fontMono = IBM_Plex_Mono({
@@ -57,7 +57,7 @@ export default function RootLayout({
             style={{ background: "var(--background)" }}
           >
             <Header />
-            <main className="flex-1 p-10 overflow-x-hidden">
+            <main className="flex-1 px-8 py-6 overflow-x-hidden">
               {children}
             </main>
           </div>

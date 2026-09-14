@@ -242,7 +242,7 @@ export default function EvaluationSummary() {
               }
             </div>
             <div className="flex items-baseline gap-2 mb-1">
-              <p className="text-4xl font-bold tabular-nums" style={{ color: fnIsZero ? "oklch(0.65 0.12 160)" : "oklch(0.65 0.14 30)" }}>
+              <p className="text-3xl font-semibold tabular-nums" style={{ color: fnIsZero ? "oklch(0.65 0.12 160)" : "oklch(0.65 0.14 30)" }}>
                 {falseNeg}
               </p>
               <p className="text-sm text-muted-foreground/40 dark:text-muted-foreground font-light">/ {totalDefects} defective components</p>
@@ -271,7 +271,7 @@ export default function EvaluationSummary() {
               <AlertTriangle className="w-4 h-4 opacity-40" style={{ color: "oklch(0.6 0.08 80)" }} />
             </div>
             <div className="flex items-baseline gap-2 mb-1">
-              <p className="text-4xl font-bold tabular-nums" style={{ color: "oklch(0.6 0.08 80)" }}>
+              <p className="text-3xl font-semibold tabular-nums" style={{ color: "oklch(0.6 0.08 80)" }}>
                 {falsePos}
               </p>
               <p className="text-sm text-muted-foreground/40 dark:text-muted-foreground font-light">/ {totalNormal} normal components</p>
@@ -386,7 +386,7 @@ export default function EvaluationSummary() {
                   <p className="text-xs font-medium uppercase tracking-widest" style={{ color: item.color }}>{item.label}</p>
                 </div>
                 <p className="text-xs text-muted-foreground/40 dark:text-muted-foreground font-light mb-3">{item.subtitle}</p>
-                <p className="text-3xl font-bold tabular-nums mb-0.5" style={{ color: item.color }}>
+                <p className="text-2xl font-semibold tabular-nums mb-0.5" style={{ color: item.color }}>
                   {item.rate.toFixed(0)}%
                 </p>
                 <p className="text-xs text-muted-foreground/50 dark:text-muted-foreground font-light">{item.flagged} / {item.total} components</p>
@@ -474,7 +474,7 @@ export default function EvaluationSummary() {
                   </span>
                 </div>
                 <div className="flex items-baseline gap-2 mb-3">
-                  <p className="text-3xl font-bold tabular-nums" style={{ color: pred.color }}>
+                  <p className="text-2xl font-semibold tabular-nums" style={{ color: pred.color }}>
                     <AnimatedNumber value={pred.mae} decimals={2} />
                   </p>
                   <p className="text-sm text-muted-foreground/50 dark:text-muted-foreground font-light">{pred.unit} MAE</p>

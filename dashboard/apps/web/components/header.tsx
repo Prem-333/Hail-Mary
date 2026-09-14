@@ -30,7 +30,7 @@ export function Header() {
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="border-b border-border/30 flex justify-between items-center w-full px-6 h-16 sticky top-0 z-10"
+      className="border-b border-border/30 flex justify-between items-center w-full px-8 h-14 sticky top-0 z-10"
       style={{
         background: "oklch(0.08 0.002 260 / 70%)",
         backdropFilter: "blur(24px) saturate(1.4)",

@@ -29,7 +29,7 @@ export function Sidebar() {
         className="px-6 mb-8"
       >
         <div className="flex items-center gap-2">
-          <h1 className="text-3xl font-bold tracking-tight text-shimmer">LATENT</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-shimmer">LATENT</h1>
         </div>
         <p className="text-xs text-muted-foreground mt-1.5 tracking-[0.15em] uppercase font-light">
           Burn-In AI · ISRO Screening
@@ -52,13 +52,13 @@ export function Sidebar() {
                 <Link
                   href={link.href}
                   className={cn(
-                    "flex items-center px-3 py-3 text-base font-medium rounded-lg transition-all duration-300 interactive-scale",
+                    "flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-300 interactive-scale",
                     isActive 
                       ? "text-foreground glass-card" 
                       : "text-muted-foreground hover:text-foreground/80 hover:bg-accent/30"
                   )}
                 >
-                  <Icon className="mr-3 h-5 w-5" />
+                  <Icon className="mr-3 h-4 w-4" />
                   <span className="font-normal">{link.label}</span>
                   {link.live && (
                     <motion.span 
