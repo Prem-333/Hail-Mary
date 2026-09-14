@@ -49,12 +49,12 @@ function ProgressBar({ value, max = 1, color = "oklch(0.7 0.05 250)", delay = 0 
 function InfoTooltip({ text }: { text: string }) {
   return (
     <div className="group relative inline-flex items-center">
-      <span className="w-3.5 h-3.5 rounded-full border border-muted-foreground/30 flex items-center justify-center text-[8px] text-muted-foreground/50 cursor-help font-bold leading-none ml-1.5">?</span>
+      <span className="w-3.5 h-3.5 rounded-full border border-muted-foreground/30 flex items-center justify-center text-[8px] text-muted-foreground/50 dark:text-muted-foreground cursor-help font-bold leading-none ml-1.5">?</span>
       <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 px-3 py-2.5 rounded-lg text-xs text-foreground/70 font-light leading-relaxed pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50"
-        style={{ background: "oklch(0.14 0.004 260)", border: "1px solid oklch(1 0 0 / 10%)" }}
+        style={{ background: "var(--popover)", border: "1px solid oklch(1 0 0 / 10%)" }}
       >
         {text}
-        <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 -mt-1" style={{ background: "oklch(0.14 0.004 260)", borderRight: "1px solid oklch(1 0 0 / 10%)", borderBottom: "1px solid oklch(1 0 0 / 10%)" }} />
+        <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 -mt-1" style={{ background: "var(--popover)", borderRight: "1px solid oklch(1 0 0 / 10%)", borderBottom: "1px solid oklch(1 0 0 / 10%)" }} />
       </div>
     </div>
   );
@@ -100,7 +100,7 @@ export default function EvaluationSummary() {
           <span className="text-2xl">⚠</span>
         </div>
         <h2 className="text-lg font-medium">Failed to Load</h2>
-        <p className="text-sm text-muted-foreground/60">Could not fetch evaluation metrics</p>
+        <p className="text-sm text-muted-foreground/60 dark:text-muted-foreground">Could not fetch evaluation metrics</p>
       </motion.div>
     );
   }
@@ -109,7 +109,7 @@ export default function EvaluationSummary() {
     <div className="flex h-full items-center justify-center">
       <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center gap-4">
         <div className="w-10 h-10 border-2 border-muted-foreground/20 border-t-chart-1 rounded-full animate-spin" />
-        <span className="text-sm text-muted-foreground/50 font-light">Computing metrics...</span>
+        <span className="text-sm text-muted-foreground/50 dark:text-muted-foreground font-light">Computing metrics...</span>
       </motion.div>
     </div>
   );
@@ -168,7 +168,7 @@ export default function EvaluationSummary() {
             LATENT
           </span>
         </div>
-        <p className="text-sm text-muted-foreground/60 mt-1 font-light">
+        <p className="text-sm text-muted-foreground/60 dark:text-muted-foreground mt-1 font-light">
           System performance against burn-in screening evaluation criteria — three graded rubric dimensions
         </p>
       </motion.div>
@@ -220,7 +220,7 @@ export default function EvaluationSummary() {
           icon={Shield}
           color="oklch(0.62 0.18 25)"
         />
-        <p className="text-xs text-muted-foreground/50 font-light ml-11">
+        <p className="text-xs text-muted-foreground/50 dark:text-muted-foreground font-light ml-11">
           Zero tolerance for false negatives — a missed defect in space causes mission failure
         </p>
 
@@ -233,7 +233,7 @@ export default function EvaluationSummary() {
           >
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-1.5">
-                <p className="text-xs text-muted-foreground/50 uppercase tracking-widest font-medium">False Negatives</p>
+                <p className="text-xs text-muted-foreground/50 dark:text-muted-foreground uppercase tracking-widest font-medium">False Negatives</p>
                 <InfoTooltip text="Defective components the AI labeled as 'Good'. In space, these are mission failures. The score is 0 — perfect." />
               </div>
               {fnIsZero
@@ -245,7 +245,7 @@ export default function EvaluationSummary() {
               <p className="text-4xl font-bold tabular-nums" style={{ color: fnIsZero ? "oklch(0.65 0.12 160)" : "oklch(0.65 0.14 30)" }}>
                 {falseNeg}
               </p>
-              <p className="text-sm text-muted-foreground/40 font-light">/ {totalDefects} defective components</p>
+              <p className="text-sm text-muted-foreground/40 dark:text-muted-foreground font-light">/ {totalDefects} defective components</p>
             </div>
             <p className="text-sm font-medium mt-2" style={{ color: fnIsZero ? "oklch(0.65 0.12 160)" : "oklch(0.65 0.14 30)" }}>
               {fnIsZero
@@ -254,7 +254,7 @@ export default function EvaluationSummary() {
             </p>
             <div className="mt-3">
               <ProgressBar value={totalDefects - falseNeg} max={totalDefects} color="oklch(0.65 0.12 160)" delay={0.1} />
-              <p className="text-xs text-muted-foreground/40 mt-1 text-right font-light">{totalDefects - falseNeg}/{totalDefects} caught</p>
+              <p className="text-xs text-muted-foreground/40 dark:text-muted-foreground mt-1 text-right font-light">{totalDefects - falseNeg}/{totalDefects} caught</p>
             </div>
           </motion.div>
 
@@ -265,7 +265,7 @@ export default function EvaluationSummary() {
           >
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-1.5">
-                <p className="text-xs text-muted-foreground/50 uppercase tracking-widest font-medium">False Positives</p>
+                <p className="text-xs text-muted-foreground/50 dark:text-muted-foreground uppercase tracking-widest font-medium">False Positives</p>
                 <InfoTooltip text="Good components incorrectly flagged as defective. These cause yield loss but not mission failure — less critical than FN." />
               </div>
               <AlertTriangle className="w-4 h-4 opacity-40" style={{ color: "oklch(0.6 0.08 80)" }} />
@@ -274,14 +274,14 @@ export default function EvaluationSummary() {
               <p className="text-4xl font-bold tabular-nums" style={{ color: "oklch(0.6 0.08 80)" }}>
                 {falsePos}
               </p>
-              <p className="text-sm text-muted-foreground/40 font-light">/ {totalNormal} normal components</p>
+              <p className="text-sm text-muted-foreground/40 dark:text-muted-foreground font-light">/ {totalNormal} normal components</p>
             </div>
-            <p className="text-sm text-muted-foreground/50 mt-2 font-light">
+            <p className="text-sm text-muted-foreground/50 dark:text-muted-foreground mt-2 font-light">
               {fpRate.toFixed(1)}% unnecessary rejection rate (yield cost, not safety risk)
             </p>
             <div className="mt-3">
               <ProgressBar value={fpRate} max={20} color="oklch(0.6 0.08 80)" delay={0.15} />
-              <p className="text-xs text-muted-foreground/40 mt-1 text-right font-light">{fpRate.toFixed(1)}% of {totalNormal} good parts over-rejected</p>
+              <p className="text-xs text-muted-foreground/40 dark:text-muted-foreground mt-1 text-right font-light">{fpRate.toFixed(1)}% of {totalNormal} good parts over-rejected</p>
             </div>
           </motion.div>
         </div>
@@ -328,7 +328,7 @@ export default function EvaluationSummary() {
             >
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-1">
-                  <p className="text-xs text-muted-foreground/50 uppercase tracking-widest font-medium">{stat.label}</p>
+                  <p className="text-xs text-muted-foreground/50 dark:text-muted-foreground uppercase tracking-widest font-medium">{stat.label}</p>
                   <InfoTooltip text={stat.tooltip} />
                 </div>
                 <stat.icon className="w-4 h-4 opacity-40" style={{ color: stat.color }} />
@@ -380,16 +380,16 @@ export default function EvaluationSummary() {
                 flagged: normalRow?.flagged ?? 0,
               },
             ].map((item) => (
-              <div key={item.label} className="rounded-lg p-4" style={{ background: "oklch(0.09 0.003 260)" }}>
+              <div key={item.label} className="rounded-lg p-4" style={{ background: "var(--screening-inset)" }}>
                 <div className="flex items-center gap-1.5 mb-1">
                   {item.crit && <span className="w-1.5 h-1.5 rounded-full" style={{ background: item.color }} />}
                   <p className="text-xs font-medium uppercase tracking-widest" style={{ color: item.color }}>{item.label}</p>
                 </div>
-                <p className="text-xs text-muted-foreground/40 font-light mb-3">{item.subtitle}</p>
+                <p className="text-xs text-muted-foreground/40 dark:text-muted-foreground font-light mb-3">{item.subtitle}</p>
                 <p className="text-3xl font-bold tabular-nums mb-0.5" style={{ color: item.color }}>
                   {item.rate.toFixed(0)}%
                 </p>
-                <p className="text-xs text-muted-foreground/50 font-light">{item.flagged} / {item.total} components</p>
+                <p className="text-xs text-muted-foreground/50 dark:text-muted-foreground font-light">{item.flagged} / {item.total} components</p>
                 <div className="mt-3">
                   <ProgressBar value={item.rate} max={100} color={item.color} />
                 </div>
@@ -401,7 +401,7 @@ export default function EvaluationSummary() {
               style={{ background: "oklch(0.65 0.14 55 / 8%)", border: "1px solid oklch(0.65 0.14 55 / 20%)" }}
             >
               <AlertTriangle className="w-4 h-4 text-amber-400/70 shrink-0 mt-0.5" />
-              <p className="text-xs text-muted-foreground/70 font-light">
+              <p className="text-xs text-muted-foreground/70 dark:text-muted-foreground font-light">
                 <span className="font-semibold text-amber-400/80">Traditional static-limit rules would have missed these latent defects entirely.</span>{" "}
                 LATENT's peer-comparison outlier detection catches them by identifying statistically abnormal behaviour within the batch — even when the component is below the datasheet maximum.
               </p>
@@ -412,7 +412,7 @@ export default function EvaluationSummary() {
         {/* Safety Slope Flag Rate chart */}
         <div className="h-[320px] glass-card rounded-xl p-6 flex flex-col">
           <div className="flex items-center gap-2 mb-3">
-            <h4 className="text-xs font-medium uppercase tracking-widest text-muted-foreground/50">Safety-Slope Flag Rate by Defect Class (%)</h4>
+            <h4 className="text-xs font-medium uppercase tracking-widest text-muted-foreground/50 dark:text-muted-foreground">Safety-Slope Flag Rate by Defect Class (%)</h4>
             <InfoTooltip text="Safety Slope = the drift rate implied by 0h→24h measurements, compared against a lot-specific dynamic threshold. Shows how well the Module B predictor flags each class." />
           </div>
           <div className="flex-1 min-h-0">
@@ -434,7 +434,7 @@ export default function EvaluationSummary() {
           icon={TrendingDown}
           color="oklch(0.7 0.05 250)"
         />
-        <p className="text-xs text-muted-foreground/50 font-light ml-11">
+        <p className="text-xs text-muted-foreground/50 dark:text-muted-foreground font-light ml-11">
           Lower MAE = better prediction of 168h behaviour from 0h &amp; 24h early readings
         </p>
 
@@ -468,7 +468,7 @@ export default function EvaluationSummary() {
                 className="glass-card glass-card-hover rounded-xl p-5"
               >
                 <div className="flex items-center justify-between mb-3">
-                  <p className="text-xs text-muted-foreground/50 uppercase tracking-widest font-medium">{pred.param}</p>
+                  <p className="text-xs text-muted-foreground/50 dark:text-muted-foreground uppercase tracking-widest font-medium">{pred.param}</p>
                   <span className={`text-xs font-medium px-2 py-0.5 rounded-md ${isBetter ? 'bg-emerald-500/10 text-emerald-400/80 border border-emerald-500/20' : 'bg-destructive/10 text-destructive/70 border border-destructive/20'}`}>
                     {isBetter ? `↓ ${pred.improvement.toFixed(0)}% vs baseline` : `↑ above baseline`}
                   </span>
@@ -477,9 +477,9 @@ export default function EvaluationSummary() {
                   <p className="text-3xl font-bold tabular-nums" style={{ color: pred.color }}>
                     <AnimatedNumber value={pred.mae} decimals={2} />
                   </p>
-                  <p className="text-sm text-muted-foreground/50 font-light">{pred.unit} MAE</p>
+                  <p className="text-sm text-muted-foreground/50 dark:text-muted-foreground font-light">{pred.unit} MAE</p>
                 </div>
-                <div className="flex items-center justify-between text-xs text-muted-foreground/40 mb-2">
+                <div className="flex items-center justify-between text-xs text-muted-foreground/40 dark:text-muted-foreground mb-2">
                   <span>Pre-tuning baseline</span>
                   <span className="font-mono">{pred.baseline} {pred.unit}</span>
                 </div>
@@ -494,7 +494,7 @@ export default function EvaluationSummary() {
                     style={{ background: isBetter ? "oklch(0.65 0.12 160)" : "oklch(0.62 0.18 25)" }}
                   />
                 </div>
-                <p className="text-xs text-muted-foreground/35 mt-1.5 font-light">
+                <p className="text-xs text-muted-foreground/35 dark:text-muted-foreground mt-1.5 font-light">
                   {((pred.mae / pred.baseline) * 100).toFixed(0)}% of baseline error — {isBetter ? "improvement achieved" : "needs tuning"}
                 </p>
               </motion.div>
@@ -505,10 +505,10 @@ export default function EvaluationSummary() {
         {/* MAE by defect class chart */}
         <div className="h-[350px] glass-card rounded-xl p-6 flex flex-col">
           <div className="flex items-center gap-2 mb-1">
-            <h4 className="text-xs font-medium uppercase tracking-widest text-muted-foreground/50">MAE by Defect Class — Leakage Current (µA)</h4>
+            <h4 className="text-xs font-medium uppercase tracking-widest text-muted-foreground/50 dark:text-muted-foreground">MAE by Defect Class — Leakage Current (µA)</h4>
             <InfoTooltip text="XGBoost vs Linear regression MAE breakdown per defect class. XGBoost (dark) should outperform Linear on latent defects due to non-linear drift patterns." />
           </div>
-          <p className="text-xs text-muted-foreground/30 font-light mb-3">Lower bars = more accurate prediction</p>
+          <p className="text-xs text-muted-foreground/30 dark:text-muted-foreground font-light mb-3">Lower bars = more accurate prediction</p>
           <div className="flex-1 min-h-0">
             <BarChart data={leakageBarData} xDataKey="group" barGap={0.3} aspectRatio="auto" className="h-full">
               <Grid horizontal />
@@ -529,7 +529,7 @@ export default function EvaluationSummary() {
           icon={Eye}
           color="oklch(0.65 0.10 160)"
         />
-        <p className="text-xs text-muted-foreground/50 font-light ml-11">
+        <p className="text-xs text-muted-foreground/50 dark:text-muted-foreground font-light ml-11">
           Every rejection decision must be traceable by a QA inspector with a specific, quantified reason
         </p>
 
@@ -573,7 +573,7 @@ export default function EvaluationSummary() {
                 </span>
               </div>
               <h4 className="text-sm font-semibold mb-2">{item.title}</h4>
-              <p className="text-xs text-muted-foreground/50 font-light leading-relaxed">{item.description}</p>
+              <p className="text-xs text-muted-foreground/50 dark:text-muted-foreground font-light leading-relaxed">{item.description}</p>
             </motion.div>
           ))}
         </div>
@@ -581,24 +581,24 @@ export default function EvaluationSummary() {
         {/* QA-readable example */}
         <div className="glass-card rounded-xl p-5">
           <div className="flex items-center gap-2 mb-4">
-            <Eye className="w-4 h-4 text-muted-foreground/40" />
+            <Eye className="w-4 h-4 text-muted-foreground/40 dark:text-muted-foreground" />
             <h3 className="text-sm font-semibold">Example QA Inspector Output</h3>
-            <span className="text-xs text-muted-foreground/40 font-light">— what a QA engineer sees per component</span>
+            <span className="text-xs text-muted-foreground/40 dark:text-muted-foreground font-light">— what a QA engineer sees per component</span>
           </div>
           <div className="rounded-lg px-4 py-4 font-mono text-xs leading-7 space-y-1"
-            style={{ background: "oklch(0.07 0.003 260)", border: "1px solid oklch(1 0 0 / 6%)" }}
+            style={{ background: "var(--background)", border: "1px solid oklch(1 0 0 / 6%)" }}
           >
             <div><span className="text-red-400 font-bold">DECISION: REJECT</span></div>
-            <div className="text-muted-foreground/60">─────────────────────────────────────────────</div>
+            <div className="text-muted-foreground/60 dark:text-muted-foreground">─────────────────────────────────────────────</div>
             <div><span className="text-amber-400">Module A — Anomaly Detection:</span></div>
-            <div className="text-muted-foreground/70 pl-4">Leakage anomaly score: <span className="text-foreground/80">18.4 / 25</span> (flagged)</div>
-            <div className="text-muted-foreground/70 pl-4">Peer batch median: <span className="text-foreground/80">11.2 µA</span>, this component: <span className="text-red-400">42.8 µA</span></div>
-            <div className="text-muted-foreground/70 pl-4">Deviation: <span className="text-red-400">4.8σ above batch norm</span> — static limit would have passed at 50µA max</div>
-            <div className="text-muted-foreground/60 mt-1">─────────────────────────────────────────────</div>
+            <div className="text-muted-foreground/70 dark:text-muted-foreground pl-4">Leakage anomaly score: <span className="text-foreground/80">18.4 / 25</span> (flagged)</div>
+            <div className="text-muted-foreground/70 dark:text-muted-foreground pl-4">Peer batch median: <span className="text-foreground/80">11.2 µA</span>, this component: <span className="text-red-400">42.8 µA</span></div>
+            <div className="text-muted-foreground/70 dark:text-muted-foreground pl-4">Deviation: <span className="text-red-400">4.8σ above batch norm</span> — static limit would have passed at 50µA max</div>
+            <div className="text-muted-foreground/60 dark:text-muted-foreground mt-1">─────────────────────────────────────────────</div>
             <div><span className="text-amber-400">Module B — Drift Predictor:</span></div>
-            <div className="text-muted-foreground/70 pl-4">Predicted 168h leakage: <span className="text-red-400">47.3 µA</span></div>
-            <div className="text-muted-foreground/70 pl-4">Implied drift rate: <span className="text-red-400">0.00183 µA/h</span> vs lot threshold <span className="text-foreground/80">0.00059 µA/h</span></div>
-            <div className="text-muted-foreground/70 pl-4">Drift ratio: <span className="text-red-400">3.1× above lot safety slope</span></div>
+            <div className="text-muted-foreground/70 dark:text-muted-foreground pl-4">Predicted 168h leakage: <span className="text-red-400">47.3 µA</span></div>
+            <div className="text-muted-foreground/70 dark:text-muted-foreground pl-4">Implied drift rate: <span className="text-red-400">0.00183 µA/h</span> vs lot threshold <span className="text-foreground/80">0.00059 µA/h</span></div>
+            <div className="text-muted-foreground/70 dark:text-muted-foreground pl-4">Drift ratio: <span className="text-red-400">3.1× above lot safety slope</span></div>
           </div>
         </div>
       </motion.div>
@@ -615,7 +615,7 @@ export default function EvaluationSummary() {
               { label: "QA Status", value: fnIsZero ? "Mission-Ready" : "Review Required" },
             ].map((item) => (
               <div key={item.label} className="flex items-center gap-1.5">
-                <span className="text-xs text-muted-foreground/40 uppercase tracking-widest font-medium">{item.label}</span>
+                <span className="text-xs text-muted-foreground/40 dark:text-muted-foreground uppercase tracking-widest font-medium">{item.label}</span>
                 <span className="w-1 h-1 rounded-full bg-muted-foreground/20" />
                 <span className="text-sm text-emerald-400/70 font-medium">{item.value}</span>
               </div>

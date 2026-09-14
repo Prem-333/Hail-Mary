@@ -90,7 +90,7 @@ export default function LotOverview() {
           <span className="text-2xl">!</span>
         </div>
         <h2 className="text-lg font-medium">Connection Failed</h2>
-        <p className="text-sm text-muted-foreground/60 font-light">Could not reach the API server</p>
+        <p className="text-sm text-muted-foreground/60 dark:text-muted-foreground font-light">Could not reach the API server</p>
       </motion.div>
     );
   }
@@ -100,7 +100,7 @@ export default function LotOverview() {
       <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
         className="flex flex-col items-center gap-4">
         <div className="w-10 h-10 border-2 border-muted-foreground/20 border-t-chart-1 rounded-full animate-spin" />
-        <span className="text-sm text-muted-foreground/50 font-light">Loading lot data...</span>
+        <span className="text-sm text-muted-foreground/50 dark:text-muted-foreground font-light">Loading lot data...</span>
       </motion.div>
     </div>
   );
@@ -111,7 +111,7 @@ export default function LotOverview() {
       <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight mb-1">Lot Overview</h1>
-          <p className="text-sm text-muted-foreground/60 font-light">
+          <p className="text-sm text-muted-foreground/60 dark:text-muted-foreground font-light">
             {allComponents.length} components screened · LATENT catches statistically abnormal parts that pass traditional static limits
           </p>
         </div>
@@ -154,7 +154,7 @@ export default function LotOverview() {
             className="glass-card glass-card-hover rounded-xl px-4 py-3">
             <div className="flex items-center gap-2 mb-1.5">
               <stat.icon className="w-4 h-4" style={{ color: stat.color, opacity: 0.6 }} />
-              <span className="text-xs text-muted-foreground/40 uppercase tracking-widest font-medium">{stat.label}</span>
+              <span className="text-xs text-muted-foreground/40 dark:text-muted-foreground uppercase tracking-widest font-medium">{stat.label}</span>
             </div>
             <p className="text-2xl font-semibold tabular-nums" style={{ color: stat.color }}>{stat.value}</p>
             {stat.subtitle && (
@@ -171,7 +171,7 @@ export default function LotOverview() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-base font-medium">Parametric Scatter</h3>
-              <p className="text-xs text-muted-foreground/40 uppercase tracking-widest font-medium mt-0.5">
+              <p className="text-xs text-muted-foreground/40 dark:text-muted-foreground uppercase tracking-widest font-medium mt-0.5">
                 Anomaly distribution by leakage &amp; delay — {allComponents.length} components
               </p>
             </div>
@@ -189,7 +189,7 @@ export default function LotOverview() {
                     transition-all duration-300 flex items-center gap-1.5
                     ${filter === f.key
                       ? 'text-foreground/90'
-                      : 'text-muted-foreground/40 hover:text-foreground/50'
+                      : 'text-muted-foreground/40 dark:text-muted-foreground hover:text-foreground/50'
                     }
                   `}
                 >
@@ -233,11 +233,11 @@ export default function LotOverview() {
            <div className="flex items-center gap-5 mb-3 text-xs">
              <div className="flex items-center gap-1.5">
                <span className="w-2.5 h-2.5 rounded-full" style={{ background: "rgba(160, 165, 180, 0.7)", border: "1.5px solid rgba(160, 165, 180, 0.4)" }} />
-               <span className="text-muted-foreground/60 font-light">Normal</span>
+               <span className="text-muted-foreground/60 dark:text-muted-foreground font-light">Normal</span>
              </div>
              <div className="flex items-center gap-1.5">
                <span className="w-2.5 h-2.5 rounded-full" style={{ background: "oklch(0.62 0.18 25)", border: "1.5px solid oklch(0.62 0.18 25 / 0.5)" }} />
-               <span className="text-muted-foreground/60 font-light">Anomalous</span>
+               <span className="text-muted-foreground/60 dark:text-muted-foreground font-light">Anomalous</span>
              </div>
            </div>
 
@@ -245,7 +245,7 @@ export default function LotOverview() {
           <div className="relative">
             {/* Y-axis label */}
             <div
-              className="absolute left-0 top-1/2 -translate-x-full -translate-y-1/2 text-xs text-muted-foreground/40 uppercase tracking-widest font-medium"
+              className="absolute left-0 top-1/2 -translate-x-full -translate-y-1/2 text-xs text-muted-foreground/40 dark:text-muted-foreground uppercase tracking-widest font-medium"
               style={{ writingMode: "vertical-rl", transform: "rotate(180deg) translateX(50%) translateY(50%)", marginLeft: "-2px" }}
             >
               Delay (ns)
@@ -363,7 +363,7 @@ export default function LotOverview() {
             </AnimatePresence>
 
             {/* X-axis label */}
-            <div className="text-center text-xs text-muted-foreground/40 uppercase tracking-widest font-medium mt-1">
+            <div className="text-center text-xs text-muted-foreground/40 dark:text-muted-foreground uppercase tracking-widest font-medium mt-1">
               Iddq / Leakage Current (µA)
             </div>
           </div>
@@ -378,7 +378,7 @@ export default function LotOverview() {
               <h3 className="text-base font-medium">
                 {filter === "all" ? "All Components" : filter === "anomalous" ? "Anomalous Components" : "Normal Components"}
               </h3>
-              <p className="text-xs text-muted-foreground/40 uppercase tracking-widest font-medium mt-0.5">
+              <p className="text-xs text-muted-foreground/40 dark:text-muted-foreground uppercase tracking-widest font-medium mt-0.5">
                 Showing {Math.min(TABLE_LIMIT, tableData.length)} of {tableData.length} — click to inspect
               </p>
             </div>
@@ -387,12 +387,12 @@ export default function LotOverview() {
             <table className="w-full text-left border-collapse text-sm">
               <thead>
                 <tr className="border-b border-border/5">
-                  <th className="px-6 py-3 text-xs font-medium text-muted-foreground/40 uppercase tracking-widest">Component</th>
-                  <th className="px-6 py-3 text-xs font-medium text-muted-foreground/40 uppercase tracking-widest">Lot</th>
-                  <th className="px-6 py-3 text-xs font-medium text-muted-foreground/40 uppercase tracking-widest">Defect Type</th>
-                  <th className="px-6 py-3 text-xs font-medium text-muted-foreground/40 uppercase tracking-widest">Score</th>
-                  <th className="px-6 py-3 text-xs font-medium text-muted-foreground/40 uppercase tracking-widest">Leakage (µA)</th>
-                  <th className="px-6 py-3 text-xs font-medium text-muted-foreground/40 uppercase tracking-widest">Delay (ns)</th>
+                  <th className="px-6 py-3 text-xs font-medium text-muted-foreground/40 dark:text-muted-foreground uppercase tracking-widest">Component</th>
+                  <th className="px-6 py-3 text-xs font-medium text-muted-foreground/40 dark:text-muted-foreground uppercase tracking-widest">Lot</th>
+                  <th className="px-6 py-3 text-xs font-medium text-muted-foreground/40 dark:text-muted-foreground uppercase tracking-widest">Defect Type</th>
+                  <th className="px-6 py-3 text-xs font-medium text-muted-foreground/40 dark:text-muted-foreground uppercase tracking-widest">Score</th>
+                  <th className="px-6 py-3 text-xs font-medium text-muted-foreground/40 dark:text-muted-foreground uppercase tracking-widest">Leakage (µA)</th>
+                  <th className="px-6 py-3 text-xs font-medium text-muted-foreground/40 dark:text-muted-foreground uppercase tracking-widest">Delay (ns)</th>
                   <th className="px-6 py-3"></th>
                 </tr>
               </thead>
@@ -410,7 +410,7 @@ export default function LotOverview() {
                     `}
                   >
                     <td className="px-6 py-3.5 font-mono text-sm text-foreground/70">{c.component_id}</td>
-                    <td className="px-6 py-3.5 text-sm text-muted-foreground/50 font-light">{c.lot_id}</td>
+                    <td className="px-6 py-3.5 text-sm text-muted-foreground/50 dark:text-muted-foreground font-light">{c.lot_id}</td>
                     <td className="px-6 py-3">
                       {c.is_anomalous ? (
                         <span className="text-xs font-medium uppercase tracking-wider px-2 py-0.5 rounded-md bg-destructive/10 text-destructive/80">
@@ -425,7 +425,7 @@ export default function LotOverview() {
                         </span>
                       )}
                     </td>
-                    <td className={`px-6 py-3.5 font-mono text-sm tabular-nums font-medium ${c.is_anomalous ? 'text-destructive/80' : 'text-muted-foreground/50'}`}>
+                    <td className={`px-6 py-3.5 font-mono text-sm tabular-nums font-medium ${c.is_anomalous ? 'text-destructive/80' : 'text-muted-foreground/50 dark:text-muted-foreground'}`}>
                       {c.anomaly_score?.toFixed(4)}
                     </td>
                     <td className="px-6 py-3">
@@ -436,7 +436,7 @@ export default function LotOverview() {
                             background: c.is_anomalous ? "oklch(0.62 0.18 25 / 0.6)" : "oklch(0.6 0.04 250 / 0.5)",
                           }} />
                         </div>
-                        <span className="text-xs text-muted-foreground/50 font-light tabular-nums">{c.leakage_median?.toFixed(2)}</span>
+                        <span className="text-xs text-muted-foreground/50 dark:text-muted-foreground font-light tabular-nums">{c.leakage_median?.toFixed(2)}</span>
                       </div>
                     </td>
                     <td className="px-6 py-3.5">
@@ -447,11 +447,11 @@ export default function LotOverview() {
                             background: c.is_anomalous ? "oklch(0.62 0.18 25 / 0.6)" : "oklch(0.6 0.04 250 / 0.5)",
                           }} />
                         </div>
-                        <span className="text-xs text-muted-foreground/50 font-light tabular-nums">{c.delay_median?.toFixed(2)}</span>
+                        <span className="text-xs text-muted-foreground/50 dark:text-muted-foreground font-light tabular-nums">{c.delay_median?.toFixed(2)}</span>
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <ArrowRight className="w-3.5 h-3.5 text-muted-foreground/0 group-hover:text-muted-foreground/40 transition-all duration-200 group-hover:translate-x-0.5" />
+                      <ArrowRight className="w-3.5 h-3.5 text-muted-foreground/0 group-hover:text-muted-foreground/40 dark:group-hover:text-muted-foreground transition-all duration-200 group-hover:translate-x-0.5" />
                     </td>
                   </motion.tr>
                 ))}
@@ -459,10 +459,10 @@ export default function LotOverview() {
             </table>
           </div>
           <div className="px-6 py-2 border-t border-border/5 flex items-center gap-2">
-            <span className="text-xs text-muted-foreground/40 uppercase tracking-widest font-medium">
+            <span className="text-xs text-muted-foreground/40 dark:text-muted-foreground uppercase tracking-widest font-medium">
               Static datasheet limits:
             </span>
-            <span className="text-xs text-muted-foreground/40 uppercase tracking-widest font-medium">
+            <span className="text-xs text-muted-foreground/40 dark:text-muted-foreground uppercase tracking-widest font-medium">
               Leakage &lt; 50&nbsp;µA&nbsp;·&nbsp;Delay &lt; 18&nbsp;ns — LATENT catches outliers that pass these limits
             </span>
           </div>

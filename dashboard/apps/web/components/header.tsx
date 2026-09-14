@@ -84,7 +84,7 @@ export function Header() {
           style={{ border: "1px solid oklch(0.4 0.01 260 / 20%)" }}
         >
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/70" />
-          <span className="text-xs text-muted-foreground/60 font-medium uppercase tracking-widest">
+          <span className="text-xs text-muted-foreground/60 dark:text-muted-foreground font-medium uppercase tracking-widest">
             System Operational
           </span>
         </div>

@@ -165,11 +165,11 @@ export default function ComponentDeepDive() {
 
             {/* Text */}
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground/50 mb-1">Screening Verdict</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground/50 dark:text-muted-foreground mb-1">Screening Verdict</p>
               <p className={`text-3xl font-black tracking-tight ${verdictConfig.color}`}>
                 {verdictConfig.label}
               </p>
-              <p className="text-sm text-muted-foreground/70 font-light mt-1">
+              <p className="text-sm text-muted-foreground/70 dark:text-muted-foreground font-light mt-1">
                 {verdictConfig.sublabel}
               </p>
             </div>
@@ -206,13 +206,13 @@ export default function ComponentDeepDive() {
           border: "1px solid oklch(1 0 0 / 6%)",
         }}>
           <div className="flex items-center gap-2 mb-4">
-            <Brain className="w-4 h-4 text-muted-foreground/50" />
+            <Brain className="w-4 h-4 text-muted-foreground/50 dark:text-muted-foreground" />
             <h3 className="text-base font-semibold">SHAP Decision Breakdown</h3>
           </div>
           <div className="space-y-3">
             {parseJustification(report.recommendation_text || "").map((point, idx) => (
               <div key={idx} className="flex items-start gap-3">
-                <span className="text-muted-foreground/70 mt-2 text-xs shrink-0">•</span>
+                <span className="text-muted-foreground/70 dark:text-muted-foreground mt-2 text-xs shrink-0">•</span>
                 <p className="text-sm leading-relaxed text-foreground/80 flex-1 font-light">{point}</p>
               </div>
             ))}
@@ -227,9 +227,9 @@ export default function ComponentDeepDive() {
           border: "1px solid oklch(1 0 0 / 6%)",
         }}>
           <div className="flex items-center gap-2 mb-5">
-            <TrendingUp className="w-4 h-4 text-muted-foreground/50" />
+            <TrendingUp className="w-4 h-4 text-muted-foreground/50 dark:text-muted-foreground" />
             <h3 className="text-base font-semibold">Parametric Trajectory</h3>
-            <span className="text-xs text-muted-foreground/60 font-light">— vs batch envelope (±2 MAD)</span>
+            <span className="text-xs text-muted-foreground/60 dark:text-muted-foreground font-light">— vs batch envelope (±2 MAD)</span>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {Object.entries(trajectories).map(([param, tr]: [string, any]) => {
@@ -253,7 +253,7 @@ export default function ComponentDeepDive() {
               return (
                 <div key={param}>
                   <div className="flex items-center justify-between mb-2">
-                    <h4 className="text-xs font-semibold text-muted-foreground/90 uppercase tracking-widest">{label}</h4>
+                    <h4 className="text-xs font-semibold text-muted-foreground/90 dark:text-muted-foreground uppercase tracking-widest">{label}</h4>
                     {isOutlier && (
                       <span className="text-[10px] px-2 py-0.5 rounded-full bg-destructive/10 text-destructive/70 border border-destructive/20 font-medium">
                         {deviation > 0 ? "+" : ""}{deviation.toFixed(0)}% vs batch median
@@ -283,7 +283,7 @@ export default function ComponentDeepDive() {
                       <ChartTooltip />
                     </LineChart>
                   </div>
-                  <div className="flex items-center gap-4 mt-2 text-[11px] text-muted-foreground/70">
+                  <div className="flex items-center gap-4 mt-2 text-[11px] text-muted-foreground/70 dark:text-muted-foreground">
                     <div className="flex items-center gap-1.5">
                       <div className="w-4 h-0.5 rounded" style={{ background: "var(--chart-1)" }} />
                       <span>This component</span>
@@ -336,9 +336,9 @@ export default function ComponentDeepDive() {
                   <p className={`font-bold text-lg ${anomaly.is_anomalous ? 'text-destructive' : 'text-emerald-400'}`}>
                     {anomaly.is_anomalous ? 'ANOMALOUS' : 'Normal'}
                   </p>
-                  <p className="text-xs text-muted-foreground/70 mt-0.5">
+                  <p className="text-xs text-muted-foreground/70 dark:text-muted-foreground mt-0.5">
                     Score: <span className="font-mono tabular-nums">{anomaly.anomaly_score?.toFixed(2) || '0.00'}</span>
-                    <span className="text-muted-foreground/40 ml-1">(z-score)</span>
+                    <span className="text-muted-foreground/40 dark:text-muted-foreground ml-1">(z-score)</span>
                   </p>
                 </div>
               </div>
@@ -359,14 +359,14 @@ export default function ComponentDeepDive() {
                     formatOptions={{ maximumFractionDigits: 1 }}
                   />
                 </div>
-                <p className="text-[11px] text-muted-foreground/40 mt-1">Scale: 0 – 25 z-score</p>
+                <p className="text-[11px] text-muted-foreground/40 dark:text-muted-foreground mt-1">Scale: 0 – 25 z-score</p>
               </div>
 
               {/* Justification */}
               <div>
                 <div className="flex items-center gap-1.5 mb-3">
-                  <AlertTriangle className="w-3 h-3 text-muted-foreground/40" />
-                  <h4 className="font-semibold text-xs text-muted-foreground/60 uppercase tracking-widest">Why Flagged</h4>
+                  <AlertTriangle className="w-3 h-3 text-muted-foreground/40 dark:text-muted-foreground" />
+                  <h4 className="font-semibold text-xs text-muted-foreground/60 dark:text-muted-foreground uppercase tracking-widest">Why Flagged</h4>
                 </div>
                 <div className="bg-muted/20 p-4 rounded-xl border border-border/20 space-y-2.5">
                   {parseJustification(anomaly.justification || "").length > 0 ? (
@@ -379,7 +379,7 @@ export default function ComponentDeepDive() {
                       </div>
                     ))
                   ) : (
-                    <p className="text-sm text-muted-foreground/60">N/A</p>
+                    <p className="text-sm text-muted-foreground/60 dark:text-muted-foreground">N/A</p>
                   )}
                 </div>
               </div>
@@ -425,11 +425,11 @@ export default function ComponentDeepDive() {
                 {drift.flagged_for_rejection && (
                   <div className="mt-4 pt-4 border-t border-destructive/20 grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <p className="text-muted-foreground/60 text-xs uppercase tracking-wider mb-1">Implied Drift</p>
+                      <p className="text-muted-foreground/60 dark:text-muted-foreground text-xs uppercase tracking-wider mb-1">Implied Drift</p>
                       <p className="font-mono tabular-nums text-destructive font-semibold">{drift.max_implied_drift?.toFixed(4) || 'N/A'}/h</p>
                     </div>
                     <div>
-                      <p className="text-muted-foreground/60 text-xs uppercase tracking-wider mb-1">Lot Threshold</p>
+                      <p className="text-muted-foreground/60 dark:text-muted-foreground text-xs uppercase tracking-wider mb-1">Lot Threshold</p>
                       <p className="font-mono tabular-nums">{drift.max_safety_slope?.toFixed(4) || 'N/A'}/h</p>
                     </div>
                   </div>
@@ -452,14 +452,14 @@ export default function ComponentDeepDive() {
                     formatOptions={{ maximumFractionDigits: 2 }}
                   />
                 </div>
-                <p className="text-[11px] text-muted-foreground/40 mt-1">
+                <p className="text-[11px] text-muted-foreground/40 dark:text-muted-foreground mt-1">
                   {worstDriftData.label} · Scale: 0 – 2× threshold
                 </p>
               </div>
 
               {/* Per-parameter table */}
               <div>
-                <h4 className="font-semibold mb-3 text-xs text-muted-foreground/60 uppercase tracking-widest">Per-Parameter Forecast</h4>
+                <h4 className="font-semibold mb-3 text-xs text-muted-foreground/60 dark:text-muted-foreground uppercase tracking-widest">Per-Parameter Forecast</h4>
                 <div className="rounded-xl overflow-hidden border border-border/30">
                   <table className="w-full text-left border-collapse">
                     <thead>
@@ -478,7 +478,7 @@ export default function ComponentDeepDive() {
                         const unit = param.includes("leak") ? "µA" : "ns";
                         return (
                           <tr key={param} className="border-b border-border/20 last:border-0 hover:bg-muted/5 transition-colors">
-                            <td className="px-4 py-3 capitalize text-sm text-muted-foreground/70">{param.replace(/_/g, ' ').replace('u a', 'µA').replace(' n s', ' ns')}</td>
+                            <td className="px-4 py-3 capitalize text-sm text-muted-foreground/70 dark:text-muted-foreground">{param.replace(/_/g, ' ').replace('u a', 'µA').replace(' n s', ' ns')}</td>
                             <td className="px-4 py-3 font-mono tabular-nums text-sm">
                               {pinfo.predicted_168h_xgb?.toFixed(3)} {unit}
                             </td>
@@ -495,7 +495,7 @@ export default function ComponentDeepDive() {
                     </tbody>
                   </table>
                 </div>
-                <p className="text-xs text-muted-foreground/35 mt-1.5 font-light text-right">Drift Ratio = implied drift ÷ lot safety-slope threshold</p>
+                <p className="text-xs text-muted-foreground/35 dark:text-muted-foreground mt-1.5 font-light text-right">Drift Ratio = implied drift ÷ lot safety-slope threshold</p>
               </div>
             </div>
           </div>

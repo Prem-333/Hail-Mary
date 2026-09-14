@@ -89,7 +89,7 @@ export function InitialLoader() {
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, scale: 1.05, filter: "blur(10px)" }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="fixed inset-0 flex flex-col items-center justify-center"
+          className="dark text-foreground fixed inset-0 flex flex-col items-center justify-center"
           style={{
             zIndex: 9999,
             background: "linear-gradient(180deg, oklch(0.04 0.002 260) 0%, oklch(0.02 0.001 260) 100%)",
@@ -106,7 +106,7 @@ export function InitialLoader() {
               <p className="text-sm text-muted-foreground tracking-[0.2em] uppercase font-light mb-1">
                 Burn-In AI · ISRO Screening
               </p>
-              <p className="text-xs text-muted-foreground/40 uppercase tracking-widest font-medium mb-12">
+              <p className="text-xs text-muted-foreground/40 dark:text-muted-foreground uppercase tracking-widest font-medium mb-12">
                 Smart India Hackathon · 2026
               </p>
             </motion.div>

@@ -92,7 +92,7 @@ export function Sidebar() {
         <div className="px-6 pt-3 space-y-2">
             <div className="glass-card rounded-lg px-3 py-2.5 flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/70" />
-              <p className="text-xs text-muted-foreground/70 uppercase tracking-[0.15em] font-medium">
+              <p className="text-xs text-muted-foreground/70 dark:text-muted-foreground uppercase tracking-[0.15em] font-medium">
                 System Operational
               </p>
             </div>
@@ -102,7 +102,7 @@ export function Sidebar() {
               <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "oklch(0.65 0.10 270)" }}>
                 LATENT
               </span>
-              <span className="text-[10px] text-muted-foreground/30 font-mono">v1.0.0</span>
+              <span className="text-[10px] text-muted-foreground/30 dark:text-muted-foreground font-mono">v1.0.0</span>
             </div>
           </div>
       </motion.div>

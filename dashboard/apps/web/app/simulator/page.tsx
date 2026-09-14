@@ -27,7 +27,7 @@ function ShapBar({ name, value, maxAbs }: { name: string; value: number; maxAbs:
   const displayName = friendlyNames[name] || name.replace(/_/g, " ");
   return (
     <div className="flex items-center gap-4">
-      <span className="text-sm text-muted-foreground/70 font-light w-56 shrink-0 text-right truncate" title={displayName}>
+      <span className="text-sm text-muted-foreground/70 dark:text-muted-foreground font-light w-56 shrink-0 text-right truncate" title={displayName}>
         {displayName}
       </span>
       <div className="flex-1 flex items-center gap-1.5" style={{ height: 20 }}>
@@ -145,7 +145,7 @@ export default function SimulatorPage() {
     show: { opacity: 1, y: 0, transition: { duration: 0.35 } }
   };
 
-  const inputClass = "w-full mt-1.5 px-3 py-2.5 rounded-lg text-sm transition-all focus:outline-none focus:ring-1 focus:ring-ring/40 bg-[oklch(0.09_0.004_260)] border border-border/40 placeholder:text-muted-foreground/40 tabular-nums";
+  const inputClass = "w-full mt-1.5 px-3 py-2.5 rounded-lg text-sm transition-all focus:outline-none focus:ring-1 focus:ring-ring/40 bg-[var(--screening-inset)] text-foreground border border-border/40 placeholder:text-muted-foreground/40 dark:placeholder:text-muted-foreground tabular-nums";
 
   // Build human-readable QA justification from result
   function buildJustification(result: any): string[] {
@@ -172,7 +172,7 @@ export default function SimulatorPage() {
     <motion.div variants={containerVariants} initial="hidden" animate="show" className="flex flex-col gap-5">
       <div className="mb-1">
         <h1 className="text-2xl font-semibold tracking-tight">Rejection Simulator</h1>
-        <p className="text-sm text-muted-foreground/60 mt-1 font-light">
+        <p className="text-sm text-muted-foreground/60 dark:text-muted-foreground mt-1 font-light">
           Enter early burn-in readings to predict 168h drift behaviour — with full SHAP explainability
         </p>
       </div>
@@ -181,11 +181,11 @@ export default function SimulatorPage() {
         {/* Input panel */}
         <motion.div variants={itemVariants} className="lg:col-span-2">
           <div className="rounded-lg p-5 h-full" style={{
-            background: "linear-gradient(180deg, var(--card) 0%, oklch(0.085 0.004 260) 100%)",
+            background: "linear-gradient(180deg, var(--card) 0%, var(--screening-panel-end) 100%)",
             border: "1px solid oklch(1 0 0 / 6%)",
           }}>
             <div className="flex items-center gap-2 mb-4">
-              <FlaskConical className="h-4 w-4 text-muted-foreground/50" />
+              <FlaskConical className="h-4 w-4 text-muted-foreground/50 dark:text-muted-foreground" />
               <h3 className="font-semibold text-sm">Input Measurements</h3>
             </div>
 
@@ -198,7 +198,7 @@ export default function SimulatorPage() {
                     value={formData.lot_id}
                     onValueChange={(v) => setFormData(prev => ({ ...prev, lot_id: v ?? "" }))}
                   >
-                    <SelectTrigger className="w-full bg-[oklch(0.09_0.004_260)] border-border/40 h-10 text-sm">
+                    <SelectTrigger className="w-full bg-[var(--screening-inset)] text-foreground border-border/40 h-10 text-sm">
                       <SelectValue placeholder="Select Lot" />
                     </SelectTrigger>
                     <SelectContent>
@@ -213,31 +213,31 @@ export default function SimulatorPage() {
               {/* Leakage Current */}
               <div className="pt-3 border-t border-border/20">
                 <div className="flex items-center gap-2 mb-3">
-                  <Zap className="h-3 w-3 text-muted-foreground/40" />
+                  <Zap className="h-3 w-3 text-muted-foreground/40 dark:text-muted-foreground" />
                   <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">
                     Iddq / Leakage Current (&micro;A)
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs text-muted-foreground/70 uppercase font-medium">0 h reading</label>
+                    <label className="text-xs text-muted-foreground/70 dark:text-muted-foreground uppercase font-medium">0 h reading</label>
                     <input
                       type="number" step="0.1" name="leak_0h"
                       value={formData.leak_0h} onChange={handleChange}
                       className={inputClass}
                       placeholder="e.g. 17.0"
                     />
-                    <p className="text-xs text-muted-foreground/40 mt-1 font-light">Typical: 15 – 25 µA</p>
+                    <p className="text-xs text-muted-foreground/40 dark:text-muted-foreground mt-1 font-light">Typical: 15 – 25 µA</p>
                   </div>
                   <div>
-                    <label className="text-xs text-muted-foreground/70 uppercase font-medium">24 h reading</label>
+                    <label className="text-xs text-muted-foreground/70 dark:text-muted-foreground uppercase font-medium">24 h reading</label>
                     <input
                       type="number" step="0.1" name="leak_24h"
                       value={formData.leak_24h} onChange={handleChange}
                       className={inputClass}
                       placeholder="e.g. 17.2"
                     />
-                    <p className="text-xs text-muted-foreground/40 mt-1 font-light">Must be ≥ 0 h value</p>
+                    <p className="text-xs text-muted-foreground/40 dark:text-muted-foreground mt-1 font-light">Must be ≥ 0 h value</p>
                   </div>
                 </div>
               </div>
@@ -245,31 +245,31 @@ export default function SimulatorPage() {
               {/* Propagation Delay */}
               <div className="pt-3 border-t border-border/20">
                 <div className="flex items-center gap-2 mb-3">
-                  <Zap className="h-3 w-3 text-muted-foreground/40" />
+                  <Zap className="h-3 w-3 text-muted-foreground/40 dark:text-muted-foreground" />
                   <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">
                     Propagation Delay (ns)
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs text-muted-foreground/70 uppercase font-medium">0 h reading</label>
+                    <label className="text-xs text-muted-foreground/70 dark:text-muted-foreground uppercase font-medium">0 h reading</label>
                     <input
                       type="number" step="0.01" name="delay_0h"
                       value={formData.delay_0h} onChange={handleChange}
                       className={inputClass}
                       placeholder="e.g. 8.0"
                     />
-                    <p className="text-xs text-muted-foreground/40 mt-1 font-light">Typical: 7 – 12 ns</p>
+                    <p className="text-xs text-muted-foreground/40 dark:text-muted-foreground mt-1 font-light">Typical: 7 – 12 ns</p>
                   </div>
                   <div>
-                    <label className="text-xs text-muted-foreground/70 uppercase font-medium">24 h reading</label>
+                    <label className="text-xs text-muted-foreground/70 dark:text-muted-foreground uppercase font-medium">24 h reading</label>
                     <input
                       type="number" step="0.01" name="delay_24h"
                       value={formData.delay_24h} onChange={handleChange}
                       className={inputClass}
                       placeholder="e.g. 8.04"
                     />
-                    <p className="text-xs text-muted-foreground/40 mt-1 font-light">Must be ≥ 0 h value</p>
+                    <p className="text-xs text-muted-foreground/40 dark:text-muted-foreground mt-1 font-light">Must be ≥ 0 h value</p>
                   </div>
                 </div>
               </div>
@@ -333,12 +333,12 @@ export default function SimulatorPage() {
         {/* Results panel */}
         <motion.div variants={itemVariants} className="lg:col-span-3">
           <div className="rounded-lg h-full" style={{
-            background: "linear-gradient(180deg, var(--card) 0%, oklch(0.085 0.004 260) 100%)",
+            background: "linear-gradient(180deg, var(--card) 0%, var(--screening-panel-end) 100%)",
             border: "1px solid oklch(1 0 0 / 6%)",
           }}>
             <div className="p-5 border-b border-border/10">
               <h3 className="font-semibold text-sm">Simulation Results</h3>
-              <p className="text-xs text-muted-foreground/50 font-light mt-0.5">
+              <p className="text-xs text-muted-foreground/50 dark:text-muted-foreground font-light mt-0.5">
                 Predicted 168 h drift rate vs lot-specific safety-slope threshold
               </p>
             </div>
@@ -353,10 +353,10 @@ export default function SimulatorPage() {
                       background: "linear-gradient(135deg, oklch(0.14 0.005 260), oklch(0.1 0.004 260))",
                       border: "1px solid oklch(1 0 0 / 6%)",
                     }}>
-                      <FlaskConical className="h-7 w-7 text-muted-foreground/30" />
+                      <FlaskConical className="h-7 w-7 text-muted-foreground/30 dark:text-muted-foreground" />
                     </div>
                     <p className="text-foreground/80 text-base font-medium">Enter readings and run a simulation</p>
-                    <p className="text-muted-foreground/50 text-sm mt-1 font-light">Results + SHAP explanation will appear here</p>
+                    <p className="text-muted-foreground/50 dark:text-muted-foreground text-sm mt-1 font-light">Results + SHAP explanation will appear here</p>
                   </motion.div>
                 )}
 
@@ -373,7 +373,7 @@ export default function SimulatorPage() {
                   <motion.div key="result" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-5">
                     {/* Status badge */}
                     <div className="flex items-center justify-between p-4 rounded-lg" style={{
-                      background: result.is_flagged ? "oklch(0.13 0.04 25)" : "oklch(0.11 0.03 160)",
+                      background: result.is_flagged ? "color-mix(in oklch, var(--destructive) 8%, var(--card))" : "color-mix(in oklch, var(--chart-2) 8%, var(--card))",
                       border: result.is_flagged ? "1px solid oklch(0.65 0.22 25 / 25%)" : "1px solid oklch(0.6 0.15 160 / 25%)",
                     }}>
                       <div className="flex items-center gap-3">
@@ -384,7 +384,7 @@ export default function SimulatorPage() {
                         )}
                         <div>
                           <h4 className="font-semibold text-sm">Safety-Slope Decision</h4>
-                          <p className="text-xs text-muted-foreground/60 font-light">
+                          <p className="text-xs text-muted-foreground/60 dark:text-muted-foreground font-light">
                             {result.is_flagged
                               ? "Drift rate exceeds lot threshold — component rejected"
                               : "Drift rate within lot threshold — component passes"}
@@ -420,7 +420,7 @@ export default function SimulatorPage() {
                         return (
                           <motion.div key={param} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
                             className="rounded-lg p-4" style={{
-                              background: "oklch(0.09 0.004 260)",
+                              background: "var(--screening-inset)",
                               border: "1px solid oklch(1 0 0 / 5%)",
                             }}
                           >
@@ -442,11 +442,11 @@ export default function SimulatorPage() {
                                     isolate
                                   />
                                 </span>
-                                <span className="text-xs text-muted-foreground/50 uppercase font-medium mt-1.5">{unit}</span>
+                                <span className="text-xs text-muted-foreground/50 dark:text-muted-foreground uppercase font-medium mt-1.5">{unit}</span>
                               </div>
                             </div>
                             <div className="text-center mb-2 -mt-2">
-                              <span className="text-xs text-muted-foreground/60">Drift Rate: {(data.implied_drift).toExponential(2)} {unit}</span>
+                              <span className="text-xs text-muted-foreground/60 dark:text-muted-foreground">Drift Rate: {(data.implied_drift).toExponential(2)} {unit}</span>
                             </div>
                             {/* Ratio badge */}
                             {isDanger && (
@@ -457,7 +457,7 @@ export default function SimulatorPage() {
                               </div>
                             )}
                             <div className="mt-2 pt-2 border-t border-border/20 text-xs flex items-center justify-between">
-                              <span className="text-muted-foreground/50 font-light">Lot threshold</span>
+                              <span className="text-muted-foreground/50 dark:text-muted-foreground font-light">Lot threshold</span>
                               <span className="font-mono tabular-nums text-foreground/60">
                                 {data.threshold.toFixed(5)} {unit}
                               </span>
@@ -476,7 +476,7 @@ export default function SimulatorPage() {
                                   }}
                                 />
                               </div>
-                              <p className="text-xs text-muted-foreground/40 text-right mt-0.5 font-light">
+                              <p className="text-xs text-muted-foreground/40 dark:text-muted-foreground text-right mt-0.5 font-light">
                                 {percentOfThreshold.toFixed(0)}% of threshold
                               </p>
                             </div>
@@ -487,20 +487,20 @@ export default function SimulatorPage() {
 
                     {/* QA Inspector Justification */}
                     <div className="rounded-xl p-5" style={{
-                      background: "oklch(0.08 0.004 260)",
+                      background: "var(--screening-inset-deep)",
                       border: "1px solid oklch(1 0 0 / 6%)",
                     }}>
                       <div className="flex items-center gap-2 mb-4">
-                        <Eye className="h-4 w-4 text-muted-foreground/50" />
-                        <span className="text-sm font-semibold uppercase tracking-widest text-muted-foreground/60">QA Inspector Justification</span>
+                        <Eye className="h-4 w-4 text-muted-foreground/50 dark:text-muted-foreground" />
+                        <span className="text-sm font-semibold uppercase tracking-widest text-muted-foreground/60 dark:text-muted-foreground">QA Inspector Justification</span>
                       </div>
                       <div className="space-y-3">
                         {buildJustification(result).map((line, i) => (
                           <div key={i} className="flex items-start gap-3">
-                            <span className="text-muted-foreground/40 mt-0.5 text-sm shrink-0">
+                            <span className="text-muted-foreground/40 dark:text-muted-foreground mt-0.5 text-sm shrink-0">
                               {result.is_flagged ? "⚠" : "✓"}
                             </span>
-                            <p className="text-sm text-muted-foreground/80 font-light leading-relaxed">{line}</p>
+                            <p className="text-sm text-muted-foreground/80 dark:text-muted-foreground font-light leading-relaxed">{line}</p>
                           </div>
                         ))}
                       </div>
@@ -509,14 +509,14 @@ export default function SimulatorPage() {
                     {/* SHAP Feature Attribution */}
                     {result.shap && Object.keys(result.shap).length > 0 && (
                       <div className="rounded-xl p-5" style={{
-                        background: "oklch(0.08 0.004 260)",
+                        background: "var(--screening-inset-deep)",
                         border: "1px solid oklch(1 0 0 / 6%)",
                       }}>
                         <div className="flex items-center gap-2 mb-1.5">
-                          <Brain className="h-4 w-4 text-muted-foreground/50" />
-                          <span className="text-sm font-semibold uppercase tracking-widest text-muted-foreground/60">SHAP Feature Attribution</span>
+                          <Brain className="h-4 w-4 text-muted-foreground/50 dark:text-muted-foreground" />
+                          <span className="text-sm font-semibold uppercase tracking-widest text-muted-foreground/60 dark:text-muted-foreground">SHAP Feature Attribution</span>
                         </div>
-                        <p className="text-sm text-muted-foreground/40 font-light mb-6">
+                        <p className="text-sm text-muted-foreground/40 dark:text-muted-foreground font-light mb-6">
                           Why the model predicted this drift — red bars push prediction up (more drift), blue bars push down (less drift)
                         </p>
                         <div className="space-y-6">
@@ -528,8 +528,8 @@ export default function SimulatorPage() {
                             return (
                               <div key={param}>
                                 <div className="flex items-center gap-3 mb-3 pl-[3.5rem]">
-                                  <span className="text-base font-semibold text-muted-foreground/80">{paramLabel}</span>
-                                  <span className="text-sm text-muted-foreground/40 font-light">
+                                  <span className="text-base font-semibold text-muted-foreground/80 dark:text-muted-foreground">{paramLabel}</span>
+                                  <span className="text-sm text-muted-foreground/40 dark:text-muted-foreground font-light">
                                     Base: {shapData.base_value?.toFixed(4)}
                                   </span>
                                 </div>
@@ -538,7 +538,7 @@ export default function SimulatorPage() {
                                     <ShapBar key={f.feature} name={f.feature} value={f.value} maxAbs={maxAbs} />
                                   ))}
                                 </div>
-                                <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground/40">
+                                <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground/40 dark:text-muted-foreground">
                                   <div className="w-56 shrink-0" />
                                   <div className="flex-1 flex items-center justify-center gap-4">
                                     <span className="text-right flex-1">← reduces drift prediction</span>

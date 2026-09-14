@@ -72,18 +72,18 @@ export default function ComponentsIndex() {
           <p className="text-sm text-muted-foreground mt-1">Select a component to view its trajectory, SHAP explanation, and AI assessment</p>
         </div>
         <div className="relative w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40 dark:text-muted-foreground" />
           <input
             type="text"
             value={lotSearch}
             onChange={(e) => handleLotSearch(e.target.value)}
             placeholder="Search lot..."
-            className="w-full pl-9 pr-8 py-2 rounded-lg text-sm bg-card border border-border/50 focus:outline-none focus:ring-1 focus:ring-ring/40 placeholder:text-muted-foreground/40"
+            className="w-full pl-9 pr-8 py-2 rounded-lg text-sm bg-card border border-border/50 focus:outline-none focus:ring-1 focus:ring-ring/40 placeholder:text-muted-foreground/40 dark:placeholder:text-muted-foreground"
           />
           {lotSearch && (
             <button
               onClick={() => setLotSearch("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/40 hover:text-muted-foreground transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/40 dark:text-muted-foreground hover:text-muted-foreground transition-colors"
             >
               <X className="h-4 w-4" />
             </button>

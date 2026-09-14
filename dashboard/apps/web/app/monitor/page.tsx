@@ -230,7 +230,7 @@ export default function SensorMonitor() {
               )}
             </motion.div>
           </div>
-          <p className="text-sm text-muted-foreground/50 mt-1 font-light">
+          <p className="text-sm text-muted-foreground/50 dark:text-muted-foreground mt-1 font-light">
             Streaming live burn-in telemetry · Real-time threshold monitoring
           </p>
         </div>
@@ -255,7 +255,7 @@ export default function SensorMonitor() {
               {lotComponents?.components?.map((c: any) => (
                 <SelectItem key={c.component_id} value={c.component_id} className="text-sm font-mono">
                   {c.component_id}
-                  <span className="ml-2 text-muted-foreground/40 text-xs font-sans normal-case">({c.defect_type})</span>
+                  <span className="ml-2 text-muted-foreground/40 dark:text-muted-foreground text-xs font-sans normal-case">({c.defect_type})</span>
                 </SelectItem>
               ))}
             </SelectContent>
@@ -302,8 +302,8 @@ export default function SensorMonitor() {
             { icon: Zap, label: "Burn-In Hour", value: `${currentHour.toFixed(1)} h`, mono: true },
           ].map((item) => (
             <div key={item.label} className="glass-card rounded-xl px-4 py-3 flex items-center gap-3">
-              {item.icon && <item.icon className="w-3.5 h-3.5 text-muted-foreground/30" />}
-              <span className="text-xs text-muted-foreground/40 uppercase tracking-widest font-medium">{item.label}</span>
+              {item.icon && <item.icon className="w-3.5 h-3.5 text-muted-foreground/30 dark:text-muted-foreground" />}
+              <span className="text-xs text-muted-foreground/40 dark:text-muted-foreground uppercase tracking-widest font-medium">{item.label}</span>
               <span className={`ml-auto text-sm font-medium tabular-nums ${item.mono ? 'font-mono' : ''} ${item.color || 'text-foreground/70'}`}>
                 {item.value}
               </span>
@@ -327,7 +327,7 @@ export default function SensorMonitor() {
             <div className="p-5 border-b border-border/5 flex items-center justify-between">
               <div>
                 <h3 className="text-base font-medium">Iddq / Leakage Current</h3>
-                <p className="text-xs text-muted-foreground/40 uppercase tracking-widest font-medium mt-0.5">
+                <p className="text-xs text-muted-foreground/40 dark:text-muted-foreground uppercase tracking-widest font-medium mt-0.5">
                   µA · Limit: {LEAKAGE_LIMIT.toFixed(1)} µA (MIL-STD datasheet)
                 </p>
               </div>
@@ -342,7 +342,7 @@ export default function SensorMonitor() {
                 <span className={`text-lg font-mono font-semibold tabular-nums ${currentLeakage > LEAKAGE_LIMIT ? 'text-destructive' : 'text-foreground/70'}`}>
                   {currentLeakage.toFixed(2)}
                 </span>
-                <span className="text-xs text-muted-foreground/40 uppercase tracking-widest font-medium ml-1">µA</span>
+                <span className="text-xs text-muted-foreground/40 dark:text-muted-foreground uppercase tracking-widest font-medium ml-1">µA</span>
               </div>
             </div>
             <div className="p-4" style={{ height: 320 }}>
@@ -380,14 +380,14 @@ export default function SensorMonitor() {
                     transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                     className="w-8 h-8 border-2 border-muted-foreground/15 border-t-chart-1/50 rounded-full mb-3"
                   />
-                  <p className="text-sm text-muted-foreground/40 font-light">Waiting for sensor data...</p>
-                  <p className="text-xs text-muted-foreground/25 mt-1 font-light">Connects automatically on load</p>
+                  <p className="text-sm text-muted-foreground/40 dark:text-muted-foreground font-light">Waiting for sensor data...</p>
+                  <p className="text-xs text-muted-foreground/25 dark:text-muted-foreground mt-1 font-light">Connects automatically on load</p>
                 </div>
               )}
             </div>
             {/* Threshold context bar */}
             <div className="px-5 pb-4">
-              <div className="flex items-center justify-between text-xs text-muted-foreground/40 mb-1">
+              <div className="flex items-center justify-between text-xs text-muted-foreground/40 dark:text-muted-foreground mb-1">
                 <span>0 µA</span>
                 <span className="text-destructive/50">⬆ Limit: {LEAKAGE_LIMIT} µA</span>
                 <span>{LEAKAGE_LIMIT * 1.5} µA</span>
@@ -416,7 +416,7 @@ export default function SensorMonitor() {
             <div className="p-5 border-b border-border/5 flex items-center justify-between">
               <div>
                 <h3 className="text-base font-medium">Propagation Delay</h3>
-                <p className="text-xs text-muted-foreground/40 uppercase tracking-widest font-medium mt-0.5">
+                <p className="text-xs text-muted-foreground/40 dark:text-muted-foreground uppercase tracking-widest font-medium mt-0.5">
                   ns · Limit: {DELAY_LIMIT.toFixed(1)} ns (MIL-STD datasheet)
                 </p>
               </div>
@@ -431,7 +431,7 @@ export default function SensorMonitor() {
                 <span className={`text-lg font-mono font-semibold tabular-nums ${currentDelay > DELAY_LIMIT ? 'text-destructive' : 'text-foreground/70'}`}>
                   {currentDelay.toFixed(4)}
                 </span>
-                <span className="text-xs text-muted-foreground/40 uppercase tracking-widest font-medium ml-1">ns</span>
+                <span className="text-xs text-muted-foreground/40 dark:text-muted-foreground uppercase tracking-widest font-medium ml-1">ns</span>
               </div>
             </div>
             <div className="p-4" style={{ height: 320 }}>
@@ -469,13 +469,13 @@ export default function SensorMonitor() {
                     transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                     className="w-8 h-8 border-2 border-muted-foreground/15 border-t-chart-1/50 rounded-full mb-3"
                   />
-                  <p className="text-sm text-muted-foreground/40 font-light">Waiting for sensor data...</p>
+                  <p className="text-sm text-muted-foreground/40 dark:text-muted-foreground font-light">Waiting for sensor data...</p>
                 </div>
               )}
             </div>
             {/* Threshold context bar */}
             <div className="px-5 pb-4">
-              <div className="flex items-center justify-between text-xs text-muted-foreground/40 mb-1">
+              <div className="flex items-center justify-between text-xs text-muted-foreground/40 dark:text-muted-foreground mb-1">
                 <span>0 ns</span>
                 <span className="text-destructive/50">⬆ Limit: {DELAY_LIMIT} ns</span>
                 <span>{DELAY_LIMIT * 1.5} ns</span>
