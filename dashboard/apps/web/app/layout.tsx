@@ -53,7 +53,7 @@ export default function RootLayout({
           <InitialLoader />
           <AutoFullscreen />
           <Sidebar />
-          <div className="md:ml-[280px] md:w-[calc(100%-280px)] w-full flex flex-col min-h-screen"
+          <div className="md:ml-[300px] md:w-[calc(100%-300px)] w-full flex flex-col min-h-screen"
             style={{ background: "var(--background)" }}
           >
             <Header />

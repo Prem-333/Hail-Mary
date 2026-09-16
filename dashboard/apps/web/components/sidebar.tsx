@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { LayoutDashboard, Activity, Gauge, FileBarChart, Radio, Sparkles } from "lucide-react";
+import { LayoutDashboard, Activity, FlaskConical, FileBarChart, Radio, Sparkles } from "lucide-react";
 import { cn } from "@workspace/ui/lib/utils";
 
 export function Sidebar() {
@@ -12,14 +12,14 @@ export function Sidebar() {
     { href: "/", label: "Lot Overview", icon: LayoutDashboard },
     { href: "/components", label: "Component Deep-Dive", icon: Activity },
     { href: "/monitor", label: "Sensor Monitor", icon: Radio, live: true },
-    { href: "/simulator", label: "Rejection Simulator", icon: Gauge },
+    { href: "/simulator", label: "Rejection Simulator", icon: FlaskConical },
     { href: "/evaluation", label: "Evaluation Summary", icon: FileBarChart },
   ];
 
   return (
     <>
       {/* ─── Desktop Sidebar (md+) ─── */}
-      <aside className="hidden md:flex md:flex-col fixed left-0 top-0 h-full w-[280px] border-r border-sidebar-border/50 py-6 z-20"
+      <aside className="hidden md:flex md:flex-col fixed left-0 top-0 h-full w-[300px] border-r border-sidebar-border/50 py-7 z-20"
         style={{
           background: "linear-gradient(180deg, var(--sidebar) 0%, oklch(0.04 0.002 260) 100%)",
         }}
@@ -39,7 +39,7 @@ export function Sidebar() {
         </motion.div>
 
         <nav className="flex-1 overflow-y-auto">
-          <ul className="flex flex-col space-y-0.5 px-3">
+          <ul className="flex flex-col space-y-1 px-3">
             {links.map((link, index) => {
               const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
               const Icon = link.icon;
@@ -54,14 +54,14 @@ export function Sidebar() {
                   <Link
                     href={link.href}
                     className={cn(
-                      "flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-300 interactive-scale",
-                      isActive 
-                        ? "text-foreground glass-card" 
-                        : "text-muted-foreground hover:text-foreground/80 hover:bg-accent/30"
-                    )}
-                  >
-                    <Icon className="mr-3 h-4 w-4" />
-                    <span className="font-normal">{link.label}</span>
+                    "flex items-center px-3 py-3 text-[15px] font-medium rounded-lg transition-all duration-300 interactive-scale",
+                    isActive 
+                      ? "text-foreground glass-card" 
+                      : "text-muted-foreground hover:text-foreground/80 hover:bg-accent/30"
+                  )}
+                >
+                  <Icon className="mr-3 h-[18px] w-[18px]" />
+                  <span className="font-normal">{link.label}</span>
                     {link.live && (
                       <motion.span 
                         className="ml-auto flex items-center gap-1.5"
@@ -101,7 +101,7 @@ export function Sidebar() {
               <div className="rounded-lg px-3 py-2 flex items-center justify-between"
                 style={{ background: "oklch(0.10 0.008 270 / 60%)", border: "1px solid oklch(0.4 0.06 270 / 20%)" }}
               >
-                <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "oklch(0.65 0.10 270)" }}>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                   LATENT
                 </span>
                 <span className="text-[10px] text-muted-foreground/30 dark:text-muted-foreground font-mono">v1.0.0</span>
