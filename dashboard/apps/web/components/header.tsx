@@ -1,7 +1,9 @@
 'use client';
-import { motion } from "framer-motion";
-import { Shield, ChevronRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Shield, ChevronRight, Moon, Sun, Maximize2, Minimize2 } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { useTheme } from "next-themes";
+import { useFullscreen } from "@/components/auto-fullscreen";
 
 const PAGE_LABELS: Record<string, string> = {
   "/": "Lot Overview",
@@ -24,6 +26,8 @@ function getPageLabel(pathname: string): string {
 export function Header() {
   const pathname = usePathname();
   const pageLabel = getPageLabel(pathname);
+  const { theme, setTheme } = useTheme();
+  const { isFullscreen, toggle } = useFullscreen();
 
   return (
     <motion.header 
@@ -73,13 +77,52 @@ export function Header() {
         </motion.div>
       </div>
       
-      {/* Right side: operator badge */}
+      {/* Right side: action buttons + operator badge */}
       <motion.div
         initial={{ opacity: 0, x: 10 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.2 }}
         className="flex items-center gap-3"
       >
+        {/* Icon buttons */}
+        <div className="flex items-center gap-2">
+          {/* Fullscreen toggle */}
+          <button
+            onClick={toggle}
+            className="w-8 h-8 rounded-lg glass-card flex items-center justify-center hover:scale-105 transition"
+            title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+          >
+            {isFullscreen ? (
+              <Minimize2 className="w-4 h-4 text-foreground/70" />
+            ) : (
+              <Maximize2 className="w-4 h-4 text-foreground/70" />
+            )}
+          </button>
+
+          {/* Theme toggle */}
+          <button
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="w-8 h-8 rounded-lg glass-card flex items-center justify-center hover:scale-105 transition"
+            title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+          >
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={theme}
+                initial={{ opacity: 0, rotate: -90, scale: 0.5 }}
+                animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                exit={{ opacity: 0, rotate: 90, scale: 0.5 }}
+                transition={{ duration: 0.2 }}
+              >
+                {theme === "dark" ? (
+                  <Moon className="w-4 h-4 text-foreground/70" />
+                ) : (
+                  <Sun className="w-4 h-4 text-foreground/70" />
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </button>
+        </div>
+
         <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg glass-card"
           style={{ border: "1px solid oklch(0.4 0.01 260 / 20%)" }}
         >

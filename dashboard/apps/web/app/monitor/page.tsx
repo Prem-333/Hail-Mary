@@ -72,7 +72,7 @@ interface StreamMeta {
 export default function SensorMonitor() {
   const { data: lotsData } = useSWR(`${API_URL}/api/lots/`, fetcher, swrOpts);
 
-  useEffect(() => { document.title = "Sensor Monitor — LATENT"; }, []);
+
 
   const [selectedLot, setSelectedLot] = useState<string>("");
   const [selectedComponent, setSelectedComponent] = useState<string>("");

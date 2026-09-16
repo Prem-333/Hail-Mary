@@ -1,5 +1,4 @@
 'use client';
-import { useEffect } from "react";
 import useSWR from "swr";
 import axios from "axios";
 import { motion } from "framer-motion";
@@ -79,7 +78,7 @@ function SectionLabel({ number, title, icon: Icon, color }: { number: string; ti
 export default function EvaluationSummary() {
   const { data, isLoading, error } = useSWR(`${API_URL}/api/evaluation/`, fetcher, swrOpts);
 
-  useEffect(() => { document.title = "Evaluation Summary — LATENT"; }, []);
+
 
   const containerVariants = {
     hidden: { opacity: 0 },

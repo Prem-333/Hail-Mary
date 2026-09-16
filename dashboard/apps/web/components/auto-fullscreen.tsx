@@ -1,30 +1,44 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
-export function AutoFullscreen() {
+export function useFullscreen() {
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
   useEffect(() => {
-    const handleFirstInteraction = () => {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(err => {
-          console.warn(`Error attempting to enable fullscreen: ${err.message}`);
-        });
-      }
-      // Remove listeners after first interaction so it doesn't repeatedly try to go fullscreen
-      // if the user later exits fullscreen manually.
-      window.removeEventListener('click', handleFirstInteraction);
-      window.removeEventListener('keydown', handleFirstInteraction);
+    if (typeof document === 'undefined') return;
+
+    const onChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
     };
 
-    // Listen for any click or keypress to trigger fullscreen
-    window.addEventListener('click', handleFirstInteraction);
-    window.addEventListener('keydown', handleFirstInteraction);
+    document.addEventListener('fullscreenchange', onChange);
+    // Sync initial state
+    setIsFullscreen(!!document.fullscreenElement);
 
     return () => {
-      window.removeEventListener('click', handleFirstInteraction);
-      window.removeEventListener('keydown', handleFirstInteraction);
+      document.removeEventListener('fullscreenchange', onChange);
     };
   }, []);
 
+  const toggle = useCallback(() => {
+    if (typeof document === 'undefined') return;
+
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch((err) => {
+        console.warn(`Error attempting to enable fullscreen: ${err.message}`);
+      });
+    } else {
+      document.exitFullscreen().catch((err) => {
+        console.warn(`Error attempting to exit fullscreen: ${err.message}`);
+      });
+    }
+  }, []);
+
+  return { isFullscreen, toggle };
+}
+
+// Kept as a no-op so layout.tsx import doesn't break
+export function AutoFullscreen() {
   return null;
 }

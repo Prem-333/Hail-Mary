@@ -10,7 +10,7 @@ import { AutoFullscreen } from "@/components/auto-fullscreen";
 import { InitialLoader } from "@/components/initial-loader";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("http://localhost:3000"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: {
     default: "LATENT — Burn-In Screening · ISRO",
     template: "%s — LATENT",
@@ -53,11 +53,11 @@ export default function RootLayout({
           <InitialLoader />
           <AutoFullscreen />
           <Sidebar />
-          <div className="ml-[280px] w-[calc(100%-280px)] flex flex-col min-h-screen"
+          <div className="md:ml-[280px] md:w-[calc(100%-280px)] w-full flex flex-col min-h-screen"
             style={{ background: "var(--background)" }}
           >
             <Header />
-            <main className="flex-1 px-8 py-6 overflow-x-hidden">
+            <main className="flex-1 px-4 md:px-8 py-6 pb-24 md:pb-6 overflow-x-hidden">
               {children}
             </main>
           </div>
