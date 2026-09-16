@@ -1,9 +1,7 @@
 'use client';
-import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Shield, ChevronRight, Moon, Sun, Maximize2, Minimize2 } from "lucide-react";
+import { Shield, ChevronRight, Maximize2, Minimize2 } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { useTheme } from "next-themes";
 import { useFullscreen } from "@/components/auto-fullscreen";
 
 const PAGE_LABELS: Record<string, string> = {
@@ -27,13 +25,7 @@ function getPageLabel(pathname: string): string {
 export function Header() {
   const pathname = usePathname();
   const pageLabel = getPageLabel(pathname);
-  const { theme, setTheme } = useTheme();
   const { isFullscreen, toggle } = useFullscreen();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   return (
     <motion.header 
@@ -103,33 +95,6 @@ export function Header() {
             ) : (
               <Maximize2 className="w-4 h-4 text-foreground/70" />
             )}
-          </button>
-
-          {/* Theme toggle */}
-          <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="w-8 h-8 rounded-lg glass-card flex items-center justify-center hover:scale-105 transition"
-            title={mounted ? `Switch to ${theme === "dark" ? "light" : "dark"} mode` : "Switch theme"}
-          >
-            <AnimatePresence mode="wait">
-              {mounted ? (
-                <motion.div
-                  key={theme}
-                  initial={{ opacity: 0, rotate: -90, scale: 0.5 }}
-                  animate={{ opacity: 1, rotate: 0, scale: 1 }}
-                  exit={{ opacity: 0, rotate: 90, scale: 0.5 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  {theme === "dark" ? (
-                    <Moon className="w-4 h-4 text-foreground/70" />
-                  ) : (
-                    <Sun className="w-4 h-4 text-foreground/70" />
-                  )}
-                </motion.div>
-              ) : (
-                <div className="w-4 h-4" />
-              )}
-            </AnimatePresence>
           </button>
         </div>
 
