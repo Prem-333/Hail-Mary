@@ -1,0 +1,437 @@
+{
+  "date": "2026-09-16",
+  "git_commit": "959b746",
+  "runtime": {
+    "python": "3.14.6",
+    "pandas": "3.0.5",
+    "sklearn": "1.9.0",
+    "xgboost": "3.4.1",
+    "shap": "0.52.0"
+  },
+  "data": {
+    "components": 15142,
+    "lots": 20,
+    "measurement_rows": 30284,
+    "classes": {
+      "normal": 14135,
+      "latent": 761,
+      "obvious": 246
+    },
+    "sha256": {
+      "burnin_measurements.csv": "5bfe2f77cfd84d35ac03d0b16903a1e6ff77a2c1a5529937324a06916c0f1cb8",
+      "burnin_labels.csv": "5ae929da07ea8ce6530d42e99234d70bcadc412b1b9c391fad8213a84ea2f82c"
+    }
+  },
+  "module_a": {
+    "precision": 0.8411,
+    "recall": 0.9672,
+    "f2_score": 0.9391,
+    "true_positives": 974,
+    "false_positives": 184,
+    "false_negatives": 33,
+    "true_negatives": 13951,
+    "total_defects": 1007,
+    "total_components": 15142
+  },
+  "static_168h": {
+    "precision": 1.0,
+    "recall": 0.3585,
+    "f2_score": 0.4113,
+    "true_positives": 361,
+    "false_positives": 0,
+    "false_negatives": 646,
+    "true_negatives": 14135,
+    "total_defects": 1007,
+    "total_components": 15142
+  },
+  "additional_defects_flagged_below_both_168h_limits": 613,
+  "module_b_in_sample": {
+    "leakage_current_uA": {
+      "xgb_mae": 1.413,
+      "xgb_rmse": 3.3098,
+      "linear_mae": 1.422,
+      "linear_rmse": 3.4575,
+      "xgb_mae_normal": 0.7638,
+      "xgb_rmse_normal": 0.9368,
+      "linear_mae_normal": 0.7612,
+      "xgb_mae_latent": 12.6886,
+      "xgb_rmse_latent": 13.8513,
+      "linear_mae_latent": 13.5924,
+      "xgb_mae_obvious": 3.8389,
+      "xgb_rmse_obvious": 5.5098,
+      "linear_mae_obvious": 1.7424
+    },
+    "propagation_delay_ns": {
+      "xgb_mae": 0.4647,
+      "xgb_rmse": 1.069,
+      "linear_mae": 0.47,
+      "linear_rmse": 1.1331,
+      "xgb_mae_normal": 0.2592,
+      "xgb_rmse_normal": 0.3194,
+      "linear_mae_normal": 0.2542,
+      "xgb_mae_latent": 4.1486,
+      "xgb_rmse_latent": 4.513,
+      "linear_mae_latent": 4.48,
+      "xgb_mae_obvious": 0.8772,
+      "xgb_rmse_obvious": 1.2117,
+      "linear_mae_obvious": 0.4638
+    }
+  },
+  "safety_slope_in_sample": {
+    "latent": {
+      "total": 761,
+      "flagged": 47
+    },
+    "normal": {
+      "total": 14135,
+      "flagged": 1
+    },
+    "obvious": {
+      "total": 246,
+      "flagged": 164
+    }
+  },
+  "explainability": {
+    "per_component": [
+      {
+        "component_id": "LOT_014_C0582",
+        "score": 8,
+        "max_score": 8,
+        "checklist": {
+          "has_trajectory": true,
+          "cites_shap_contributions": true,
+          "references_measured_values": true,
+          "has_recommendation": true,
+          "has_anomaly_justification": true,
+          "has_drift_residual": true,
+          "has_safety_slope_status": true,
+          "has_lot_context": true
+        }
+      },
+      {
+        "component_id": "LOT_014_C0543",
+        "score": 8,
+        "max_score": 8,
+        "checklist": {
+          "has_trajectory": true,
+          "cites_shap_contributions": true,
+          "references_measured_values": true,
+          "has_recommendation": true,
+          "has_anomaly_justification": true,
+          "has_drift_residual": true,
+          "has_safety_slope_status": true,
+          "has_lot_context": true
+        }
+      },
+      {
+        "component_id": "LOT_014_C0678",
+        "score": 8,
+        "max_score": 8,
+        "checklist": {
+          "has_trajectory": true,
+          "cites_shap_contributions": true,
+          "references_measured_values": true,
+          "has_recommendation": true,
+          "has_anomaly_justification": true,
+          "has_drift_residual": true,
+          "has_safety_slope_status": true,
+          "has_lot_context": true
+        }
+      },
+      {
+        "component_id": "LOT_014_C0057",
+        "score": 8,
+        "max_score": 8,
+        "checklist": {
+          "has_trajectory": true,
+          "cites_shap_contributions": true,
+          "references_measured_values": true,
+          "has_recommendation": true,
+          "has_anomaly_justification": true,
+          "has_drift_residual": true,
+          "has_safety_slope_status": true,
+          "has_lot_context": true
+        }
+      },
+      {
+        "component_id": "LOT_014_C0745",
+        "score": 8,
+        "max_score": 8,
+        "checklist": {
+          "has_trajectory": true,
+          "cites_shap_contributions": true,
+          "references_measured_values": true,
+          "has_recommendation": true,
+          "has_anomaly_justification": true,
+          "has_drift_residual": true,
+          "has_safety_slope_status": true,
+          "has_lot_context": true
+        }
+      },
+      {
+        "component_id": "LOT_011_C0163",
+        "score": 8,
+        "max_score": 8,
+        "checklist": {
+          "has_trajectory": true,
+          "cites_shap_contributions": true,
+          "references_measured_values": true,
+          "has_recommendation": true,
+          "has_anomaly_justification": true,
+          "has_drift_residual": true,
+          "has_safety_slope_status": true,
+          "has_lot_context": true
+        }
+      },
+      {
+        "component_id": "LOT_019_C0533",
+        "score": 8,
+        "max_score": 8,
+        "checklist": {
+          "has_trajectory": true,
+          "cites_shap_contributions": true,
+          "references_measured_values": true,
+          "has_recommendation": true,
+          "has_anomaly_justification": true,
+          "has_drift_residual": true,
+          "has_safety_slope_status": true,
+          "has_lot_context": true
+        }
+      },
+      {
+        "component_id": "LOT_019_C0320",
+        "score": 8,
+        "max_score": 8,
+        "checklist": {
+          "has_trajectory": true,
+          "cites_shap_contributions": true,
+          "references_measured_values": true,
+          "has_recommendation": true,
+          "has_anomaly_justification": true,
+          "has_drift_residual": true,
+          "has_safety_slope_status": true,
+          "has_lot_context": true
+        }
+      },
+      {
+        "component_id": "LOT_004_C0046",
+        "score": 8,
+        "max_score": 8,
+        "checklist": {
+          "has_trajectory": true,
+          "cites_shap_contributions": true,
+          "references_measured_values": true,
+          "has_recommendation": true,
+          "has_anomaly_justification": true,
+          "has_drift_residual": true,
+          "has_safety_slope_status": true,
+          "has_lot_context": true
+        }
+      },
+      {
+        "component_id": "LOT_010_C0393",
+        "score": 8,
+        "max_score": 8,
+        "checklist": {
+          "has_trajectory": true,
+          "cites_shap_contributions": true,
+          "references_measured_values": true,
+          "has_recommendation": true,
+          "has_anomaly_justification": true,
+          "has_drift_residual": true,
+          "has_safety_slope_status": true,
+          "has_lot_context": true
+        }
+      }
+    ],
+    "average_score": 8.0,
+    "max_score": 8,
+    "perfect_reports": 10,
+    "total_evaluated": 10,
+    "rubric_note": "This is a PROXY metric. True explainability quality requires human evaluation. The rubric checks structural completeness: does the report contain traceable, measurement-backed reasoning? A perfect score of 8/8 means all expected structural elements are present, but does not guarantee the explanations are semantically correct or useful to a domain expert."
+  },
+  "holdout": {
+    "method": "GroupShuffleSplit test_size=0.25 random_state=42; fit on training lots, infer cohort statistics using only 0h and 24h of test lots",
+    "train_lots": [
+      "LOT_002",
+      "LOT_003",
+      "LOT_004",
+      "LOT_005",
+      "LOT_006",
+      "LOT_007",
+      "LOT_009",
+      "LOT_010",
+      "LOT_011",
+      "LOT_012",
+      "LOT_013",
+      "LOT_014",
+      "LOT_016",
+      "LOT_018",
+      "LOT_019"
+    ],
+    "test_lots": [
+      "LOT_000",
+      "LOT_001",
+      "LOT_008",
+      "LOT_015",
+      "LOT_017"
+    ],
+    "train_components": 11189,
+    "test_components": 3953,
+    "metrics": {
+      "leakage_current_uA": {
+        "xgb_mae": 1.6206,
+        "xgb_rmse": 4.0088,
+        "linear_mae": 1.5506,
+        "linear_rmse": 3.8961,
+        "xgb_mae_normal": 0.755,
+        "xgb_rmse_normal": 0.9595,
+        "linear_mae_normal": 0.7182,
+        "xgb_mae_latent": 14.3604,
+        "xgb_rmse_latent": 15.6919,
+        "linear_mae_latent": 14.2261,
+        "xgb_mae_obvious": 4.6879,
+        "xgb_rmse_obvious": 6.3419,
+        "linear_mae_obvious": 2.7554
+      },
+      "propagation_delay_ns": {
+        "xgb_mae": 0.5579,
+        "xgb_rmse": 1.2601,
+        "linear_mae": 0.519,
+        "linear_rmse": 1.2265,
+        "xgb_mae_normal": 0.2991,
+        "xgb_rmse_normal": 0.3966,
+        "linear_mae_normal": 0.2654,
+        "xgb_mae_latent": 4.5169,
+        "xgb_rmse_latent": 4.8885,
+        "linear_mae_latent": 4.492,
+        "xgb_mae_obvious": 0.862,
+        "xgb_rmse_obvious": 1.2244,
+        "linear_mae_obvious": 0.4284
+      }
+    },
+    "safety_slope": {
+      "latent": {
+        "total": 235,
+        "flagged": 0
+      },
+      "normal": {
+        "total": 3661,
+        "flagged": 6
+      },
+      "obvious": {
+        "total": 57,
+        "flagged": 36
+      }
+    }
+  },
+  "case_study": {
+    "component_id": "LOT_009_C0374",
+    "lot_id": "LOT_009",
+    "ground_truth": "latent",
+    "recommendation": "FLAG FOR MANUAL REVIEW",
+    "confidence": "Medium",
+    "trajectory": {
+      "leakage_current_uA": {
+        "0h": 17.13,
+        "24h": 17.88,
+        "96h": 29.22,
+        "168h": 48.09
+      },
+      "propagation_delay_ns": {
+        "0h": 9.12,
+        "24h": 9.23,
+        "96h": 12.29,
+        "168h": 17.03
+      }
+    },
+    "anomaly": {
+      "is_anomalous": true,
+      "anomaly_score": 15.1284,
+      "robust_z_score": 15.1284,
+      "isolation_score": -0.1203,
+      "triggered_by": [
+        "robust_z(leakage_current_uA@value_96h): z=2.2",
+        "robust_z(propagation_delay_ns@value_96h): z=7.0",
+        "robust_z(leakage_current_uA@value_168h): z=6.6",
+        "robust_z(propagation_delay_ns@value_168h): z=13.6",
+        "isolation_forest(score=-0.120)"
+      ],
+      "justification": "Component LOT_009_C0374 flagged as ANOMALOUS (score: 15.1). Iddq / Leakage Current at 96h (29.2 \u00b5A) is 2.2 standard deviations above the lot median (21.3 \u00b5A), despite being within the 50.0 \u00b5A datasheet limit. Propagation Delay at 96h (12.3 ns) is 7.0 standard deviations above the lot median (8.2 ns), despite being within the 18.0 ns datasheet limit. Iddq / Leakage Current at 168h (48.1 \u00b5A) is 6.6 standard deviations above the lot median (22.4 \u00b5A), despite being within the 50.0 \u00b5A datasheet limit. Propagation Delay at 168h (17.0 ns) is 13.6 standard deviations above the lot median (8.6 ns), despite being within the 18.0 ns datasheet limit. Isolation Forest corroborates this as an outlier based on joint leakage/propagation-delay pattern."
+    },
+    "drift": {
+      "per_parameter": {
+        "leakage_current_uA": {
+          "predicted_168h_xgb": 21.98,
+          "predicted_168h_linear": 20.44,
+          "actual_168h": 48.09,
+          "residual": 26.11,
+          "implied_drift": 0.02887,
+          "safety_slope": 0.060854,
+          "shap": {
+            "feature_values": {
+              "value_0h": 17.133,
+              "value_24h": 17.8785,
+              "early_slope": 0.0311,
+              "lot_dev_0h": -2.5084,
+              "lot_dev_24h": -2.0891
+            },
+            "shap_values": {
+              "value_0h": 0.3785,
+              "value_24h": 0.5297,
+              "early_slope": 1.2843,
+              "lot_dev_0h": -0.7847,
+              "lot_dev_24h": 0.5505
+            },
+            "base_value": 20.0251,
+            "prediction": 21.9832
+          }
+        },
+        "propagation_delay_ns": {
+          "predicted_168h_xgb": 10.51,
+          "predicted_168h_linear": 10.19,
+          "actual_168h": 17.03,
+          "residual": 6.53,
+          "implied_drift": 0.008254,
+          "safety_slope": 0.013838,
+          "shap": {
+            "feature_values": {
+              "value_0h": 9.121,
+              "value_24h": 9.2343,
+              "early_slope": 0.0047,
+              "lot_dev_0h": 1.3752,
+              "lot_dev_24h": 1.3785
+            },
+            "shap_values": {
+              "value_0h": 0.2672,
+              "value_24h": 0.2627,
+              "early_slope": 0.1192,
+              "lot_dev_0h": -0.1154,
+              "lot_dev_24h": 0.0277
+            },
+            "base_value": 9.9462,
+            "prediction": 10.5076
+          }
+        }
+      },
+      "flagged_for_rejection": false,
+      "max_implied_drift": 0.02887,
+      "max_safety_slope": 0.060854
+    },
+    "recommendation_text": "This component shows some concerning signals and should be reviewed by a senior QA engineer before disposition:\n  - Trajectory divergence: Iddq / Leakage Current changed +181% from 0h to 168h (17.1 -> 48.1 \u00b5A), far exceeding the lot's typical drift of +14%.\n  - Trajectory divergence: Propagation Delay changed +87% from 0h to 168h (9.1 -> 17.0 ns), far exceeding the lot's typical drift of +11%.\n  - Cohort-relative anomaly: Flagged by outlier detection (score: 15.1), indicating the component is statistically unusual relative to its manufacturing lot.\n  - Prediction residual: The drift model predicted 22.0 \u00b5A at 168h but actual was 48.1 \u00b5A (residual: +26.1 \u00b5A), suggesting unexpected degradation.\n  - Prediction residual: The drift model predicted 10.5 ns at 168h but actual was 17.0 ns (residual: +6.5 ns), suggesting unexpected degradation.\n  - Note: The 168h iddq / leakage current (48.1 \u00b5A) remains within the datasheet limit (50.0 \u00b5A), but the degradation trajectory strongly suggests continued drift toward field failure.\n  - Note: The 168h propagation delay (17.0 ns) remains within the datasheet limit (18.0 ns), but the degradation trajectory strongly suggests continued drift toward field failure.",
+    "lot_medians": {
+      "leakage_current_uA": {
+        "value_0h": 19.64145,
+        "value_24h": 19.967599999999997,
+        "value_96h": 21.34585,
+        "value_168h": 22.40885
+      },
+      "propagation_delay_ns": {
+        "value_0h": 7.74585,
+        "value_24h": 7.8557500000000005,
+        "value_96h": 8.228100000000001,
+        "value_168h": 8.58145
+      }
+    }
+  }
+}

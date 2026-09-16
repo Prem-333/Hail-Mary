@@ -344,6 +344,7 @@ The documentation suite is organized for different audiences:
 
 | Document | Audience | Description |
 |:---|:---|:---|
+| **[Project documentation](docs/submission/LATENT_Project_Documentation.pdf)** | General and technical audiences | 9-page space-themed project overview with visual demonstrations, architecture, verified results, practical value, and supporting evidence. [Editable edition](docs/submission/LATENT_Project_Documentation.md) · [Evidence guide](docs/submission/README.md) |
 | **[`docs/TECHNICAL_REFERENCE.md`](docs/TECHNICAL_REFERENCE.md)** | Evaluators & Developers | Complete technical reference — architecture, algorithms, API, physics, and deployment |
 | [`docs/PROJECT_REPORT.md`](docs/PROJECT_REPORT.md) | Judges | Formal project report covering problem, approach, results, and future enhancements |
 | [`docs/DATA_MODELLING.md`](docs/DATA_MODELLING.md) | Technical reviewers | Physics-grounded data modelling (Arrhenius kinetics, JEDEC JESD22-A108 standards) |

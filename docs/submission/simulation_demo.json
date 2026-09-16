@@ -1,0 +1,160 @@
+{
+  "baseline": {
+    "request": {
+      "lot_id": "LOT_009",
+      "leak_0h": 17.13,
+      "leak_24h": 17.88,
+      "delay_0h": 9.12,
+      "delay_24h": 9.23
+    },
+    "response": {
+      "status": "success",
+      "is_flagged": false,
+      "results": {
+        "leakage_current_uA": {
+          "predicted_168h": 21.983200073242188,
+          "implied_drift": 0.028888095674060647,
+          "threshold": 0.060853650394778316,
+          "is_flagged": false
+        },
+        "propagation_delay_ns": {
+          "predicted_168h": 10.507599830627441,
+          "implied_drift": 0.008259522801353822,
+          "threshold": 0.013838372123213781,
+          "is_flagged": false
+        }
+      },
+      "shap": {
+        "leakage_current_uA": {
+          "base_value": 20.025070190429688,
+          "features": [
+            {
+              "feature": "value_0h",
+              "value": 0.3784928619861603
+            },
+            {
+              "feature": "value_24h",
+              "value": 0.5296812653541565
+            },
+            {
+              "feature": "early_slope",
+              "value": 1.2842655181884766
+            },
+            {
+              "feature": "lot_dev_0h",
+              "value": -0.7847437262535095
+            },
+            {
+              "feature": "lot_dev_24h",
+              "value": 0.550477147102356
+            }
+          ]
+        },
+        "propagation_delay_ns": {
+          "base_value": 9.946210861206055,
+          "features": [
+            {
+              "feature": "value_0h",
+              "value": 0.26718229055404663
+            },
+            {
+              "feature": "value_24h",
+              "value": 0.26287150382995605
+            },
+            {
+              "feature": "early_slope",
+              "value": 0.11733686178922653
+            },
+            {
+              "feature": "lot_dev_0h",
+              "value": -0.11537524312734604
+            },
+            {
+              "feature": "lot_dev_24h",
+              "value": 0.02938278205692768
+            }
+          ]
+        }
+      }
+    }
+  },
+  "increased_early_drift": {
+    "request": {
+      "lot_id": "LOT_009",
+      "leak_0h": 17.13,
+      "leak_24h": 23.0,
+      "delay_0h": 9.12,
+      "delay_24h": 10.5
+    },
+    "response": {
+      "status": "success",
+      "is_flagged": true,
+      "results": {
+        "leakage_current_uA": {
+          "predicted_168h": 35.58089828491211,
+          "implied_drift": 0.10982677550542923,
+          "threshold": 0.060853650394778316,
+          "is_flagged": true
+        },
+        "propagation_delay_ns": {
+          "predicted_168h": 12.449399948120117,
+          "implied_drift": 0.019817856834048322,
+          "threshold": 0.013838372123213781,
+          "is_flagged": true
+        }
+      },
+      "shap": {
+        "leakage_current_uA": {
+          "base_value": 20.025070190429688,
+          "features": [
+            {
+              "feature": "value_0h",
+              "value": 1.8521085977554321
+            },
+            {
+              "feature": "value_24h",
+              "value": 8.119507789611816
+            },
+            {
+              "feature": "early_slope",
+              "value": 2.361870527267456
+            },
+            {
+              "feature": "lot_dev_0h",
+              "value": 1.2174098491668701
+            },
+            {
+              "feature": "lot_dev_24h",
+              "value": 2.0049755573272705
+            }
+          ]
+        },
+        "propagation_delay_ns": {
+          "base_value": 9.946210861206055,
+          "features": [
+            {
+              "feature": "value_0h",
+              "value": 0.4256286919116974
+            },
+            {
+              "feature": "value_24h",
+              "value": 1.6911782026290894
+            },
+            {
+              "feature": "early_slope",
+              "value": 0.29055508971214294
+            },
+            {
+              "feature": "lot_dev_0h",
+              "value": -0.0912666991353035
+            },
+            {
+              "feature": "lot_dev_24h",
+              "value": 0.18713440001010895
+            }
+          ]
+        }
+      }
+    }
+  }
+}
