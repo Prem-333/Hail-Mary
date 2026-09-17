@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import useSWR from "swr";
 import axios from "axios";
+import type { SimulationResponse, SimulationParamResult, SimulationShapResult, ShapFeature } from "@/lib/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@workspace/ui/components/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select";
@@ -86,7 +87,7 @@ export default function SimulatorPage() {
     }
   }, [lotsData, formData.lot_id]);
 
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<SimulationResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [animateValues, setAnimateValues] = useState(false);
@@ -148,10 +149,10 @@ export default function SimulatorPage() {
   const inputClass = "w-full mt-1.5 px-3 py-2.5 rounded-lg text-sm transition-all focus:outline-none focus:ring-1 focus:ring-ring/40 bg-[var(--screening-inset)] text-foreground border border-border/40 placeholder:text-muted-foreground/40 dark:placeholder:text-muted-foreground tabular-nums";
 
   // Build human-readable QA justification from result
-  function buildJustification(result: any): string[] {
+  function buildJustification(result: SimulationResponse): string[] {
     if (!result) return [];
     const lines: string[] = [];
-    for (const [param, data] of Object.entries(result.results) as [string, any][]) {
+    for (const [param, data] of Object.entries(result.results) as [string, SimulationParamResult][]) {
       const unit = param.includes("leak") ? "µA" : "ns";
       const paramLabel = param.includes("leak") ? "Iddq / Leakage Current" : "Propagation Delay";
       const ratio = data.threshold > 0 ? (data.implied_drift / data.threshold) : 1;
@@ -520,9 +521,9 @@ export default function SimulatorPage() {
                           Why the model predicted this drift — red bars push prediction up (more drift), blue bars push down (less drift)
                         </p>
                         <div className="space-y-6">
-                          {Object.entries(result.shap).map(([param, shapData]: [string, any]) => {
-                            const features: { feature: string; value: number }[] = shapData.features || [];
-                            const maxAbs = Math.max(...features.map((f: any) => Math.abs(f.value)), 0.0001);
+                          {Object.entries(result.shap).map(([param, shapData]: [string, SimulationShapResult]) => {
+                            const features: ShapFeature[] = shapData.features || [];
+                            const maxAbs = Math.max(...features.map((f: ShapFeature) => Math.abs(f.value)), 0.0001);
                             const sorted = [...features].sort((a, b) => Math.abs(b.value) - Math.abs(a.value));
                             const paramLabel = param.includes("leak") ? "Iddq / Leakage Current" : "Propagation Delay";
                             return (
@@ -534,7 +535,7 @@ export default function SimulatorPage() {
                                   </span>
                                 </div>
                                 <div className="space-y-2">
-                                  {sorted.slice(0, 6).map((f: any) => (
+                                  {sorted.slice(0, 6).map((f: ShapFeature) => (
                                     <ShapBar key={f.feature} name={f.feature} value={f.value} maxAbs={maxAbs} />
                                   ))}
                                 </div>
