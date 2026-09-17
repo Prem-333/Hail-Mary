@@ -149,7 +149,21 @@ sequenceDiagram
 
 ## Quickstart
 
-### Prerequisites
+### Docker (Recommended — One Command)
+
+```bash
+git clone "https://github.com/Prem-333/Hail-Mary"
+cd "SIH - 2026"
+docker compose up --build
+# API  → http://localhost:8000
+# Dashboard → http://localhost:3000
+```
+
+> That's it. `docker compose up` generates the dataset, trains both ML modules, and starts the full stack.
+
+### Manual Setup
+
+#### Prerequisites
 
 | Tool | Version | Purpose |
 |:---|:---|:---|
@@ -158,7 +172,7 @@ sequenceDiagram
 | npm | 10+ | Package manager |
 | Git | Latest | Version control |
 
-### 1. Clone & Setup Python Backend
+#### 1. Clone & Setup Python Backend
 
 ```bash
 git clone "https://github.com/Prem-333/Hail-Mary"
@@ -176,7 +190,7 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-### 2. Generate Dataset & Start API
+#### 2. Generate Dataset & Start API
 
 ```bash
 # Generate the synthetic burn-in dataset (Arrhenius-modelled, seeded for reproducibility)
@@ -188,7 +202,7 @@ uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
 
 > **API documentation** is auto-generated at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) (Swagger UI) and [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc) (ReDoc).
 
-### 3. Start Next.js Dashboard
+#### 3. Start Next.js Dashboard
 
 ```bash
 cd dashboard
@@ -204,7 +218,7 @@ npm run dev
 | `NEXT_PUBLIC_API_URL` | `http://127.0.0.1:8000` | `dashboard/apps/web/.env.local` |
 | `NEXT_PUBLIC_WS_URL` | `ws://127.0.0.1:8000` | `dashboard/apps/web/.env.local` |
 
-### 4. Run Tests
+#### 4. Run Tests
 
 ```bash
 # Full test suite
@@ -325,12 +339,13 @@ SIH - 2026/
 ├── tests/                                # ── Test Suite ──────────────────────
 │   ├── test_outlier_detection.py         # Module A unit tests
 │   ├── test_drift_prediction.py          # Module B unit tests
-│   └── test_placeholder.py              # Placeholder for future test modules
+│   └── test_api_endpoints.py             # API endpoint tests
 │
 ├── notebooks/                            # Reserved for exploratory Jupyter notebooks
 │
-├── requirements.txt                      # Python dependencies (ML core)
-├── requirements-api.txt                  # Additional dependencies for the backend server
+├── requirements.txt                      # Python dependencies (ML core + API)
+├── docker-compose.yml                    # One-command startup (API + Dashboard)
+├── Dockerfile.api                        # Backend container definition
 └── README.md                             # ⬅ You are here
 ```
 
