@@ -229,7 +229,7 @@ python scripts/validate_physics.py
 | **Explainability** | `shap >= 0.43` TreeExplainer | Exact, additive per-feature attributions; traces every prediction to physical bench measurements |
 | **Data** | `pandas >= 2.0`, `numpy >= 1.24` | Standard tabular data pipeline |
 | **API** | `FastAPI >= 0.100`, `uvicorn >= 0.23` | Async-native; WebSocket support for sensor stream; auto-generated OpenAPI docs |
-| **Frontend** | Next.js 16, React 19, TypeScript | App Router; server-side rendering; Turbopack for sub-second hot reload |
+| **Frontend** | Next.js 16.2.6, React 19.2.4, TypeScript | App Router; server-side rendering; Turbopack for sub-second hot reload |
 | **Charts** | `@visx/shape`, custom `@workspace/ui` charts | Trajectory envelopes, live streaming charts, animated gauge components |
 | **Animations** | `framer-motion 13`, `@number-flow/react` | Staggered page transitions, animated metric counters, progressive disclosure |
 | **Monorepo** | Turborepo 2 | Shared UI package across apps; parallel builds |
@@ -439,7 +439,7 @@ python -m src.data_generation.generate_dataset
 python -m src.evaluation.evaluate
 
 # 3. Validate physics (Arrhenius trajectory verification)
-python validate_physics.py
+python scripts/validate_physics.py
 
 # 4. Run test suite
 pytest tests/ -v

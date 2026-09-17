@@ -12,6 +12,50 @@ import { Grid } from "@workspace/ui/components/charts/grid";
 import { BarXAxis } from "@workspace/ui/components/charts/bar-x-axis";
 import { ChartTooltip } from "@workspace/ui/components/charts/tooltip";
 
+interface SafetySlopeRow {
+  class: string;
+  flag_rate: number;
+  total: number;
+  flagged: number;
+}
+
+interface LeakageRow {
+  group: string;
+  xgb: number | undefined;
+  linear: number | undefined;
+}
+
+interface AnomalyMetrics {
+  total_defects: number;
+  total_normal: number;
+  false_negatives: number;
+  false_positives: number;
+  recall: number;
+  precision: number;
+  f2_score: number;
+}
+
+interface DriftMetrics {
+  leakage_mae: number;
+  delay_mae: number;
+  leakage_current_uA?: {
+    xgb_mae_normal: number; xgb_mae_latent: number; xgb_mae_obvious: number;
+    linear_mae_normal: number; linear_mae_latent: number; linear_mae_obvious: number;
+  };
+  propagation_delay_ns?: {
+    xgb_mae_normal: number; xgb_mae_latent: number; xgb_mae_obvious: number;
+    linear_mae_normal: number; linear_mae_latent: number; linear_mae_obvious: number;
+  };
+}
+
+interface GeneralizationMetrics {
+  leakage_mae_mean?: number;
+  leakage_mae_std?: number;
+  leakage_generalization_gap?: number;
+  gap_interpretation?: string;
+  [key: string]: unknown;
+}
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data);
@@ -76,7 +120,12 @@ function SectionLabel({ number, title, icon: Icon, color }: { number: string; ti
 }
 
 export default function EvaluationSummary() {
-  const { data, isLoading, error } = useSWR(`${API_URL}/api/evaluation/`, fetcher, swrOpts);
+  const { data, isLoading, error } = useSWR<{
+    anomaly_metrics: AnomalyMetrics;
+    drift_metrics: DriftMetrics;
+    safety_slope: SafetySlopeRow[];
+    generalization?: GeneralizationMetrics;
+  }>(`${API_URL}/api/evaluation/`, fetcher, swrOpts);
 
 
 
@@ -137,19 +186,19 @@ export default function EvaluationSummary() {
   const delayImprovement = ((DELAY_MAE_BASELINE - delayMae) / DELAY_MAE_BASELINE * 100);
 
   const safetySlopeData = data?.safety_slope || [];
-  const latentRow = safetySlopeData.find((s: any) => s.class === "Latent");
-  const obviousRow = safetySlopeData.find((s: any) => s.class === "Obvious");
-  const normalRow = safetySlopeData.find((s: any) => s.class === "Normal");
+  const latentRow = safetySlopeData.find((s: SafetySlopeRow) => s.class === "Latent");
+  const obviousRow = safetySlopeData.find((s: SafetySlopeRow) => s.class === "Obvious");
+  const normalRow = safetySlopeData.find((s: SafetySlopeRow) => s.class === "Normal");
   const latentCatchRate = latentRow ? (latentRow.flag_rate * 100) : 0;
   const obviousCatchRate = obviousRow ? (obviousRow.flag_rate * 100) : 0;
   const normalFalseRejectRate = normalRow ? (normalRow.flag_rate * 100) : 0;
 
-  const safetySlopeBarData = safetySlopeData.map((s: any) => ({
+  const safetySlopeBarData = safetySlopeData.map((s: SafetySlopeRow) => ({
     class: s.class,
     rate: parseFloat((s.flag_rate * 100).toFixed(1))
   }));
 
-  const leakageBarData = [
+  const leakageBarData: LeakageRow[] = [
     { group: "Normal", xgb: driftMetrics.leakage_current_uA?.xgb_mae_normal, linear: driftMetrics.leakage_current_uA?.linear_mae_normal },
     { group: "Latent", xgb: driftMetrics.leakage_current_uA?.xgb_mae_latent, linear: driftMetrics.leakage_current_uA?.linear_mae_latent },
     { group: "Obvious", xgb: driftMetrics.leakage_current_uA?.xgb_mae_obvious, linear: driftMetrics.leakage_current_uA?.linear_mae_obvious },

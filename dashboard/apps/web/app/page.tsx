@@ -96,11 +96,25 @@ export default function LotOverview() {
   }
 
   if (isLoading) return (
-    <div className="flex h-full items-center justify-center">
-      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-        className="flex flex-col items-center gap-4">
-        <div className="w-10 h-10 border-2 border-muted-foreground/20 border-t-chart-1 rounded-full animate-spin" />
-        <span className="text-sm text-muted-foreground/50 dark:text-muted-foreground font-light">Loading lot data...</span>
+    <div className="flex flex-col gap-5">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: index * 0.05 }}
+          >
+            <div className="skeleton h-36 rounded-xl" />
+          </motion.div>
+        ))}
+      </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3, delay: 6 * 0.05 }}
+      >
+        <div className="skeleton h-96 rounded-xl" />
       </motion.div>
     </div>
   );

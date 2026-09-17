@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { LayoutDashboard, Activity, FlaskConical, FileBarChart, Radio, Sparkles } from "lucide-react";
 import { cn } from "@workspace/ui/lib/utils";
+import { ShimmeringText } from "@/components/shimmering-text";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -31,7 +32,9 @@ export function Sidebar() {
           className="px-6 mb-8"
         >
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-semibold tracking-tight text-shimmer">LATENT</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">
+              <ShimmeringText text="LATENT" />
+            </h1>
           </div>
           <p className="text-xs text-muted-foreground mt-1.5 tracking-[0.15em] uppercase font-light">
             Burn-In AI · ISRO Screening
