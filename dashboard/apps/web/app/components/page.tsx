@@ -4,6 +4,7 @@ import useSWR from "swr";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@workspace/ui/components/card";
+import type { ComponentSummary } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { Activity, AlertTriangle, CheckCircle, ArrowRight, Search, X } from "lucide-react";
 
@@ -60,7 +61,7 @@ export default function ComponentsIndex() {
   };
 
   const components = lotDetails?.components || [];
-  const flaggedCount = components.filter((c: any) => c.is_anomalous).length;
+  const flaggedCount = components.filter((c: ComponentSummary) => c.is_anomalous).length;
   const normalCount = components.length - flaggedCount;
 
   return (
@@ -139,7 +140,7 @@ export default function ComponentsIndex() {
         </div>
       ) : (
         <motion.div variants={containerVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-          {components.map((c: any, i: number) => (
+          {components.map((c: ComponentSummary, i: number) => (
             <motion.div
               key={c.component_id}
               variants={itemVariants}
