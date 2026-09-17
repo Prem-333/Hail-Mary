@@ -20,6 +20,10 @@ import numpy as np
 
 router = APIRouter(tags=["Streaming"])
 
+# ── WebSocket connection cap ───────────────────────────────────────────
+MAX_WS_CONNECTIONS = 10
+_active_connections: set[WebSocket] = set()
+
 
 def _interpolate_trajectory(values: list[float], timepoints: list[float],
                             steps_between: int = 40, noise_scale: float = 0.005):
@@ -47,7 +51,14 @@ def _interpolate_trajectory(values: list[float], timepoints: list[float],
 
 @router.websocket("/ws/sensor-stream")
 async def sensor_stream(websocket: WebSocket):
+    # Enforce connection cap
+    if len(_active_connections) >= MAX_WS_CONNECTIONS:
+        await websocket.close(code=1013, reason="Too many connections — try again later")
+        return
+
     await websocket.accept()
+    _active_connections.add(websocket)
+
 
     system = get_system()
     measurements = system["measurements"]
@@ -146,6 +157,8 @@ async def sensor_stream(websocket: WebSocket):
             await websocket.close(code=1011)
         except Exception:
             pass
+    finally:
+        _active_connections.discard(websocket)
 
 
 @router.get("/api/streaming/components/{lot_id}")
