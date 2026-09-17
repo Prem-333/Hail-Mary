@@ -22,11 +22,6 @@ export function InitialLoader() {
 
   // Start loading automatically on mount
   useEffect(() => {
-    if (sessionStorage.getItem('latent_loaded')) {
-      setLoading(false);
-      return;
-    }
-    sessionStorage.setItem('latent_loaded', 'true');
 
     // Attempt fullscreen silently
     try {

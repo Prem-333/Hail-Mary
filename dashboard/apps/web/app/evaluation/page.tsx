@@ -23,6 +23,7 @@ interface LeakageRow {
   group: string;
   xgb: number | undefined;
   linear: number | undefined;
+  [key: string]: unknown;
 }
 
 interface AnomalyMetrics {
@@ -162,8 +163,8 @@ export default function EvaluationSummary() {
     </div>
   );
 
-  const anomalyMetrics = data?.anomaly_metrics || {};
-  const driftMetrics = data?.drift_metrics || {};
+  const anomalyMetrics = (data?.anomaly_metrics || {}) as Partial<AnomalyMetrics>;
+  const driftMetrics = (data?.drift_metrics || {}) as Partial<DriftMetrics>;
 
   const totalDefects = anomalyMetrics.total_defects ?? 0;
   const totalNormal = anomalyMetrics.total_normal ?? 0;
