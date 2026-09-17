@@ -13,6 +13,7 @@ import { LiveYAxis } from "@workspace/ui/components/charts/live-y-axis";
 import { useChartStable } from "@workspace/ui/components/charts/chart-context";
 import { Radio, Pause, Play, RotateCcw, AlertTriangle, CheckCircle, Zap, Wifi, WifiOff } from "lucide-react";
 import { scaleLinear } from "@visx/scale";
+import type { StreamComponent } from "@/lib/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 const WS_URL = process.env.NEXT_PUBLIC_WS_URL || "ws://127.0.0.1:8000";
@@ -252,7 +253,7 @@ export default function SensorMonitor() {
               <SelectValue placeholder="All Components (random)" />
             </SelectTrigger>
             <SelectContent className="glass-card rounded-xl">
-              {lotComponents?.components?.map((c: any) => (
+              {lotComponents?.components?.map((c: StreamComponent) => (
                 <SelectItem key={c.component_id} value={c.component_id} className="text-sm font-mono">
                   {c.component_id}
                   <span className="ml-2 text-muted-foreground/40 dark:text-muted-foreground text-xs font-sans normal-case">({c.defect_type})</span>
