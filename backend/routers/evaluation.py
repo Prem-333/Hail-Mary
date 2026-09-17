@@ -44,5 +44,6 @@ def get_evaluation(system=Depends(get_system)):
         "anomaly_metrics": safe_am,
         "drift_metrics": safe_dm,
         "generalization": safe_gm,
-        "safety_slope": flag_stats
+        "safety_slope": flag_stats,
+        "split_info": system.get("split_info", {}),
     }
