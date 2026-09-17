@@ -10,6 +10,7 @@ from src.drift_prediction.predictor import DriftPredictor
 from src.evaluation.evaluate import (
     evaluate_anomaly_detection,
     evaluate_drift_prediction,
+    evaluate_generalization_gap,
 )
 from src.explainability.explainer import BurnInExplainer
 from src.outlier_detection.detector import OutlierDetector
@@ -66,6 +67,7 @@ def load_system() -> SystemState:
         # Pre-compute metrics
         anomaly_metrics = evaluate_anomaly_detection(outlier_results, labels)
         drift_metrics = evaluate_drift_prediction(predictions, measurements, labels)
+        generalization_metrics = evaluate_generalization_gap(measurements, labels)
 
         # SHAP explainers
         shap_explainers = {
@@ -83,6 +85,7 @@ def load_system() -> SystemState:
             "explainer": explainer,
             "anomaly_metrics": anomaly_metrics,
             "drift_metrics": drift_metrics,
+            "generalization_metrics": generalization_metrics,
             "shap_explainers": shap_explainers,
         }
         print("System loaded successfully.")

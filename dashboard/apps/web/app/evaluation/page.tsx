@@ -168,7 +168,7 @@ export default function EvaluationSummary() {
           </span>
         </div>
         <p className="text-sm text-muted-foreground/60 dark:text-muted-foreground mt-1 font-light">
-          System performance against burn-in screening evaluation criteria — three graded rubric dimensions
+          System performance against burn-in screening evaluation criteria — four graded rubric dimensions
         </p>
       </motion.div>
 
@@ -599,6 +599,72 @@ export default function EvaluationSummary() {
             <div className="text-muted-foreground/70 dark:text-muted-foreground pl-4">Implied drift rate: <span className="text-red-400">0.00183 µA/h</span> vs lot threshold <span className="text-foreground/80">0.00059 µA/h</span></div>
             <div className="text-muted-foreground/70 dark:text-muted-foreground pl-4">Drift ratio: <span className="text-red-400">3.1× above lot safety slope</span></div>
           </div>
+        </div>
+      </motion.div>
+
+      {/* ─── CRITERION 4: GENERALIZATION ─── */}
+      <motion.div variants={itemVariants} className="flex flex-col gap-3">
+        <SectionLabel
+          number="4"
+          title="Generalization — Out-of-Sample Robustness"
+          icon={TrendingUp}
+          color="oklch(0.65 0.14 55)"
+        />
+        <p className="text-xs text-muted-foreground/50 font-light ml-11">
+          Model performance on strictly held-out manufacturing lots
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {/* 1. Lot-Level CV */}
+          <motion.div whileHover={{ scale: 1.02, y: -2 }} className="glass-card glass-card-hover rounded-xl p-5">
+            <h4 className="text-xs font-medium uppercase tracking-widest text-muted-foreground/50 mb-3">Lot-Level CV</h4>
+            <div className="flex items-baseline gap-2 mb-1">
+              <p className="text-3xl font-bold tabular-nums" style={{ color: "oklch(0.65 0.14 55)" }}>
+                {data?.generalization?.leakage_mae_mean?.toFixed(2) ?? "—"}
+              </p>
+              <p className="text-sm text-muted-foreground/50 font-light">µA</p>
+            </div>
+            <p className="text-xs text-muted-foreground/50 font-light mb-1">5-fold cross-val MAE (held-out lots)</p>
+            <p className="text-xs text-muted-foreground/40 font-light">± {data?.generalization?.leakage_mae_std?.toFixed(2) ?? "—"} std</p>
+          </motion.div>
+
+          {/* 2. Generalization Gap */}
+          <motion.div whileHover={{ scale: 1.02, y: -2 }} className="glass-card glass-card-hover rounded-xl p-5">
+            <div className="flex items-center gap-1.5 mb-3">
+              <h4 className="text-xs font-medium uppercase tracking-widest text-muted-foreground/50">Generalization Gap</h4>
+              <InfoTooltip text="Difference between in-sample MAE and cross-validation MAE. Small gap = model generalizes well to unseen manufacturing lots." />
+            </div>
+            <div className="flex items-baseline gap-2 mb-1">
+              <p className="text-3xl font-bold tabular-nums" style={{ color: (data?.generalization?.leakage_generalization_gap ?? 0) < 0.5 ? "oklch(0.65 0.12 160)" : (data?.generalization?.leakage_generalization_gap ?? 0) < 1.0 ? "oklch(0.65 0.14 55)" : "oklch(0.62 0.18 25)" }}>
+                {data?.generalization?.leakage_generalization_gap?.toFixed(2) ?? "—"}
+              </p>
+              <p className="text-sm text-muted-foreground/50 font-light">µA</p>
+            </div>
+          </motion.div>
+
+          {/* 3. CV Interpretation */}
+          <motion.div whileHover={{ scale: 1.02, y: -2 }} className="glass-card glass-card-hover rounded-xl p-5">
+            <h4 className="text-xs font-medium uppercase tracking-widest text-muted-foreground/50 mb-3">CV Interpretation</h4>
+            <div className="flex items-center gap-3 mt-4">
+              {data?.generalization?.gap_interpretation === "small" ? (
+                <CheckCircle2 className="w-8 h-8" style={{ color: "oklch(0.65 0.12 160)" }} />
+              ) : data?.generalization?.gap_interpretation === "moderate" ? (
+                <AlertTriangle className="w-8 h-8" style={{ color: "oklch(0.65 0.14 55)" }} />
+              ) : (
+                <AlertTriangle className="w-8 h-8" style={{ color: "oklch(0.62 0.18 25)" }} />
+              )}
+              <p className="text-xl font-bold uppercase tracking-widest" style={{ color: data?.generalization?.gap_interpretation === "small" ? "oklch(0.65 0.12 160)" : data?.generalization?.gap_interpretation === "moderate" ? "oklch(0.65 0.14 55)" : "oklch(0.62 0.18 25)" }}>
+                {data?.generalization?.gap_interpretation ?? "—"}
+              </p>
+            </div>
+          </motion.div>
+        </div>
+
+        <div className="mt-2 flex items-start gap-2 rounded-lg px-4 py-3" style={{ background: "oklch(0.65 0.14 55 / 8%)", border: "1px solid oklch(0.65 0.14 55 / 20%)" }}>
+          <AlertTriangle className="w-4 h-4 text-amber-400/70 shrink-0 mt-0.5" />
+          <p className="text-xs text-muted-foreground/70 font-light">
+            5-fold lot-level cross-validation held out entire manufacturing lots — not individual components — to prevent within-lot data leakage. This gives a conservative estimate of real-world generalization performance.
+          </p>
         </div>
       </motion.div>
 

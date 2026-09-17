@@ -186,6 +186,103 @@ def evaluate_drift_prediction(
     return metrics
 
 
+def evaluate_lot_cv(measurements_df: pd.DataFrame, labels_df: pd.DataFrame, n_sigma: float = 3.0, random_state: int = 42, k: int = 5) -> dict:
+    """
+    Performs k-fold cross-validation at the LOT level to prevent within-lot data leakage.
+    """
+    unique_lots = sorted(measurements_df["lot_id"].unique())
+    folds = np.array_split(unique_lots, k)
+    cv_results = []
+    leakage_maes = []
+    delay_maes = []
+
+    for i, fold_lots in enumerate(folds):
+        held_out_lots = fold_lots.tolist()
+        train_lots = [lot for lot in unique_lots if lot not in held_out_lots]
+        
+        train_df = measurements_df[measurements_df["lot_id"].isin(train_lots)]
+        test_df = measurements_df[measurements_df["lot_id"].isin(held_out_lots)]
+        
+        predictor = DriftPredictor(safety_slope_n_sigma=n_sigma, random_state=random_state)
+        predictor.fit(train_df)
+        predictions = predictor.predict(test_df)
+        
+        # Merge actuals
+        actuals = test_df[["component_id", "param_name", "value_168h"]].copy()
+        actuals = actuals.rename(columns={"value_168h": "actual_168h"})
+        merged = predictions.merge(actuals, on=["component_id", "param_name"], how="left")
+        
+        # Calculate MAE for leakage and delay
+        leakage_data = merged[merged["param_name"] == "leakage_current_uA"]
+        if not leakage_data.empty:
+            leakage_mae = float(mean_absolute_error(leakage_data["actual_168h"], leakage_data["predicted_168h_xgb"]))
+        else:
+            leakage_mae = 0.0
+            
+        delay_data = merged[merged["param_name"] == "propagation_delay_ns"]
+        if not delay_data.empty:
+            delay_mae = float(mean_absolute_error(delay_data["actual_168h"], delay_data["predicted_168h_xgb"]))
+        else:
+            delay_mae = 0.0
+
+        leakage_maes.append(leakage_mae)
+        delay_maes.append(delay_mae)
+        
+        cv_results.append({
+            "fold": i,
+            "held_out_lots": held_out_lots,
+            "leakage_mae": leakage_mae,
+            "delay_mae": delay_mae
+        })
+
+    return {
+        "n_folds": k,
+        "n_lots": len(unique_lots),
+        "cv_results": cv_results,
+        "leakage_mae_mean": float(np.mean(leakage_maes)),
+        "leakage_mae_std": float(np.std(leakage_maes)),
+        "delay_mae_mean": float(np.mean(delay_maes)),
+        "delay_mae_std": float(np.std(delay_maes)),
+        "generalization_note": "Lot-level CV prevents within-lot data leakage. Each fold holds out entire manufacturing lots, not individual components."
+    }
+
+def evaluate_generalization_gap(measurements_df: pd.DataFrame, labels_df: pd.DataFrame, n_sigma: float = 3.0, random_state: int = 42) -> dict:
+    # Train on all lots
+    predictor = DriftPredictor(safety_slope_n_sigma=n_sigma, random_state=random_state)
+    predictor.fit(measurements_df)
+    predictions = predictor.predict(measurements_df)
+    in_sample_metrics = evaluate_drift_prediction(predictions, measurements_df, labels_df)
+    
+    in_sample_leakage_mae = in_sample_metrics.get("leakage_current_uA", {}).get("xgb_mae", 0.0)
+    in_sample_delay_mae = in_sample_metrics.get("propagation_delay_ns", {}).get("xgb_mae", 0.0)
+    
+    cv_metrics = evaluate_lot_cv(measurements_df, labels_df, n_sigma=n_sigma, random_state=random_state)
+    
+    leakage_gap = cv_metrics["leakage_mae_mean"] - in_sample_leakage_mae
+    delay_gap = cv_metrics["delay_mae_mean"] - in_sample_delay_mae
+    
+    if leakage_gap < 0.5 and delay_gap < 0.5:
+        gap_interpretation = "small"
+    elif leakage_gap < 1.0 and delay_gap < 1.0:
+        gap_interpretation = "moderate"
+    else:
+        gap_interpretation = "large"
+        
+    return {
+        "in_sample_leakage_mae": float(in_sample_leakage_mae),
+        "in_sample_delay_mae": float(in_sample_delay_mae),
+        "cv_leakage_mae_mean": cv_metrics["leakage_mae_mean"],
+        "cv_delay_mae_mean": cv_metrics["delay_mae_mean"],
+        "leakage_mae_mean": cv_metrics["leakage_mae_mean"],
+        "leakage_mae_std": cv_metrics["leakage_mae_std"],
+        "delay_mae_mean": cv_metrics["delay_mae_mean"],
+        "delay_mae_std": cv_metrics["delay_mae_std"],
+        "leakage_generalization_gap": float(leakage_gap),
+        "delay_generalization_gap": float(delay_gap),
+        "gap_interpretation": gap_interpretation
+    }
+
+
 # ===================================================================
 # Metric 3: Explainability Quality (Rubric)
 # ===================================================================

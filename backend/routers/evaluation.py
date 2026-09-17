@@ -7,6 +7,7 @@ router = APIRouter(prefix="/api/evaluation", tags=["Evaluation"])
 def get_evaluation(system=Depends(get_system)):
     am = system["anomaly_metrics"]
     dm = system["drift_metrics"]
+    gm = system.get("generalization_metrics", {})
     
     # We must sanitize numpy types
     import json
@@ -20,6 +21,7 @@ def get_evaluation(system=Depends(get_system)):
         
     safe_am = json.loads(json.dumps(am, default=default_encode))
     safe_dm = json.loads(json.dumps(dm, default=default_encode))
+    safe_gm = json.loads(json.dumps(gm, default=default_encode))
     
     # Flags logic
     flags = system["flags"]
@@ -41,5 +43,6 @@ def get_evaluation(system=Depends(get_system)):
     return {
         "anomaly_metrics": safe_am,
         "drift_metrics": safe_dm,
+        "generalization": safe_gm,
         "safety_slope": flag_stats
     }
