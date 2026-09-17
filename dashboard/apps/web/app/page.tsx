@@ -2,6 +2,7 @@
 import { useState, useEffect, useMemo } from "react";
 import useSWR from "swr";
 import axios from "axios";
+import type { ComponentSummary, StatCard } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -53,9 +54,9 @@ export default function LotOverview() {
   };
 
   const allComponents = lotDetails?.components || [];
-  const flagged = allComponents.filter((c: any) => c.is_anomalous);
-  const normal = allComponents.filter((c: any) => !c.is_anomalous);
-  const latentCaught = flagged.filter((c: any) =>
+  const flagged = allComponents.filter((c: ComponentSummary) => c.is_anomalous);
+  const normal = allComponents.filter((c: ComponentSummary) => !c.is_anomalous);
+  const latentCaught = flagged.filter((c: ComponentSummary) =>
     c.defect_type === "latent" ||
     (c.defect_type !== "normal" && c.leakage_median < 50 && c.delay_median < 18)
   ).length;
@@ -163,7 +164,7 @@ export default function LotOverview() {
             color: "oklch(0.65 0.14 55)",
             subtitle: "Missed by static rules"
           },
-        ].map((stat: any) => (
+        ].map((stat: StatCard) => (
           <motion.div key={stat.label} whileHover={{ y: -2 }} transition={{ duration: 0.2 }}
             className="glass-card glass-card-hover rounded-xl px-4 py-3">
             <div className="flex items-center gap-2 mb-1.5">
@@ -278,12 +279,12 @@ export default function LotOverview() {
                   data={allComponents}
                   xDataKey="leakage_median"
                   aspectRatio="2.4 / 1"
-                  isInteractable={(row: any) => {
+                  isInteractable={(row: Record<string, unknown>) => {
                     if (filter === "all") return true;
                     if (filter === "anomalous") return !!row.is_anomalous;
                     return !row.is_anomalous;
                   }}
-                  onRowClick={(row: any) => {
+                  onRowClick={(row: Record<string, unknown>) => {
                     if (row.component_id) router.push(`/components/${row.component_id}`);
                   }}
                 >
@@ -328,9 +329,10 @@ export default function LotOverview() {
 
                   <ChartTooltip
                     renderContent={(row) => {
-                      const isAnom = (row as any).is_anomalous;
-                      const compId = (row as any).component_id || "—";
-                      const defectType = (row as any).defect_type || "unknown";
+                      const r = row as unknown as ComponentSummary;
+                      const isAnom = r.is_anomalous;
+                      const compId = r.component_id || "—";
+                      const defectType = r.defect_type || "unknown";
                       return (
                         <div>
                           <div style={{
@@ -411,7 +413,7 @@ export default function LotOverview() {
                 </tr>
               </thead>
               <tbody>
-                {tableData.slice(0, TABLE_LIMIT).map((c: any, i: number) => (
+                {tableData.slice(0, TABLE_LIMIT).map((c: ComponentSummary, i: number) => (
                   <motion.tr
                     key={c.component_id}
                     initial={{ opacity: 0, x: -6 }}
