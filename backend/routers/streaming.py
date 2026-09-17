@@ -6,7 +6,8 @@ replays it as a continuous time-series stream. Between the real measurement
 timepoints (0h, 24h, 96h, 168h), values are linearly interpolated with
 small Gaussian noise to simulate live sensor readings.
 
-FIX: More interpolation steps + continuous time prevents graph reset.
+Note: 40 interpolation steps per segment (120 total points per cycle) and
+continuous monotonic timestamps prevent chart resets on the frontend.
 """
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends

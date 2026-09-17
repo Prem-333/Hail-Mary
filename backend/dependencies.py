@@ -1,4 +1,6 @@
 from pathlib import Path
+from typing import TypedDict
+
 import pandas as pd
 import shap
 import numpy as np
@@ -15,11 +17,25 @@ from src.outlier_detection.detector import OutlierDetector
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = PROJECT_ROOT / "data" / "generated"
 
+
+class SystemState(TypedDict):
+    measurements: pd.DataFrame
+    labels: pd.DataFrame
+    outlier_results: pd.DataFrame
+    predictor: DriftPredictor
+    predictions: pd.DataFrame
+    flags: pd.DataFrame
+    explainer: BurnInExplainer
+    anomaly_metrics: dict
+    drift_metrics: dict
+    shap_explainers: dict
+
+
 # Global system state
-SYSTEM_STATE = None
+SYSTEM_STATE: SystemState | None = None
 _lock = threading.Lock()
 
-def load_system():
+def load_system() -> SystemState:
     global SYSTEM_STATE
     with _lock:
         if SYSTEM_STATE is not None:
@@ -29,11 +45,11 @@ def load_system():
         measurements = pd.read_csv(DATA_DIR / "burnin_measurements.csv")
         labels = pd.read_csv(DATA_DIR / "burnin_labels.csv")
 
-        # Module A â€” Outlier Detection
+        # Module A — Outlier Detection
         detector = OutlierDetector(z_threshold=3.5)
         outlier_results = detector.detect(measurements)
 
-        # Module B â€” Drift Prediction
+        # Module B — Drift Prediction
         predictor = DriftPredictor(safety_slope_n_sigma=3.0, random_state=42)
         predictor.fit(measurements)
         predictions = predictor.predict(measurements)
@@ -72,7 +88,7 @@ def load_system():
         print("System loaded successfully.")
         return SYSTEM_STATE
 
-def get_system():
+def get_system() -> SystemState:
     if SYSTEM_STATE is None:
         return load_system()
     return SYSTEM_STATE

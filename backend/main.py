@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import sys
@@ -12,6 +14,13 @@ if str(PROJECT_ROOT) not in sys.path:
 from backend.routers import lots, components, simulation, evaluation, streaming
 from backend.dependencies import load_system
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    load_system()
+    yield
+
+
 app = FastAPI(
     title="LATENT \u2014 Burn-In Screening API",
     version="1.0.0",
@@ -20,21 +29,17 @@ app = FastAPI(
         "semiconductor components. Cohort-relative outlier detection (MAD + Isolation Forest) "
         "and XGBoost drift prediction with SHAP explainability. Built for SIH 2026."
     ),
+    lifespan=lifespan,
 )
 
 # Configure CORS
+# NOTE: allow_credentials cannot be combined with allow_origins=["*"] per CORS spec.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Adjust in production
-    allow_credentials=True,
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Load machine learning system on startup
-@app.on_event("startup")
-async def startup_event():
-    load_system()
 
 # Include routers
 app.include_router(lots.router)

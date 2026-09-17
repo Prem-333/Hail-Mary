@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from backend.dependencies import get_system
 import numpy as np
+import json
 
 router = APIRouter(prefix="/api/components", tags=["Components"])
 
@@ -50,7 +51,6 @@ def get_component_details(component_id: str, system=Depends(get_system)):
             }
 
     # Handle nan/float32 in report
-    import json
     def default_encode(obj):
         if isinstance(obj, np.floating): return float(obj)
         if isinstance(obj, np.integer): return int(obj)
