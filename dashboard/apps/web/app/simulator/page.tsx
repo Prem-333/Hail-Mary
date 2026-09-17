@@ -425,28 +425,34 @@ export default function SimulatorPage() {
                               border: "1px solid oklch(1 0 0 / 5%)",
                             }}
                           >
-                            <h4 className="text-xs font-medium uppercase tracking-widest text-center text-muted-foreground mb-3 capitalize">
+                            <h4 className="text-xs font-medium uppercase tracking-widest text-center text-muted-foreground mb-2">
                               {param.replace(/_/g, ' ')}
                             </h4>
-                            <div className="h-[160px] flex justify-center items-center relative mb-4 mt-2">
-                              <Gauge
-                                value={Math.min(percentOfThreshold, 100)}
-                                enterTransition={{ stiffness: 100, damping: 25 }}
-                                enterStaggerScale={1.5}
-                              />
-                              <div className="absolute flex flex-col items-center top-[58%]">
-                                <span className={`text-xl font-bold tabular-nums leading-none ${isDanger ? 'text-destructive' : 'text-emerald-400'}`}>
-                                  <NumberFlow
-                                    value={animateValues ? data.implied_drift : 0}
-                                    format={{ minimumFractionDigits: 5, maximumFractionDigits: 5 }}
-                                    willChange
-                                    isolate
-                                  />
-                                </span>
-                                <span className="text-xs text-muted-foreground/50 dark:text-muted-foreground uppercase font-medium mt-1.5">{unit}</span>
+                            <div className="flex justify-center items-center my-2">
+                              <div className="relative w-[220px] h-[160px] flex items-center justify-center">
+                                <Gauge
+                                  width={220}
+                                  height={160}
+                                  value={Math.min(percentOfThreshold, 100)}
+                                  enterTransition={{ stiffness: 100, damping: 25 }}
+                                  enterStaggerScale={1.5}
+                                />
+                                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                  <span className={`text-xl font-bold tabular-nums leading-none ${isDanger ? 'text-destructive' : 'text-emerald-400'}`}>
+                                    <NumberFlow
+                                      value={animateValues ? data.implied_drift : 0}
+                                      format={{ minimumFractionDigits: 5, maximumFractionDigits: 5 }}
+                                      willChange
+                                      isolate
+                                    />
+                                  </span>
+                                  <span className="text-xs text-muted-foreground/60 dark:text-muted-foreground font-medium mt-1">
+                                    {unit}
+                                  </span>
+                                </div>
                               </div>
                             </div>
-                            <div className="text-center mb-2 -mt-2">
+                            <div className="text-center mb-2">
                               <span className="text-xs text-muted-foreground/60 dark:text-muted-foreground">Drift Rate: {(data.implied_drift).toExponential(2)} {unit}</span>
                             </div>
                             {/* Ratio badge */}

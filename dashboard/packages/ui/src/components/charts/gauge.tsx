@@ -680,7 +680,7 @@ export function Gauge({
   ...props
 }: GaugeProps) {
   const isLinear = orientation === "linear";
-  const resolvedMinWidth = minWidth ?? (isLinear ? 200 : 300);
+  const resolvedMinWidth = minWidth ?? (isLinear ? 200 : 0);
   const resolvedLinearHeight = linearHeight ?? DEFAULT_LINEAR_GAUGE_HEIGHT;
 
   if (isLinear) {
