@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from backend.dependencies import get_system
 import pandas as pd
 import numpy as np
@@ -9,11 +9,12 @@ from src.drift_prediction.predictor import FEATURE_NAMES
 router = APIRouter(prefix="/api/simulate", tags=["Simulation"])
 
 class SimulateRequest(BaseModel):
-    lot_id: str
-    leak_0h: float
-    leak_24h: float
-    delay_0h: float
-    delay_24h: float
+    lot_id: str = Field(..., min_length=1, description="Manufacturing lot identifier")
+    leak_0h: float = Field(..., ge=0, description="Leakage current at 0h (µA)")
+    leak_24h: float = Field(..., ge=0, description="Leakage current at 24h (µA)")
+    delay_0h: float = Field(..., ge=0, description="Propagation delay at 0h (ns)")
+    delay_24h: float = Field(..., ge=0, description="Propagation delay at 24h (ns)")
+
 
 @router.post("/")
 def simulate_component(req: SimulateRequest, system=Depends(get_system)):
