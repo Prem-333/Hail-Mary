@@ -437,10 +437,10 @@ export default function SimulatorPage() {
                                   enterTransition={{ stiffness: 100, damping: 25 }}
                                   enterStaggerScale={1.5}
                                 />
-                                {/* Overlay: pinned to the arc's geometric center (cx=110, cy=80) */}
+                                {/* Overlay: pinned lower down to align with the arc's bottom opening */}
                                 <div
                                   className="absolute pointer-events-none flex flex-col items-center"
-                                  style={{ left: 110, top: 72, transform: "translate(-50%, -50%)" }}
+                                  style={{ left: 110, top: 105, transform: "translate(-50%, -50%)" }}
                                 >
                                   <span className={`text-xl font-bold tabular-nums leading-none ${isDanger ? 'text-destructive' : 'text-emerald-400'}`}>
                                     <NumberFlow
@@ -450,7 +450,7 @@ export default function SimulatorPage() {
                                       isolate
                                     />
                                   </span>
-                                  <span className="text-xs text-muted-foreground/60 dark:text-muted-foreground font-medium mt-1">
+                                  <span className="text-xs text-muted-foreground/60 dark:text-muted-foreground font-medium mt-1 uppercase tracking-widest">
                                     {unit}
                                   </span>
                                 </div>
