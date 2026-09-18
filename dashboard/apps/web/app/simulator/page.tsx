@@ -429,7 +429,7 @@ export default function SimulatorPage() {
                               {param.replace(/_/g, ' ')}
                             </h4>
                             <div className="flex justify-center items-center my-2">
-                              <div className="relative w-[220px] h-[160px] flex items-center justify-center">
+                              <div className="relative" style={{ width: 220, height: 160 }}>
                                 <Gauge
                                   width={220}
                                   height={160}
@@ -437,7 +437,11 @@ export default function SimulatorPage() {
                                   enterTransition={{ stiffness: 100, damping: 25 }}
                                   enterStaggerScale={1.5}
                                 />
-                                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                {/* Overlay: pinned to the arc's geometric center (cx=110, cy=80) */}
+                                <div
+                                  className="absolute pointer-events-none flex flex-col items-center"
+                                  style={{ left: 110, top: 72, transform: "translate(-50%, -50%)" }}
+                                >
                                   <span className={`text-xl font-bold tabular-nums leading-none ${isDanger ? 'text-destructive' : 'text-emerald-400'}`}>
                                     <NumberFlow
                                       value={animateValues ? data.implied_drift : 0}
