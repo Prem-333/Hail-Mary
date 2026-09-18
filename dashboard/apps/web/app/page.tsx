@@ -14,7 +14,7 @@ import {
   ChartTooltip,
 } from "@workspace/ui/components/charts/scatter-chart";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select";
-import { Activity, AlertTriangle, CheckCircle, ArrowRight, TrendingDown, TrendingUp, Search } from "lucide-react";
+import { Activity, AlertTriangle, CheckCircle, ArrowRight, TrendingDown, TrendingUp, Search, Zap, Clock, ShieldCheck } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
@@ -23,6 +23,226 @@ const swrOpts = { revalidateOnFocus: false, dedupingInterval: 5000 };
 
 type FilterMode = "all" | "anomalous" | "normal";
 
+// ------------------------------------------------------------
+// Safe-to-End-Burn-In Banner
+// ------------------------------------------------------------
+function BurnInSavingsBanner({ savings }: { savings: any }) {
+  if (!savings) return null;
+
+  const {
+    clearable_count,
+    total_count,
+    hours_saved,
+    confidence,
+    is_lot_fully_clear,
+    flagged_count,
+  } = savings;
+
+  const confidencePct = Math.round(confidence * 100);
+  const partialClear = clearable_count > 0 && !is_lot_fully_clear;
+  const noClear = clearable_count === 0;
+
+  // Color scheme based on clearance state
+  const scheme = is_lot_fully_clear
+    ? {
+        glow: "oklch(0.55 0.18 160)",
+        glowAlpha: "oklch(0.55 0.18 160 / 12%)",
+        border: "oklch(0.55 0.18 160 / 30%)",
+        iconBg: "oklch(0.55 0.18 160 / 15%)",
+        iconColor: "oklch(0.7 0.18 160)",
+        badgeBg: "oklch(0.55 0.18 160 / 18%)",
+        badgeText: "oklch(0.75 0.18 160)",
+        barFill: "oklch(0.65 0.18 160)",
+        label: "SAFE TO END BURN-IN",
+        sublabel: "All components cleared by Module A + Module B",
+        icon: ShieldCheck,
+      }
+    : partialClear
+    ? {
+        glow: "oklch(0.65 0.14 55)",
+        glowAlpha: "oklch(0.65 0.14 55 / 10%)",
+        border: "oklch(0.65 0.14 55 / 25%)",
+        iconBg: "oklch(0.65 0.14 55 / 12%)",
+        iconColor: "oklch(0.75 0.14 55)",
+        badgeBg: "oklch(0.65 0.14 55 / 15%)",
+        badgeText: "oklch(0.8 0.14 55)",
+        barFill: "oklch(0.7 0.14 55)",
+        label: "PARTIAL CLEARANCE",
+        sublabel: `${flagged_count} component${flagged_count !== 1 ? "s" : ""} still require full burn-in`,
+        icon: Clock,
+      }
+    : {
+        glow: "oklch(0.62 0.18 25)",
+        glowAlpha: "oklch(0.62 0.18 25 / 8%)",
+        border: "oklch(0.62 0.18 25 / 20%)",
+        iconBg: "oklch(0.62 0.18 25 / 10%)",
+        iconColor: "oklch(0.7 0.18 25)",
+        badgeBg: "oklch(0.62 0.18 25 / 12%)",
+        badgeText: "oklch(0.75 0.18 25)",
+        barFill: "oklch(0.62 0.18 25)",
+        label: "FULL BURN-IN REQUIRED",
+        sublabel: "Anomalies detected — continue testing",
+        icon: AlertTriangle,
+      };
+
+  const Icon = scheme.icon;
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: -10, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+      className="rounded-2xl overflow-hidden"
+      style={{
+        background: `linear-gradient(135deg, ${scheme.glowAlpha}, oklch(0.10 0.005 260 / 80%))`,
+        border: `1px solid ${scheme.border}`,
+        boxShadow: is_lot_fully_clear
+          ? `0 0 40px oklch(0.55 0.18 160 / 10%), 0 0 0 1px oklch(0.55 0.18 160 / 15%) inset`
+          : "none",
+      }}
+    >
+      <div className="px-6 py-5 flex flex-col md:flex-row md:items-center gap-5">
+        {/* Icon */}
+        <div
+          className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+          style={{ background: scheme.iconBg }}
+        >
+          {is_lot_fully_clear ? (
+            <motion.div
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
+            >
+              <Icon className="w-6 h-6" style={{ color: scheme.iconColor }} />
+            </motion.div>
+          ) : (
+            <Icon className="w-6 h-6" style={{ color: scheme.iconColor }} />
+          )}
+        </div>
+
+        {/* Main text */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <span
+              className="text-xs font-semibold uppercase tracking-widest"
+              style={{ color: scheme.badgeText }}
+            >
+              {scheme.label}
+            </span>
+            {/* Confidence pill */}
+            <span
+              className="text-xs font-medium px-2 py-0.5 rounded-full"
+              style={{ background: scheme.badgeBg, color: scheme.badgeText }}
+            >
+              {confidencePct}% confidence
+            </span>
+          </div>
+          <p className="text-sm text-muted-foreground/60 dark:text-muted-foreground font-light">
+            {scheme.sublabel}
+          </p>
+
+          {/* Confidence bar */}
+          <div className="mt-3 flex items-center gap-3">
+            <div
+              className="flex-1 h-1 rounded-full overflow-hidden"
+              style={{ background: "oklch(1 0 0 / 6%)" }}
+            >
+              <motion.div
+                className="h-full rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${confidencePct}%` }}
+                transition={{ duration: 0.9, delay: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                style={{ background: scheme.barFill }}
+              />
+            </div>
+            <span
+              className="text-xs font-mono tabular-nums font-medium"
+              style={{ color: scheme.badgeText }}
+            >
+              {clearable_count}/{total_count} clear
+            </span>
+          </div>
+        </div>
+
+        {/* Savings metrics — the big number */}
+        {clearable_count > 0 && (
+          <div className="flex items-center gap-4 md:gap-6 flex-shrink-0">
+            {/* Hours saved */}
+            <div className="text-right">
+              <motion.p
+                className="text-3xl font-bold tabular-nums leading-none"
+                style={{ color: scheme.iconColor }}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                {hours_saved.toLocaleString()}
+              </motion.p>
+              <p className="text-xs text-muted-foreground/40 dark:text-muted-foreground uppercase tracking-widest font-medium mt-0.5">
+                hours saved
+              </p>
+            </div>
+
+            <div
+              className="w-px h-10 rounded-full"
+              style={{ background: scheme.border }}
+            />
+
+            {/* Components freed */}
+            <div className="text-right">
+              <motion.p
+                className="text-3xl font-bold tabular-nums leading-none"
+                style={{ color: scheme.iconColor }}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
+                {clearable_count}
+              </motion.p>
+              <p className="text-xs text-muted-foreground/40 dark:text-muted-foreground uppercase tracking-widest font-medium mt-0.5">
+                components freed
+              </p>
+            </div>
+
+            {/* Zap icon for energy */}
+            <div
+              className="hidden lg:flex w-10 h-10 rounded-xl items-center justify-center"
+              style={{ background: scheme.iconBg }}
+            >
+              <Zap className="w-5 h-5" style={{ color: scheme.iconColor }} />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Bottom context bar */}
+      <div
+        className="px-6 py-2 flex items-center gap-2 text-xs"
+        style={{ borderTop: `1px solid ${scheme.border}`, background: "oklch(0 0 0 / 15%)" }}
+      >
+        <span className="text-muted-foreground/30 dark:text-muted-foreground uppercase tracking-widest font-medium">
+          Module B decision at 24h checkpoint
+        </span>
+        <span className="text-muted-foreground/20 dark:text-muted-foreground">·</span>
+        <span className="text-muted-foreground/30 dark:text-muted-foreground uppercase tracking-widest font-medium">
+          144h remaining burn-in per component
+        </span>
+        {is_lot_fully_clear && (
+          <>
+            <span className="text-muted-foreground/20 dark:text-muted-foreground">·</span>
+            <span className="font-semibold uppercase tracking-widest" style={{ color: scheme.badgeText }}>
+              ✓ Both Module A & Module B agree
+            </span>
+          </>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
+// ------------------------------------------------------------
+// Main page
+// ------------------------------------------------------------
 export default function LotOverview() {
   const router = useRouter();
 
@@ -71,6 +291,8 @@ export default function LotOverview() {
     c.defect_type === "latent" ||
     (c.defect_type !== "normal" && c.leakage_median < 50 && c.delay_median < 18)
   ).length;
+
+  const burnInSavings = lotDetails?.burn_in_savings ?? null;
 
   // Filter data for the chart
   const chartNormal = filter === "anomalous" ? [] : normal;
@@ -165,6 +387,15 @@ export default function LotOverview() {
           </Select>
         </div>
       </motion.div>
+
+      {/* ── Safe-to-End-Burn-In Banner ── */}
+      <AnimatePresence mode="wait">
+        {burnInSavings && (
+          <motion.div key={selectedLot + "-savings"} variants={itemVariants}>
+            <BurnInSavingsBanner savings={burnInSavings} />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Stat cards */}
       <motion.div variants={itemVariants} className="grid grid-cols-5 gap-3">
