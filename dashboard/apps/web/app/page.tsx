@@ -14,7 +14,7 @@ import {
   ChartTooltip,
 } from "@workspace/ui/components/charts/scatter-chart";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select";
-import { Activity, AlertTriangle, CheckCircle, ArrowRight, TrendingDown, TrendingUp } from "lucide-react";
+import { Activity, AlertTriangle, CheckCircle, ArrowRight, TrendingDown, TrendingUp, Search } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
@@ -30,6 +30,7 @@ export default function LotOverview() {
   const { data: lotsData, error: lotsError } = useSWR(`${API_URL}/api/lots/`, fetcher, swrOpts);
   const [selectedLot, setSelectedLot] = useState<string>("");
   const [filter, setFilter] = useState<FilterMode>("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     if (lotsData?.lots?.length > 0 && !selectedLot) {
@@ -53,7 +54,17 @@ export default function LotOverview() {
     show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.4, 0, 0.2, 1] as [number, number, number, number] } }
   };
 
-  const allComponents = lotDetails?.components || [];
+  const allComponentsRaw = lotDetails?.components || [];
+  const searchLower = searchQuery.toLowerCase();
+  
+  const allComponents = useMemo(() => {
+    if (!searchQuery) return allComponentsRaw;
+    return allComponentsRaw.filter((c: ComponentSummary) => 
+      c.component_id?.toLowerCase().includes(searchLower) ||
+      c.defect_type?.toLowerCase().includes(searchLower)
+    );
+  }, [allComponentsRaw, searchQuery, searchLower]);
+
   const flagged = allComponents.filter((c: ComponentSummary) => c.is_anomalous);
   const normal = allComponents.filter((c: ComponentSummary) => !c.is_anomalous);
   const latentCaught = flagged.filter((c: ComponentSummary) =>
@@ -132,6 +143,16 @@ export default function LotOverview() {
         </div>
 
         <div className="flex items-center gap-3">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
+            <input 
+              type="text" 
+              placeholder="Search components..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-48 h-9 pl-9 pr-3 text-sm bg-transparent border border-border/10 rounded-xl glass-card outline-none focus:ring-1 focus:ring-primary/50 text-foreground"
+            />
+          </div>
           <Select value={selectedLot} onValueChange={(v) => setSelectedLot(v ?? "")}>
             <SelectTrigger className="w-44 h-9 glass-card text-sm font-medium rounded-xl">
               <SelectValue placeholder="Select lot" />
