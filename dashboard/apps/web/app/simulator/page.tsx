@@ -440,9 +440,9 @@ export default function SimulatorPage() {
                                 {/* Overlay: pinned to arc center (cx=140, cy proportional) */}
                                 <div
                                   className="absolute pointer-events-none flex flex-col items-center"
-                                  style={{ left: 140, top: 132, transform: "translate(-50%, -50%)" }}
+                                  style={{ left: 140, top: 120, transform: "translate(-50%, -50%)" }}
                                 >
-                                  <span className={`text-2xl font-bold tabular-nums leading-none ${isDanger ? 'text-destructive' : 'text-emerald-400'}`}>
+                                  <span className={`text-lg font-bold tabular-nums leading-none ${isDanger ? 'text-destructive' : 'text-emerald-400'}`}>
                                     <NumberFlow
                                       value={animateValues ? data.implied_drift : 0}
                                       format={{ minimumFractionDigits: 5, maximumFractionDigits: 5 }}
