@@ -429,20 +429,20 @@ export default function SimulatorPage() {
                               {param.replace(/_/g, ' ')}
                             </h4>
                             <div className="flex justify-center items-center my-2">
-                              <div className="relative" style={{ width: 220, height: 160 }}>
+                              <div className="relative" style={{ width: 280, height: 200 }}>
                                 <Gauge
-                                  width={220}
-                                  height={160}
+                                  width={280}
+                                  height={200}
                                   value={Math.min(percentOfThreshold, 100)}
                                   enterTransition={{ stiffness: 100, damping: 25 }}
                                   enterStaggerScale={1.5}
                                 />
-                                {/* Overlay: pinned lower down to align with the arc's bottom opening */}
+                                {/* Overlay: pinned to arc center (cx=140, cy proportional) */}
                                 <div
                                   className="absolute pointer-events-none flex flex-col items-center"
-                                  style={{ left: 110, top: 105, transform: "translate(-50%, -50%)" }}
+                                  style={{ left: 140, top: 132, transform: "translate(-50%, -50%)" }}
                                 >
-                                  <span className={`text-xl font-bold tabular-nums leading-none ${isDanger ? 'text-destructive' : 'text-emerald-400'}`}>
+                                  <span className={`text-2xl font-bold tabular-nums leading-none ${isDanger ? 'text-destructive' : 'text-emerald-400'}`}>
                                     <NumberFlow
                                       value={animateValues ? data.implied_drift : 0}
                                       format={{ minimumFractionDigits: 5, maximumFractionDigits: 5 }}
