@@ -47,7 +47,19 @@ def simulate_component(req: SimulateRequest, system=Depends(get_system)):
         pred_val = float(pred_row.iloc[0]["predicted_168h_xgb"])
         v0 = float(pred_row.iloc[0]["value_0h"])
         implied_drift = float((pred_val - v0) / 168.0)
-        threshold = float(safety_slopes.get(req.lot_id, {}).get(param, 0.1))
+
+        # Prefer the exact lot's safety slope.  If the submitted lot_id is not
+        # in the training set (e.g. a hypothetical simulator input), fall back
+        # to the median safety slope across all trained lots for that parameter.
+        # This is far more meaningful than the previous hard-coded 0.1 constant.
+        lot_slopes = safety_slopes.get(req.lot_id, {})
+        if param in lot_slopes:
+            threshold = float(lot_slopes[param])
+        else:
+            all_param_slopes = [
+                v[param] for v in safety_slopes.values() if param in v
+            ]
+            threshold = float(np.median(all_param_slopes)) if all_param_slopes else 0.1
         
         results[param] = {
             "predicted_168h": pred_val,

@@ -18,7 +18,13 @@ import time
 import random
 import numpy as np
 
-router = APIRouter(tags=["Streaming"])
+# Two routers are needed:
+#   • ws_router  — no prefix so the WebSocket stays at /ws/sensor-stream
+#                  (the URL the frontend connects to via WS_URL)
+#   • router     — prefix /api/streaming for the REST helper endpoint
+#                  so it lives at /api/streaming/components/{lot_id}
+ws_router = APIRouter(tags=["Streaming"])
+router = APIRouter(prefix="/api/streaming", tags=["Streaming"])
 
 # ── WebSocket connection cap ───────────────────────────────────────────
 MAX_WS_CONNECTIONS = 10
@@ -49,16 +55,22 @@ def _interpolate_trajectory(values: list[float], timepoints: list[float],
     return result
 
 
-@router.websocket("/ws/sensor-stream")
+@ws_router.websocket("/ws/sensor-stream")
 async def sensor_stream(websocket: WebSocket):
     # Enforce connection cap
     if len(_active_connections) >= MAX_WS_CONNECTIONS:
         await websocket.close(code=1013, reason="Too many connections — try again later")
         return
 
+    # Guard against cold-start: reject before accepting if system isn't loaded yet.
+    # This prevents the async event loop from blocking during ML model initialisation.
+    from backend.dependencies import SYSTEM_STATE
+    if SYSTEM_STATE is None:
+        await websocket.close(code=1013, reason="System not ready — retry in a few seconds")
+        return
+
     await websocket.accept()
     _active_connections.add(websocket)
-
 
     system = get_system()
     measurements = system["measurements"]
@@ -161,7 +173,7 @@ async def sensor_stream(websocket: WebSocket):
         _active_connections.discard(websocket)
 
 
-@router.get("/api/streaming/components/{lot_id}")
+@router.get("/components/{lot_id}")
 def get_streamable_components(lot_id: str, system=Depends(get_system)):
     """Get the list of components available for streaming in a lot."""
     measurements = system["measurements"]

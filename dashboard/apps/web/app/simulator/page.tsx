@@ -13,6 +13,8 @@ import { Zap, FlaskConical, ArrowRight, AlertTriangle, CheckCircle, RotateCcw, B
 const fetcher = (url: string) => axios.get(url).then(res => res.data);
 const swrOpts = { revalidateOnFocus: false, dedupingInterval: 5000 };
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+
 // SHAP feature bar — shows a single feature contribution
 function ShapBar({ name, value, maxAbs }: { name: string; value: number; maxAbs: number }) {
   const isPos = value >= 0;
@@ -67,7 +69,7 @@ function ShapBar({ name, value, maxAbs }: { name: string; value: number; maxAbs:
 }
 
 export default function SimulatorPage() {
-  const { data: lotsData } = useSWR(`${process.env.NEXT_PUBLIC_API_URL}/api/lots/`, fetcher, swrOpts);
+  const { data: lotsData } = useSWR(`${API_URL}/api/lots/`, fetcher, swrOpts);
 
   useEffect(() => { document.title = "Rejection Simulator — LATENT"; }, []);
 
@@ -113,7 +115,7 @@ export default function SimulatorPage() {
         delay_0h: parseFloat(formData.delay_0h) || 0,
         delay_24h: parseFloat(formData.delay_24h) || 0,
       };
-      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/simulate/`, payload);
+      const res = await axios.post(`${API_URL}/api/simulate/`, payload);
       setResult(res.data);
     } catch (err) {
       console.error(err);

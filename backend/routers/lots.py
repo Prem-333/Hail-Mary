@@ -12,6 +12,11 @@ def get_lots(system=Depends(get_system)):
 
 @router.get("/{lot_id}")
 def get_lot_details(lot_id: str, system=Depends(get_system)):
+    measurements = system["measurements"]
+    if lot_id not in measurements["lot_id"].unique():
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Lot not found")
+
     outlier_results = system["outlier_results"]
     labels = system["labels"]
 

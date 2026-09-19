@@ -50,7 +50,8 @@ app.include_router(lots.router)
 app.include_router(components.router)
 app.include_router(simulation.router)
 app.include_router(evaluation.router)
-app.include_router(streaming.router)
+app.include_router(streaming.ws_router)   # WebSocket at /ws/sensor-stream
+app.include_router(streaming.router)      # REST at /api/streaming/components/{lot_id}
 
 @app.get("/")
 def read_root():
