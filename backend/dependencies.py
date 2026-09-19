@@ -60,11 +60,7 @@ def _stratified_lot_split(
 
     # Compute per-lot defect rate for stratification
     lot_defect = (
-        labels.merge(
-            measurements[["component_id", "lot_id"]].drop_duplicates(),
-            on="component_id",
-        )
-        .assign(is_defective=lambda df: (df["defect_type"] != "normal").astype(int))
+        labels.assign(is_defective=lambda df: (df["defect_type"] != "normal").astype(int))
         .groupby("lot_id")["is_defective"]
         .mean()
         .reset_index()

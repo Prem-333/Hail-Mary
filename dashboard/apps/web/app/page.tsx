@@ -14,7 +14,7 @@ import {
   ChartTooltip,
 } from "@workspace/ui/components/charts/scatter-chart";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select";
-import { Activity, AlertTriangle, CheckCircle, ArrowRight, TrendingDown, TrendingUp, Search, Zap, Clock, ShieldCheck } from "lucide-react";
+import { Activity, AlertTriangle, CheckCircle, ArrowRight, TrendingDown, TrendingUp, Search, Zap, Clock, ShieldCheck, Shield } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
@@ -53,23 +53,23 @@ function BurnInSavingsBanner({ savings }: { savings: any }) {
         badgeBg: "oklch(0.55 0.18 160 / 18%)",
         badgeText: "oklch(0.75 0.18 160)",
         barFill: "oklch(0.65 0.18 160)",
-        label: "SAFE TO END BURN-IN",
+        label: "Safe to End Burn-In",
         sublabel: "All components cleared by Module A + Module B",
         icon: ShieldCheck,
       }
     : partialClear
     ? {
-        glow: "oklch(0.65 0.14 55)",
-        glowAlpha: "oklch(0.65 0.14 55 / 10%)",
-        border: "oklch(0.65 0.14 55 / 25%)",
-        iconBg: "oklch(0.65 0.14 55 / 12%)",
-        iconColor: "oklch(0.75 0.14 55)",
-        badgeBg: "oklch(0.65 0.14 55 / 15%)",
-        badgeText: "oklch(0.8 0.14 55)",
-        barFill: "oklch(0.7 0.14 55)",
-        label: "PARTIAL CLEARANCE",
-        sublabel: `${flagged_count} component${flagged_count !== 1 ? "s" : ""} still require full burn-in`,
-        icon: Clock,
+        glow: "oklch(0.65 0.18 155)",
+        glowAlpha: "oklch(0.65 0.18 155 / 15%)",
+        border: "oklch(0.65 0.18 155 / 35%)",
+        iconBg: "oklch(0.65 0.18 155 / 15%)",
+        iconColor: "oklch(0.75 0.18 155)",
+        badgeBg: "oklch(0.65 0.18 155 / 20%)",
+        badgeText: "oklch(0.85 0.18 155)",
+        barFill: "oklch(0.7 0.18 155)",
+        label: "Early Clearance Approved",
+        sublabel: `Safely cleared ${clearable_count} components. Only ${flagged_count} component${flagged_count !== 1 ? "s" : ""} require${flagged_count === 1 ? "s" : ""} full burn-in.`,
+        icon: Shield,
       }
     : {
         glow: "oklch(0.62 0.18 25)",
@@ -80,7 +80,7 @@ function BurnInSavingsBanner({ savings }: { savings: any }) {
         badgeBg: "oklch(0.62 0.18 25 / 12%)",
         badgeText: "oklch(0.75 0.18 25)",
         barFill: "oklch(0.62 0.18 25)",
-        label: "FULL BURN-IN REQUIRED",
+        label: "Full Burn-In Required",
         sublabel: "Anomalies detected — continue testing",
         icon: AlertTriangle,
       };
@@ -93,14 +93,7 @@ function BurnInSavingsBanner({ savings }: { savings: any }) {
       initial={{ opacity: 0, y: -10, scale: 0.98 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-      className="rounded-2xl overflow-hidden"
-      style={{
-        background: `linear-gradient(135deg, ${scheme.glowAlpha}, oklch(0.10 0.005 260 / 80%))`,
-        border: `1px solid ${scheme.border}`,
-        boxShadow: is_lot_fully_clear
-          ? `0 0 40px oklch(0.55 0.18 160 / 10%), 0 0 0 1px oklch(0.55 0.18 160 / 15%) inset`
-          : "none",
-      }}
+      className="glass-card rounded-2xl overflow-hidden"
     >
       <div className="px-6 py-5 flex flex-col md:flex-row md:items-center gap-5">
         {/* Icon */}
@@ -110,6 +103,7 @@ function BurnInSavingsBanner({ savings }: { savings: any }) {
         >
           {is_lot_fully_clear ? (
             <motion.div
+              className="flex items-center justify-center"
               animate={{ scale: [1, 1.1, 1] }}
               transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
             >
@@ -124,7 +118,7 @@ function BurnInSavingsBanner({ savings }: { savings: any }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <span
-              className="text-xs font-semibold uppercase tracking-widest"
+              className="text-lg font-semibold tracking-tight"
               style={{ color: scheme.badgeText }}
             >
               {scheme.label}
@@ -388,15 +382,6 @@ export default function LotOverview() {
         </div>
       </motion.div>
 
-      {/* ── Safe-to-End-Burn-In Banner ── */}
-      <AnimatePresence mode="wait">
-        {burnInSavings && (
-          <motion.div key={selectedLot + "-savings"} variants={itemVariants}>
-            <BurnInSavingsBanner savings={burnInSavings} />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Stat cards */}
       <motion.div variants={itemVariants} className="grid grid-cols-5 gap-3">
         {[
@@ -423,13 +408,22 @@ export default function LotOverview() {
               <stat.icon className="w-4 h-4" style={{ color: stat.color, opacity: 0.6 }} />
               <span className="text-xs text-muted-foreground/40 dark:text-muted-foreground uppercase tracking-widest font-medium">{stat.label}</span>
             </div>
-            <p className="text-xl font-semibold tabular-nums" style={{ color: stat.color }}>{stat.value}</p>
+            <p className="text-3xl font-bold tabular-nums" style={{ color: stat.color }}>{stat.value}</p>
             {stat.subtitle && (
               <p className="text-xs font-medium mt-1" style={{ color: stat.color, opacity: 0.85 }}>{stat.subtitle}</p>
             )}
           </motion.div>
         ))}
       </motion.div>
+
+      {/* ── Safe-to-End-Burn-In Banner ── */}
+      <AnimatePresence mode="wait">
+        {burnInSavings && (
+          <motion.div key={selectedLot + "-savings"} variants={itemVariants}>
+            <BurnInSavingsBanner savings={burnInSavings} />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Single hybrid scatter chart with filter */}
       <motion.div variants={itemVariants}>
