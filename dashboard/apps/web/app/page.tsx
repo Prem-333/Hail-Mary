@@ -404,11 +404,11 @@ export default function LotOverview() {
         ].map((stat: StatCard) => (
           <motion.div key={stat.label} whileHover={{ y: -2 }} transition={{ duration: 0.2 }}
             className="glass-card glass-card-hover rounded-xl px-4 py-3">
-            <div className="flex items-center gap-2 mb-1.5">
+            <div className="flex items-center gap-2 mb-2">
               <stat.icon className="w-4 h-4" style={{ color: stat.color, opacity: 0.6 }} />
               <span className="text-xs text-muted-foreground/40 dark:text-muted-foreground uppercase tracking-widest font-medium">{stat.label}</span>
             </div>
-            <p className="text-3xl font-bold tabular-nums" style={{ color: stat.color }}>{stat.value}</p>
+            <p className="text-3xl font-semibold tabular-nums tracking-tight mt-2" style={{ color: stat.color }}>{stat.value}</p>
             {stat.subtitle && (
               <p className="text-xs font-medium mt-1" style={{ color: stat.color, opacity: 0.85 }}>{stat.subtitle}</p>
             )}
