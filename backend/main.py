@@ -32,11 +32,15 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Configure CORS
+# Allow the deployed dashboard as well as local development.
 # NOTE: allow_credentials cannot be combined with allow_origins=["*"] per CORS spec.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "https://latent-rose.vercel.app",
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )
